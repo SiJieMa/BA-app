@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<widget id="A6067912196305" version="0.0.1"> 
+  <name>KunchiBa</name>  
+  <description>Example For APICloud.</description>  
+  <author email="developer@apicloud.com" href="http://www.apicloud.com">Developer</author>  
+  <content src="index.html"/>  
+  <preference name="pageBounce" value="false"/>  
+  <preference name="customRefreshHeader" value="UIPullRefreshMotive"/>  
+  <preference name="appBackground" value="rgba(0,0,0,0.0)"/>  
+  <preference name="windowBackground" value="rgba(0,0,0,0.0)"/>  
+  <preference name="frameBackgroundColor" value="rgba(0,0,0,0.0)"/>  
+  <preference name="hScrollBarEnabled" value="true"/>  
+  <preference name="vScrollBarEnabled" value="true"/>  
+  <preference name="autoLaunch" value="true"/>  
+  <preference name="fullScreen" value="false"/>  
+  <preference name="autoUpdate" value="true"/>  
+  <preference name="smartUpdate" value="true"/>  
+  <preference name="debug" value="false"/>  
+  <preference name="statusBarAppearance" value="true"/>  
+  <preference name="backgroundMode" value="location"/>  
+  <preference name="checkSslTrusted" value="false"/>  
+  <permission name="readPhoneState"/>  
+  <permission name="camera"/>  
+  <permission name="record"/>  
+  <permission name="location"/>  
+  <permission name="fileSystem"/>  
+  <permission name="internet"/>  
+  <permission name="bootCompleted"/>  
+  <permission name="hardware"/>  
+  <access origin="*"/>  
+  <feature name="aMapLocation"> 
+    <param name="android_api_key" value="1d0b89b878e34a4e41c3f77c4eca9205"/>  
+    <param name="ios_api_key" value="e9095b2f2410226942a50557751d76b6"/> 
+  </feature>  
+  <feature name="ajpush"> 
+    <param name="app_key" value="b8c6d6a3c22f39987d1f2322"/>  
+    <param name="channel" value="kunchiba"/> 
+  </feature> 
+</widget>

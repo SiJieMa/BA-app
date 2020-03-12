@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>未带教报告</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/BA_wei.css" />
+	</head>
+
+	<body>
+		<div class="index-dialog-back">
+			<div class="index-dialog">
+				<div class="headmsg">
+					<img src="../../image/BA_daijiao/header.jpg" />
+					<span>张三</span>
+				</div>
+				<div class="erweima">
+					<img src="../../image/BA_daijiao/noercode.png" />
+					<span>请使用手机截屏保存到本地</span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="index-main" id="app">
+			<div class="ba-list">
+				<ul v-if="balist.length > 0">
+					<li v-for="item in balist">
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">BA姓名</span>
+							<span class="ba-list-item-rightmsg" v-text="item.RealName"></span>
+						</div>
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">所在门店</span>
+							<span class="ba-list-item-rightmsg" v-text="item.cStoreFullName"></span>
+						</div>
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">联系方式</span>
+							<span class="ba-list-item-rightmsg" v-on:click="phonenum(item.UserName)" v-text="item.UserName"></span>
+						</div>
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">负责品牌</span>
+							<span class="ba-list-item-rightmsg" v-text="item.BrandName"></span>
+						</div>
+						<!-- <img src="../../image/BA_daijiao/erweima.png" /> -->
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/es6/BA_wei-compiled.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script>
+		var appvue;
+		apiready = function(){
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					balist: [],
+					startime: '',
+					endtime: ''
+				},
+				created() {
+					this.startime = this.getfirsttime();
+					this.endtime = this.getlasttime();
+				},
+				mounted() {
+					this.postpagedb();
+				},
+				methods:{
+					postpagedb: function(){
+						api.showProgress({
+							modal: true
+						});
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						body.startime = this.startime;
+						body.endtime = this.endtime;
+						$kunchi.kunchipost("ActionApi/KPI/KPI_UntrainedInfor", body, function(ret,err){
+							//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							api.hideProgress();
+							if(ret){
+								initlist(ret);
+							}else{
+								api.alert({
+								    title: '提示',
+								    msg: '当前网络错误,请稍后重试.',
+								}, function(ret, err) {
+									api.closeWin({
+						            });
+								});
+							}
+						});
+					},
+					
+					getfirsttime: function(){
+						var date = new Date();
+						date.setDate(1);
+						var month = parseInt(date.getMonth()+1);
+						var day = date.getDate();
+						if (month < 10) {
+							month = '0' + month
+						}
+						if (day < 10) {
+							day = '0' + day
+						}
+						return date.getFullYear() + '-' + month + '-' + day;
+					},
+					
+					getlasttime: function(){
+						var date=new Date();
+						var currentMonth=date.getMonth();
+						var nextMonth=++currentMonth;
+						var nextMonthFirstDay=new Date(date.getFullYear(),nextMonth,1);
+						var oneDay=1000*60*60*24;
+						var lastTime = new Date(nextMonthFirstDay-oneDay);
+						var month = parseInt(lastTime.getMonth()+1);
+						var day = lastTime.getDate();
+						if (month < 10) {
+							month = '0' + month
+						}
+						if (day < 10) {
+							day = '0' + day
+						}
+						return date.getFullYear() + '-' + month + '-' + day;
+					},
+					phonenum: function(tel){
+						api.call({
+						    type: 'tel_prompt',
+						    number: tel
+						});
+					}
+				}
+			});
+		}
+		
+	</script>
+
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>促销计划-大区经理</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			html, body, header, section, footer, nav, div, ul, ol, li, img, a, span, em, del, center, strong, var, fieldset, form, label, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea {
+				margin: 0;
+				border: 0;
+				padding: 0;
+				font-family: Tahoma, Geneva, sans-serif;
+				font-style: normal;
+			}
+			html, body {
+				-webkit-touch-callout: none;
+				-webkit-text-size-adjust: none;
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-user-select: none;
+			}
+			header, footer, section, nav, img, a, button, em, del, strong, var, fieldset, label, cite, small, time, mark, code, figcaption, figure, textarea {
+				display: block;
+			}
+			header, section, footer, nav {
+				position: relative;
+				overflow: hidden;
+			}
+			ol, ul {
+				list-style: none;
+			}
+			input, button, textarea {
+				border: 0;
+				margin: 0;
+				padding: 0;
+				font-size: 1em;
+				line-height: 1em;
+				-webkit-appearance: none;
+				background-color: rgba(0, 0, 0, 0);
+			}
+			span {
+				display: inline-block;
+			}
+			a, a:visited {
+				text-decoration: none;
+			}
+
+
+		    html,body{
+		        height: 100%;
+		    }
+			#wrap{
+		        height: 100%;
+		        display: -webkit-box;
+		        display: -webkit-flex;
+		        display: flex;
+		        -webkit-box-orient: vertical;
+		        -webkit-flex-flow: column;
+		               flex-flow: column;
+		    }
+			#main{
+		        -webkit-box-flex: 1;
+		        -webkit-flex: 1;
+		        flex: 1;
+		    }
+
+
+			#header {
+				background-color: #71C4E4;
+			}
+			#nav {
+				display: -webkit-box;
+				height: 44px;
+			}
+			#left {
+				width: 80px;
+				color: #000;
+				background: url(../../image/fanhui_bai.png) no-repeat 14px 12px;
+				-webkit-background-size: 20px 20px;
+			}
+			#left > span {
+				margin-top: 13px;
+				margin-left: 36px;
+				font-size: 18px;
+				height: 18px;
+				line-height: 18px;
+			}
+			#right > span {
+				margin-top: 13px;
+				margin-left: 36px;
+				font-size: 16px;
+				height: 18px;
+				line-height: 18px;
+				color: #FFFFFF;
+			}
+			#middle {
+				-webkit-box-flex: 1;
+				width: 100%;
+				display: -webkit-box;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+			}
+			#title {
+				font-size: 16px;
+				text-align: center;
+				color: #fff;
+			}
+			#right {
+				width: 80px;
+			}
+			section {
+				-webkit-box-flex: 1;
+			}
+			body {
+				background-color: #fff;
+			}
+			.tab {
+				width: 100%;
+				height: 40px;
+				float: left;
+				border-bottom: 1px solid #f2f2f2;
+				background-color: #fff;
+			}
+			.tab .tabdiv {
+				width: 50%;
+				height: 40px;
+				float: left;
+			}
+			.tab .tabdiv span {
+				width: 80%;
+				margin-left: 10px;
+				float: left;
+				line-height: 38px;
+				text-align: center;
+				color: #666;
+				font-size: 15px;
+			}
+			.tab .active span {
+				border-bottom: 2px solid #71C4E4;
+				color: #71C4E4;
+			}
+			.tijiao{
+				color: #3DB7E6;
+			}
+
+			#main {
+				overflow: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<header id='header'>
+				<nav id="nav">
+					<a id="left" onclick="api.closeWin();"> <span></span> </a>
+					<div id="middle">
+						<strong id="title">审核促销计划</strong>
+					</div>
+					<a id="right" tapmode="tijiao"> <span></span></a>
+				</nav>
+				<div id="changetab" class="tab">
+					<div value="0" id="oneitem" onclick="changetab(this)" class="tabdiv active">
+						<span>申请计划</span>
+					</div>
+					<div value="1" id="twoitem" onclick="changetab(this)" class="tabdiv">
+						<span>检查计划</span>
+					</div>
+				</div>
+			</header>
+			<div id="main"></div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var header = $api.byId('header');
+			$api.fixStatusBar(header);
+			$api.fixTabBar($api.byId('footer'))
+			var headerPos = $api.offset(header);
+			var main = $api.byId('main');
+			var mainPos = $api.offset(main);
+			api.openFrameGroup({
+				name : 'zgcreatewin',
+				rect : {
+					x : 0,
+					y : headerPos.h,
+					w : 'auto',
+					h : mainPos.h
+				},
+				preload: 0,
+				frames : [{
+					name : 'zg_splan',
+					url : 'widget://html/zmcu/dq_splan.html',
+					bgColor : '#fff',
+					bounces : false,
+					bgColor : 'rgba(255,255,255,255)',
+					vScrollBarEnabled : false,
+					hScrollBarEnabled : false,
+					pageParam:{
+						storeid : api.pageParam.storeid,
+						date : api.pageParam.date,
+						cstorename: api.pageParam.cstorename,
+						iscomplete: api.pageParam.iscomplete,
+						taskid: api.pageParam.taskid
+					}
+				}, {
+					name : 'zg_zplan',
+					url : 'widget://html/zmcu/dq_zplan.html',
+					bgColor : '#fff',
+					bgColor : 'rgba(255,255,255,255)',
+					vScrollBarEnabled : false,
+					hScrollBarEnabled : false,
+					pageParam:{
+						storeid : api.pageParam.storeid,
+						date : api.pageParam.date,
+						cstorename: api.pageParam.cstorename,
+						iscomplete: api.pageParam.iscomplete,
+						taskid: api.pageParam.taskid,
+						headerPos: headerPos.h,
+						mainPos: mainPos.h
+					}
+				}]
+			}, function(ret, err) {
+				var index = ret.index;
+				var oneitem = document.getElementById("oneitem");
+				var twoitem = document.getElementById("twoitem");
+				if(index == 0){
+					jsonchagetab(oneitem);
+				}else{
+					jsonchagetab(twoitem);
+				}
+			});
+		};
+
+		function jsonchagetab(tag){
+			var el = document.getElementById("changetab");
+			for(var a = 0; a < $api.domAll(el, ".tabdiv").length; a++){
+				$api.removeCls($api.domAll(el, ".tabdiv")[a], "active");
+			}
+			$api.addCls(tag, "active");
+		}
+
+		function changetab(tag){
+			var el = document.getElementById("changetab");
+			for(var a = 0; a < $api.domAll(el, ".tabdiv").length; a++){
+				$api.removeCls($api.domAll(el, ".tabdiv")[a], "active");
+			}
+			$api.addCls(tag, "active");
+
+			api.setFrameGroupIndex({
+			    name: 'zgcreatewin',
+			    index: $api.attr(tag, 'value')
+			});
+		}
+
+	</script>
+</html>

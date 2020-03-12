@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>title</title>
+		<link rel="stylesheet" type="text/css" href="css/api.css"/>
+		<style>
+			body {
+				background-color: #FFFFFF;
+			}
+			#testidimg{
+				width: 80%;
+				background-color: #ff0000;
+				padding: 10%;
+				float: left;
+			}
+			button{
+				width: 100%;
+				height: 100px;
+				float: left;
+				background-color: #ffff00;
+			}
+		</style>
+	</head>
+	<body id="body">
+		<div id="header"></div>
+		<button onclick="getpic()">拍照</button>
+		<button onclick="shangchuan()">shangchuan</button>
+		<button onclick="savepic()">合成</button>
+		<img id="testidimg" />
+	</body>
+	<script type="text/javascript" src="script/api.js"></script>
+	<script type="text/javascript" src="script/synthesis.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var header = $api.byId('header');
+			$api.fixStatusBar(header);
+//			initpic()
+		};
+		
+		
+		function shangchuan(){
+			api.getPicture({
+				sourceType : 'camera',
+				encodingType : 'jpg',
+				mediaValue : 'pic',
+				destinationType : 'url',
+				allowEdit : false,
+				quality : 50,
+				saveToPhotoAlbum : false
+			}, function(ret, err) {
+				if (ret) {
+					
+					alert(ret.data);
+				
+					api.ajax({
+						url : $api.posturllujie+'ActionApi/Upload/UploadAjaxFiles',
+						method : 'post',
+						headers : {
+							'Content-Type' : 'multipart/form-data',
+							'Authorization' : 'bearer ' + $api.getStorage("token")
+						},
+						timeout : 10,
+						data : {
+							files: ret.data
+						}
+					}, function(ccc, ddd) {
+						alert(JSON.stringify(ccc) + "---" + JSON.stringify(ddd));
+					});
+			} else {
+					alert(JSON.stringify(err));
+				}
+			});
+		}
+		
+		function getpic() {
+			api.getPicture({
+				sourceType : 'camera',
+				encodingType : 'jpg',
+				mediaValue : 'pic',
+				destinationType : 'url',
+				allowEdit : false,
+				quality : 50,
+				saveToPhotoAlbum : false
+			}, function(ret, err) {
+				if (ret) {
+					putpic(ret.data);
+				} else {
+					alert(JSON.stringify(err));
+				}
+			});
+		}
+		
+		function uploadfile(){
+			api.ajax({
+			    url: 'http://192.168.1.101:3101/upLoad',
+			    method: 'post',
+			    data: {
+			        values: {
+			            name: 'haha'
+			        },
+			        files: {
+			            file: 'fs://a.gif'
+			        }
+			    }
+			}, function(ret, err) {
+			    if (ret) {
+			        api.alert({ msg: JSON.stringify(ret) });
+			    } else {
+			        api.alert({ msg: JSON.stringify(err) });
+			    }
+			});
+		}
+		
+	</script>
+</html>

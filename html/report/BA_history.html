@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>业务指标</title>
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/BA_history.css" />
+    <script src="../js/jquery-3.4.1.min.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.g2-3.5.1/dist/g2.min.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/pkg/_antv.data-set-0.10.1/dist/data-set.min.js"></script>
+    <script src="https://gw.alipayobjects.com/os/antv/assets/lib/jquery-3.2.1.min.js"></script>
+</head>
+
+<body>
+    <div class="index-main" id="app">
+        <div class="index-item">
+            <div class="index-item-title">
+                <span class="index-item-title-span">促销业绩/日均拜访量</span>
+                <img class="index-item-title-img" src="../img/BA_history/jiantou999.png" />
+            </div>
+            <div id="indexitemone" class="index-item-charts">
+            </div>
+            <div class="index-item-showcolor">
+                <div class="index-item-showcolor-item">
+                    <img src="../img/BA_history/line2.png" />
+                    <h6>促销业绩</h6>
+                </div>
+                <div class="index-item-showcolor-item">
+                    <img src="../img/BA_history/line1.png" />
+                    <h6>日均拜访量</h6>
+                </div>
+            </div>
+        </div>
+        <div class="index-item">
+            <div class="index-item-title">
+                <span class="index-item-title-span">门店覆盖与执行</span>
+                <img class="index-item-title-img" src="../img/BA_history/jiantou999d.png" />
+            </div>
+            <div id="indexitemtwo" class="index-item-charts">
+            </div>
+        </div>
+        <div class="index-item">
+            <div class="index-item-title">
+                <span class="index-item-title-span">门店覆盖与执行</span>
+                <img class="index-item-title-img" src="../img/BA_history/jiantou999d.png" />
+            </div>
+            <div id="indexitemthree" class="index-item-charts">
+                <div class="index-item-charts-titleline">
+                    <h6>月份</h6>
+                    <h6>综合达标率</h6>
+                    <h6>门店覆盖</h6>
+                    <h6>周末促销</h6>
+                </div>
+                <ul>
+                    <li>
+                        <h6>9月</h6>
+                        <h6>80%</h6>
+                        <h6>6.5家</h6>
+                        <h6>33333元</h6>
+                    </li>
+                    <li>
+                        <h6>9月</h6>
+                        <h6>80%</h6>
+                        <h6>6.5家</h6>
+                        <h6>33333元</h6>
+                    </li>
+                    <li>
+                        <h6>9月</h6>
+                        <h6>80%</h6>
+                        <h6>6.5家</h6>
+                        <h6>33333元</h6>
+                    </li>
+                    <li>
+                        <h6>9月</h6>
+                        <h6>80%</h6>
+                        <h6>6.5家</h6>
+                        <h6>33333元</h6>
+                    </li>
+                    <li>
+                        <h6>9月</h6>
+                        <h6>80%</h6>
+                        <h6>6.5家</h6>
+                        <h6>33333元</h6>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="../js/BA/echart.js"></script>
+<script src="../js/BA/echartzhu.js"></script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+
+        }
+    });
+
+    initlinechart();
+    initzhuchart();
+
+</script>
+
+</html>

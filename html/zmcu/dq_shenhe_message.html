@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>选择查看促销时间范围</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			html, body{ background: transparent;}
+      .selecttime{ width: 90%; height: 225px; float: left; background-color: #fff; border-radius: 5px; margin-left: 5%; margin-right: 5%;}
+      .selecttime .kaishi{ width: 90%; height: 205px; margin-top: 10px; margin-bottom: 10px; margin-left: 5%; margin-right: 5%; float: left; background-color: #ff000;}
+      .selecttime .kaishi .title{ width: 100%; height: 40px; line-height: 40px; float: left; font-size: 16px; font-weight: 800;}
+      .selecttime .kaishi .titletwo{ width: 100%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+      .selecttime .kaishi .titlethree{ width: 100%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+      .selecttime .kaishi .showtime{ width: 100%; height: 60px; float: left; font-size: 14px;}
+      .selecttime .kaishi .showtime .liyou{ width: 100%; height: 60px; float: left; font-size: 15px; background-color: #efefef;}
+      .selecttime .kaishi .btnmenu{ width: 100%; height: 40px; line-height: 40px; font-size: 14px; float: left; text-align: center; border-top: 1px solid #efefef;}
+      .selecttime .kaishi .queding{width: 50%; height: 40px; float: left; text-align: center; background-color: #169bd5; color: #ffffff;}
+			.selecttime .kaishi .cancle{width: 50%; height: 40px; float: left; text-align: center; background-color: #ff0000; color: #ffffff;}
+      input,button,select,textarea{
+      outline:none;
+      box-shadow:none;
+      background:none;
+      border: none;
+      -webkit-tap-highlight-color:rgba(0,0,0,0);
+      }
+      textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+    </style>
+	</head>
+	<body>
+    <div class="selecttime" id="selecttime">
+      <div class="kaishi">
+        <span class="title">提示</span>
+        <span class="titletwo" id="titletwo">同意这个促销计划吗?</span>
+        <span class="titlethree" id="titlethree">审核说明(选填)</span>
+        <div class="showtime">
+          <textarea id="liyou" class="liyou"></textarea>
+        </div>
+				<div class="btnmenu">
+					<span class="queding" onclick="quedingconnect()">确定</span>
+					<span class="cancle" onclick="api.closeFrame()">取消</span>
+				</div>
+      </div>
+    </div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript">
+		var shvalue;
+		apiready = function() {
+			var frameheight = api.frameHeight;
+			var selecttimehtml = document.getElementById("selecttime");
+			var marginheight = (frameheight - 225) / 2;
+			$api.css(selecttimehtml, 'margin-top: '+marginheight+'px;');
+			shvalue = api.pageParam.name;
+			if(shvalue == 'tongyi'){
+				document.getElementById("titletwo").innerHTML = '同意这个促销计划吗?';
+				document.getElementById("titlethree").innerHTML = '审核说明(选填)';
+			}else{
+				document.getElementById("titletwo").innerHTML = '不同意这个促销计划吗?';
+				document.getElementById("titlethree").innerHTML = '审核说明(必填)';
+			}
+		};
+
+    function quedingconnect(){
+			var msgshuoming = document.getElementById("liyou").value;
+			if(shvalue == 'jujue'){
+				if(msgshuoming.trim().length == 0){
+					api.toast({
+					    msg: '审核理由为必填项',
+					    duration: 2000,
+					    location: 'middle'
+					});
+				}else{
+					//可以继续操作
+					fanhuicanshu(msgshuoming, '不同意');
+				}
+			}else{
+				//继续操作
+				fanhuicanshu(msgshuoming, '同意');
+			}
+    }
+
+		function fanhuicanshu(msgshuoming, msg){
+			api.sendEvent({
+			    name: 'zhoumocuevent',
+			    extra: {
+			        msgshuoming: msgshuoming,
+							msg: msg
+			    }
+			});
+		}
+
+	</script>
+</html>

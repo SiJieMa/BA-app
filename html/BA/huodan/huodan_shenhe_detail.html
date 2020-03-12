@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>审核货单</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			.addshop{ font-size: 15px; display: none; width: 100%; height: 40px; position: fixed;  color: #FFFFFF;bottom: 0; left: 0; z-index: 999;}
+			.addshop .add{ width: 33.33333%; height: 40px;line-height: 40px; text-align: center; float: left; background-color: #FF0000;}
+			.addshop .queding{ width: 33.33333%; height: 40px;line-height: 40px; text-align: center; float: left; background-color: #71C4E4;}
+			.addshop .jujue{ width: 33.33333%; height: 40px;line-height: 40px; text-align: center; float: left; background-color: #666666;}
+			.titleintorduce{ width: 100%; height: 45px; position: fixed; left: 0; top: 0; background-color: #FFFFFF; border-bottom: 1px solid #f5f5f5;}
+			.titleintorduce span{ width: 50%; height: 45px; line-height: 45px; float: left; text-align: center; font-size: 14px;}
+
+			.liyou{ display: none; width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: 999; background-color: rgba(0,0,0,0.5);}
+			.liyou .liyouson{ width: 90%; height: auto; float: left; background-color: #FFFFFF; margin-left: 5%;}
+			.liyou .liyouson .liyoutitle{ width: 98%; height: 50px; line-height: 50px; float: left; padding-left: 2%; font-size: 16px; background-color: #f5f5f5;}
+			.liyou .liyouson .liyouwenzi{ font-size: 16px; width: 96%; padding-left: 2%; padding-right: 2%; padding-top: 5px; padding-bottom: 5px; float: left; outline: none; height: 150px;}
+			.liyou .liyouson .caozuo{ width: 100%; height: 50px; float: left;}
+			.liyou .liyouson .caozuo span{ width: 50%; height: 50px; line-height: 50px; float: left; text-align: center; color: #FFFFFF;}
+			.liyou .liyouson .caozuo .one{ background-color: #71C4E4;}
+			.liyou .liyouson .caozuo .two{ background-color: #FF5C01;}
+
+			.goodinfo{ width: 100%; height: auto; float: left; margin-bottom: 50px;}
+			.goodinfo ul{ width: 100%; height: auto; float: left;}
+			.goodinfo ul li{ position: relative; padding: 5px 0; margin-top: 5px; border-radius: 5px; width: 94%; margin-left: 3%; margin-right: 3%; height: auto; float: left; background-color: #f5f5f5;}
+			.goodinfo ul li .name{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%;}
+			.goodinfo ul li .name .left{ font-size: 14px; width: 80px; height: 25px; line-height: 25px; float: left; font-style: normal;}
+			.goodinfo ul li .name .right{ color: #666; width: auto; height: auto; line-height: 25px; float: left; font-style: normal;}
+			.goodinfo ul li .imglist{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%;}
+			.goodinfo ul li .imglist img{ width: 50px; height: 50px; float: left; margin: 5px 4px 5px 0;}
+			.goodinfo ul li .inputnum{ width: 90%; margin-left: 5%; margin-right: 5%; float: left;}
+			.goodinfo ul li .inputnum .editname{ width: 80px; line-height: 25px; height: 25px; float: left; font-size: 14px;}
+			.goodinfo ul li .inputnum .editnum{ margin-bottom: 5px; width: 100px; height: 25px; float: left; background-color: #FFFFFF;}
+			.goodinfo ul li .inputnum .editnum input{ width: 90px; margin-left: 5px; margin-right: 5px; float: left; outline: none; height: 20px; line-height: 20px; margin-top: 2.5px; text-align: center; }
+			.goodinfo ul li .delxml{ position: absolute; width: 20px; height: 20px; padding: 20px; top: 0; right: 0; z-index: 9;}
+
+
+		</style>
+	</head>
+	<body>
+
+		<div id="liyou" class="liyou">
+			<div id="liyoushuruinput" class="liyouson">
+				<span class="liyoutitle">请填写拒绝理由:</span>
+				<textarea id="tuiguoseason" class="liyouwenzi" placeholder="请输入拒绝理由..."></textarea>
+				<div class="caozuo">
+					<span onclick="closeremark()" class="one">取消</span>
+					<span onclick="jujueshenqing()" class="two">确定</span>
+				</div>
+			</div>
+		</div>
+		<div class="goodinfo">
+			<ul id="list">
+				<!--<li>
+					<span class="name"><i class="left">商品名称:</i><i class="right">商品名称商品名称商品名称商品名称</i></span>
+					<span class="name"><i class="left">商品编号:</i><i class="right">RRRRRRRRRRRRRRR</i></span>
+					<span class="name"><i class="left">申请数量:</i><i class="right">RRRRRRRRRRRRRRR</i></span>
+					<div class="inputnum">
+						<span class="editname">申请数量:</span>
+						<div class="editnum">
+							<input />
+						</div>
+					</div>
+					<div class="inputnum">
+						<span class="editname">申请数量:</span>
+						<div class="editnum">
+							<input />
+						</div>
+					</div>
+					<img class="delxml" src="../../../image/delpic.png" />
+				</li>-->
+			</ul>
+		</div>
+
+		<div id="addshop" class="addshop">
+			<span class="add" onclick="addgood()">增加产品</span>
+			<span class="jujue" onclick="openremark()">拒绝</span>
+			<span class="queding" onclick="gettongi_id()">同意</span>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+
+		/**
+		 *储存已经有的商品列表
+		 */
+		var shoplist = new Array();
+
+		/**
+		 *即将保存的数据
+		 */
+		var saveobject = new Object();
+
+		var iOrderId;
+		/**
+		 *判断是否有更新
+		 */
+		var isupdatetime = 0;
+
+		var torderidJuJue;
+
+		apiready = function() {
+			jiazai();
+
+			var winheight = api.winHeight;
+			var elliyoushuruinputheight = 'margin-top: '+((winheight - 250)/2 - 100)+'px';
+			var elliyou = document.getElementById("liyou");
+			var elliyoushuruinput= document.getElementById("liyoushuruinput");
+			$api.css(elliyoushuruinput,elliyoushuruinputheight);
+			$api.css(elliyou,'height: '+winheight+'px;');
+
+
+			getdetail();
+			api.addEventListener({
+	            name:'tianjiakucun_storge'
+            },function(ret,err){
+        		var selectadd_good = $api.getStorage("tianjiakucun");
+        		$api.rmStorage("tianjiakucun");
+        		api.closeWin({
+			    	name: 'huodan_shenhe_addgood_win'
+				});
+        		var el = document.getElementById("list");
+        		for(var a = 0; a < selectadd_good.length; a++){
+
+					var html = '<li id="'+selectadd_good[a].id+'" iStoreHouseId="'+iStoreHouseId+'" value="'+selectadd_good[a].cProductCodeNc+'" isnew="new">'
+						+			'<span class="name"><i class="left">商品名称:</i><i class="right">'+selectadd_good[a].name+'</i></span>'
+						+			'<span class="name"><i class="left">商品编号:</i><i class="right">'+selectadd_good[a].code+'</i></span>'
+						+			'<span class="name"><i class="left">当期库存为:</i><i class="right"  id="kucun'+selectadd_good[a].id+'">0</i></span>'
+						+			'<div class="inputnum">'
+						+				'<span class="editname">申请数量:</span>'
+						+				'<div class="editnum">'
+						+					'<input oninput="changejinhuonum(this)" type="tel" oldcount="old" id="num'+selectadd_good[a].id+'"  />'
+						+				'</div>'
+						+			'</div>'
+						+			'<div class="inputnum">'
+						+				'<span class="editname">商品单价:</span>'
+						+				'<div class="editnum">'
+						+					'<input oninput="changejinhuonum(this)" type="tel" id="price'+selectadd_good[a].id+'" />'
+						+				'</div>'
+						+			'</div>'
+						+			'<img value="'+selectadd_good[a].id+'" onclick="delxmlthis(this)" class="delxml" src="../../../image/delpic.png" />'
+						+		'</li>';
+
+					$api.append(el, html);
+        		}
+
+        		update_hasaddlist();
+
+        		isupdatetime = 1;
+        		if(isDCorSKU == 0){
+	        		refushskulist();
+        		}else{
+        			getDClist();
+        		}
+            });
+		};
+		/**
+		 *判断是大仓 还是SKU 0 sku
+		 */
+		var isDCorSKU = 0;
+
+		var skukucunlist = new Array();
+		function getskulist(){
+			var body = new Object();
+			body.istoreid = istoreid;
+//			console.log(iStoreHouseId);
+			body.istorehouseid = iStoreHouseId;
+			body.dtTime = time;
+//			console.log(JSON.stringify(body));
+			$kunchi.kunchipost("ActionApi/T_Report_Sku/T_Report_SkusInventoryByHouse", body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				if(ret){
+					skukucunlist = new Array();
+					for(var a = 0; a < ret.length; a++){
+						var skukucunobject = new Object();
+						skukucunobject.id = ret[a].iProuductId;
+						var iCurrentInventory = ret[a].iCurrentInventory;
+						if(isempty(iCurrentInventory)){
+							iCurrentInventory = 0;
+						}
+						skukucunobject.num = iCurrentInventory;
+						skukucunlist.push(skukucunobject);
+					}
+					refushskulist();
+					tingzhi();
+				}else{
+					tingzhi();
+					if(err.statusCode == '406'){
+						alert(err.msg);
+					}else{
+						api.confirm({
+						    title: '提示',
+						    msg: '前网络环境较差，无法获取对应库存信息,是否重新尝试',
+						    buttons: ['确定', '取消']
+						}, function(aaa, bbb) {
+						    var index = aaa.buttonIndex;
+						    if(index == 1){
+						    	getskulist();
+						    }
+						});
+					}
+				}
+			});
+		}
+
+
+		function refushskulist(){
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, 'li');
+			for(var a = 0; a < ellist.length; a++){
+				var proid = $api.attr(ellist[a], 'id');
+				for(b = 0; b < skukucunlist.length; b++){
+					if(proid == skukucunlist[b].id){
+						var kucunid = 'kucun'+proid;
+						$api.attr(ellist[a], 'dangqikucun', skukucunlist[b].num);
+						document.getElementById(kucunid).innerHTML = skukucunlist[b].num;
+					}
+				}
+			}
+		}
+
+
+		/**
+		 *获取大仓库存并显示
+		 */
+		function getDClist(){
+			var body = new Object();
+			var array = new Array();
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, 'li');
+			for(var a = 0; a < ellist.length; a++){
+				var proid = $api.attr(ellist[a], 'value');
+				array.push(proid);
+			}
+			body.productId = array;
+			//console.log(JSON.stringify(body));
+			$kunchi.kunchipost("ActionApi/T_Orders/Get_InventoryByPNC", body, function(ret,err){
+				// console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					var el = document.getElementById("list");
+					var ellist = $api.domAll(el, 'li');
+					for(var a = 0; a < ellist.length; a++){
+						var proid = $api.attr(ellist[a], 'id');
+						var proidvalue = $api.attr(ellist[a], 'value');
+						for(b = 0; b < ret.length; b++){
+							//console.log(proid + '--' + ret[b].iProductID);
+							if(proidvalue == ret[b].iProductID){
+								var kucunid = 'kucun'+proid;
+								$api.attr(ellist[a], 'dangqikucun', ret[b].iAmount);
+								document.getElementById(kucunid).innerHTML = ret[b].iAmount;
+							}
+						}
+					}
+				}else{
+					api.confirm({
+					    title: '提示',
+					    msg: '前网络环境较差，无法获取对应库存信息,是否重新尝试',
+					    buttons: ['确定', '取消']
+					}, function(aaa, bbb) {
+					    var index = aaa.buttonIndex;
+					    if(index == 1){
+					    	getDClist();
+					    }
+					});
+				}
+			});
+		}
+
+		var readonly = '';
+		//判断是否需要大区经理审核
+		var isDaQuShenHe = 0;
+		function getdetail(){
+			$kunchi.kunchiget("ActionApi/T_Orders/GetT_Orders/"+api.pageParam.page.id, '', function(ret,err){
+				//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+				if(ret){
+					var el = document.getElementById("list");
+					document.getElementById("list").innerHTML = '';
+					if(ret[0].T_OrderDetail.length > 0){
+						//console.log(ret[0].iAuthoState +'==='+ $api.getStorage('saleiAuthoStatezhuguan'));
+						//当订单是主管审核 或者非调货单的情况 不能修改订单
+
+						// if(ret[0].iAuthoState == $api.getStorage('saleiAuthoStatezhuguan')){
+						// 	yincangbtn();
+						// 	readonly = 'readonly= "readonly"';
+						// 	isDaQuShenHe = 1;
+						// }
+						if((ret[0].iOrderType != $api.getStorage('diaohuodan'))&&(ret[0].iOrderType != $api.getStorage('wuliaodan'))){
+							yincangbtn();
+							readonly = 'readonly= "readonly"';
+							isDaQuShenHe = 1;
+						}
+						if(ret[0].iOrderType == $api.getStorage('wuliaodan')){
+							yincangbtn();
+						}
+
+						var addshop_bottom = document.getElementById("addshop");
+						$api.css(addshop_bottom,'display: block;');
+
+						/**
+						 *将数据保存到json中
+						 */
+						saveobject.id = ret[0].T_OrderDetail[0].iOrderId;
+						saveobject.cOrderCode = ret[0].cOrderCode;
+						saveobject.iOrderType = ret[0].iOrderType;
+						saveobject.iPreparedId = ret[0].iPreparedId;
+						saveobject.dtPrepTime = ret[0].dtPrepTime;
+						saveobject.iAuthorizeId = ret[0].iAuthorizeId;
+						saveobject.dtAuthorizeTime = $kunchi.todaytime();
+						saveobject.iSignId = ret[0].iSignId;
+						saveobject.dtSignTime = ret[0].dtSignTime;
+						saveobject.iOrderState = ret[0].iOrderState;
+
+						saveobject.iStoreId = ret[0].iStoreId;
+						saveobject.cSideId = ret[0].cSideId;
+						saveobject.cSideType = ret[0].cSideType;
+						saveobject.cLogisticsNo = ret[0].cLogisticsNo;
+						saveobject.iSourceId = ret[0].iSourceId;
+						saveobject.cRemark = ret[0].cRemark;
+						saveobject.tTimeStamp = ret[0].tTimeStamp;
+						saveobject.iDirectorId = ret[0].iDirectorId;
+						//saveobject.dtUpdate = ret[0].dtUpdate;
+						saveobject.dtUpdate = $kunchi.todaytime();
+						saveobject.cSignName = ret[0].cSignName;
+						saveobject.cSignTele = ret[0].cSignTele;
+						saveobject.cSignAddress = ret[0].cSignAddress;
+						saveobject.iStoreHouseId = ret[0].iStoreHouseId;
+
+						time = ret[0].dtPrepTime;
+						istoreid = ret[0].iStoreId;
+
+						torderidJuJue = ret[0].id;
+
+						iOrderId = ret[0].T_OrderDetail[0].iOrderId;
+						var retiOrderType = ret[0].iOrderType;
+						for(var a = 0; a < ret[0].T_OrderDetail.length; a++){
+							iStoreHouseId = ret[0].T_OrderDetail[0].iStoreHouseId;
+							var delbtn = '';
+							if((retiOrderType == $api.getStorage('diaohuodan'))||(retiOrderType == $api.getStorage('wuliaodan'))){
+								delbtn = '<img value="'+ret[0].T_OrderDetail[a].iProId+'" onclick="delxmlthis(this)" class="delxml" src="../../../image/delpic.png" />';
+							}
+							if(readonly == 'readonly= "readonly"'){
+								delbtn = '';
+							}
+							var shenqingIcount = ret[0].T_OrderDetail[a].iCount;
+							var iModifyCount = ret[0].T_OrderDetail[a].iModifyCount;
+							if(!isempty(iModifyCount)){
+								shenqingIcount = iModifyCount;
+							}
+
+							var html = '<li id="'+ret[0].T_OrderDetail[a].iProId+'" iStoreHouseId="'+ret[0].T_OrderDetail[a].iStoreHouseId+'" value="'+ret[0].T_OrderDetail[a].cProductCodeNc+'" isnew="old">'
+									+		'<span class="name"><i class="left">商品名称:</i><i class="right">'+ret[0].T_OrderDetail[a].cProductFullName+'</i></span>'
+									+		'<span class="name"><i class="left">商品编号:</i><i class="right">'+ret[0].T_OrderDetail[a].cProductProductCode+'</i></span>'
+									+		'<span class="name"><i class="left">当期库存为:</i><i class="right" id="kucun'+ret[0].T_OrderDetail[a].iProId+'">0</i></span>'
+									+		'<div class="inputnum">'
+									+			'<span class="editname">申请数量:</span>'
+									+			'<div class="editnum">'
+									+				'<input '+readonly+' type="tel" oninput="changejinhuonum(this)" id="num'+ret[0].T_OrderDetail[a].iProId+'" oldcount="'+ret[0].T_OrderDetail[a].iCount+'" value="'+shenqingIcount+'" />'
+									+			'</div>'
+									+		'</div>'
+									+		'<div class="inputnum">'
+									+			'<span class="editname">商品单价:</span>'
+									+			'<div class="editnum">'
+									+				'<input '+readonly+' type="tel" oninput="changejinhuonum(this)" id="price'+ret[0].T_OrderDetail[a].iProId+'" value="'+ret[0].T_OrderDetail[a].iPrice+'" />'
+									+			'</div>'
+									+		'</div>'
+									+		delbtn
+									+	'</li>';
+							$api.append(el, html);
+						}
+					}
+					update_hasaddlist();
+					if((ret[0].iOrderType == $api.getStorage('diaohuodan'))||(ret[0].iOrderType == $api.getStorage('wuliaodan'))){
+						getDClist();
+						isDCorSKU = 1;
+					}else{
+						getskulist();
+					}
+				}else{
+					tingzhi();
+					alert("网络错误,请稍后重试.");
+				}
+			});
+		}
+
+
+		function changejinhuonum(tag){
+			$(tag).val($(tag).val().replace(/[^0-9.]/g,''));
+			$api.css(tag,'background-color: #FFFFFF;');
+		}
+
+
+		var time, istoreid, iStoreHouseId;
+		function addgood(){
+			openpage("huodan_shenhe_addgood_win", "huodan_shenhe_addgood_frame", "添加商品", "widget://html/BA/huodan/huodan_shenhe_addgood.html", {shoplist: shoplist, time: time.split("T")[0], istoreid: istoreid, iStoreHouseId: iStoreHouseId})
+		}
+
+
+		function gettongi_id(){
+			jiazai();
+			var body = new Object();
+			body.ordertype = saveobject.iOrderType;
+			body.roleid = $api.getStorage('roleId');
+			$kunchi.kunchipost("ActionApi/T_Orders/GetWorkFlow", body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				if(ret){
+					var zuthoidid = ret.id;
+					saveobject.iAuthoState = zuthoidid;  //同意是391  驳回390
+					tijiao_shenhe();
+				}else{
+					tingzhi();
+					alert('当前网络错误,请稍后重试.');
+				}
+			});
+		}
+
+
+		function tijiao_shenhe(){
+
+			//console.log("提交审核");
+
+			//iModifyStatue  0无调整 1有调整
+			saveobject.iModifyStatue = 0;
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, 'li');
+			var array = new Array();
+			var iscontune = true;
+			for(var a = 0; a < ellist.length; a++){
+				var orderdetailjson = new Object();
+				var eliproductidnum = document.getElementById('num'+$api.attr(ellist[a], 'id')).value;
+
+
+				if((eliproductidnum.trim().length == 0)||(eliproductidnum.trim() == 0)){
+					tingzhi();
+					alert('您尚未填写商品数量');
+					var numel = document.getElementById("num"+$api.attr(ellist[a], 'id'));
+					$api.css(numel,'background-color: #ff0000;');
+					iscontune = false;
+					break;
+				}
+
+
+				var isnew = $api.attr(ellist[a], 'isnew');
+				var dangqikucun = $api.attr(ellist[a], 'dangqikucun');
+				if(parseInt(dangqikucun) < parseInt(eliproductidnum)){
+					tingzhi();
+					alert('您填写的商品数量大于当期库存,请修改.');
+					var numel = document.getElementById("num"+$api.attr(ellist[a], 'id'));
+					$api.css(numel,'background-color: #ff0000;');
+					iscontune = false;
+					break;
+				}
+
+				var eliproductidprice = document.getElementById('price'+$api.attr(ellist[a], 'id')).value;
+
+
+				if(eliproductidprice.trim().length == 0){
+					tingzhi();
+					alert('您尚未填写商品单价');
+					var numel = document.getElementById("price"+$api.attr(ellist[a], 'id'));
+					$api.css(numel,'background-color: #ff0000;');
+					iscontune = false;
+					break;
+				}
+
+				orderdetailjson.iProId = $api.attr(ellist[a], 'id');
+				orderdetailjson.iOrderId = iOrderId;
+				if(isnew == 'old'){
+					orderdetailjson.iCount = $api.attr(document.getElementById('num'+$api.attr(ellist[a], 'id')), 'oldcount');
+					if($api.attr(document.getElementById('num'+$api.attr(ellist[a], 'id')), 'oldcount') != eliproductidnum){
+						saveobject.iModifyStatue = 1;
+					}
+				}else{
+					orderdetailjson.iCount = eliproductidnum;
+					saveobject.iModifyStatue = 1;
+				}
+				orderdetailjson.iModifyCount = eliproductidnum;
+				orderdetailjson.iStoreHouseId = $api.attr(ellist[a], 'iStoreHouseId');
+				orderdetailjson.iPrice = eliproductidprice;
+				orderdetailjson.iMoney = parseInt(eliproductidnum) * parseFloat(eliproductidprice);
+				orderdetailjson.dtCreateTime = $kunchi.todaytime();
+				array.push(orderdetailjson);
+			}
+			saveobject.T_OrderDetail = array;
+
+			if(isupdatetime == 1){
+				if(isDaQuShenHe == 1){
+					saveobject.dtUpdate = null;
+				}else{
+					saveobject.dtUpdate = $kunchi.todaytime();
+				}
+			}
+			//console.log(JSON.stringify(saveobject));
+			//return;
+			var nomendiandiaobo = 'ActionApi/T_Orders/AuthorT_Orders';
+			if(saveobject.iOrderType == $api.getStorage('mendiandiaobodan')){
+				nomendiandiaobo = 'ActionApi/T_Orders/AuthorT_OrdersToStore';
+			}
+			//console.log(JSON.stringify(nomendiandiaobo))
+			if(iscontune){
+				$kunchi.kunchipost(nomendiandiaobo, saveobject, function(ret,err){
+					//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+					tingzhi();
+
+					if(ret){
+						api.sendEvent({
+		                    name:'shenhewancheng',
+						    extra: {
+						        key1: api.pageParam.page.id
+						    }
+	                    });
+						api.alert({
+						    title: '提示',
+						    msg: '审核完成',
+						}, function(ret, err) {
+							api.closeWin({
+	                        });
+						});
+					}else{
+						var msg = '当前网络不通畅,请稍后再试.';
+						if(typeof(err.msg) != 'undefined'){
+							msg = err.msg;
+						}
+						api.sendEvent({
+						    name: 'shenhewancheng'
+						});
+
+						api.alert({
+					    title: '错误提示',
+					    msg: msg,
+						}, function(ret, err) {
+							api.closeWin({
+													});
+						});
+					}
+				});
+			}else{
+				tingzhi();
+			}
+		}
+
+		function jujueshenqing(){
+
+			var tuiguoseason = document.getElementById("tuiguoseason").value;
+
+			var T_Authorize_Array = new Array();
+			var T_Authorize = new Object();
+			T_Authorize.cAuthorize = tuiguoseason;
+			T_Authorize.id = guid();
+			T_Authorize.iOrderId = torderidJuJue;
+			T_Authorize.cSign = $api.getStorage('id');
+			T_Authorize_Array.push(T_Authorize);
+
+			saveobject.T_Authorize = T_Authorize_Array;
+
+
+			saveobject.iAuthoState = $api.getStorage('saleiAuthoStateno');  //同意是391  驳回390
+
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, 'li');
+			var array = new Array();
+			var iscontune = true;
+			for(var a = 0; a < ellist.length; a++){
+				var orderdetailjson = new Object();
+				var eliproductidnum = document.getElementById('num'+$api.attr(ellist[a], 'id')).value;
+				var eliproductidprice = document.getElementById('price'+$api.attr(ellist[a], 'id')).value;
+
+				orderdetailjson.iOrderId = iOrderId;
+				orderdetailjson.iProId = $api.attr(ellist[a], 'id');
+				orderdetailjson.iCount = eliproductidnum;
+				orderdetailjson.iPrice = eliproductidprice;
+				orderdetailjson.dtCreateTime = $kunchi.todaytime();
+				orderdetailjson.iStoreHouseId = $api.attr(ellist[a], 'iStoreHouseId');
+				orderdetailjson.iMoney = parseInt(eliproductidnum) * parseFloat(eliproductidprice);
+				array.push(orderdetailjson);
+			}
+			saveobject.T_OrderDetail = array;
+
+			if(isupdatetime == 1){
+				saveobject.dtUpdate = $kunchi.todaytime();
+			}
+
+			//console.log(JSON.stringify(saveobject));
+			//return;
+			if(iscontune){
+				jiazai();
+				$kunchi.kunchipost("ActionApi/T_Orders/AuthorT_Orders", saveobject, function(ret,err){
+					//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+					tingzhi();
+					if(ret){
+						api.sendEvent({
+		                    name:'shenhewancheng',
+						    extra: {
+						        key1: api.pageParam.page.id
+						    }
+	                    });
+						api.alert({
+						    title: '提示',
+						    msg: '审核完成',
+						}, function(ret, err) {
+							api.closeWin({
+	                        });
+						});
+					}else{
+						var msg = '当前网络不通畅,请稍后再试.';
+						if(typeof(err.msg) != 'undefined'){
+							msg = err.msg;
+						}
+						api.sendEvent({
+						    name: 'shenhewancheng'
+						});
+
+						api.alert({
+					    title: '错误提示',
+					    msg: msg,
+						}, function(ret, err) {
+							api.closeWin({
+													});
+						});
+
+					}
+				});
+			}
+		}
+
+
+		function yincangbtn(){
+			var el = document.getElementById("addshop");
+			var elspanlist = $api.domAll(el, 'span');
+			$api.css(elspanlist[0],'display: none;');
+			$api.css(elspanlist[1],'width: 50%;');
+			$api.css(elspanlist[2],'width: 50%;');
+		}
+
+		function closeremark(){
+			var elliyou = document.getElementById("liyou");
+			$api.css(elliyou,'display: none;');
+		}
+
+		function openremark(){
+			var elliyou = document.getElementById("liyou");
+			$api.css(elliyou,'display: block;');
+		}
+
+		function guid() {
+		    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		        return v.toString(16);
+		    });
+		}
+
+		/**
+		 *删除 某个商品
+		 */
+		function delxmlthis(tag){
+			var valueid = $api.attr(tag, 'value');
+			api.confirm({
+			    title: '提示',
+			    msg: '是否确定删除此条商品',
+			    buttons: ['确定', '取消']
+			}, function(aaa, bbb) {
+			    var index = aaa.buttonIndex;
+			    if(index == 1){
+			    	delxml(valueid);
+			    	update_hasaddlist();
+			    }
+			});
+		}
+
+
+		function update_hasaddlist(){
+			shoplist = new Array();
+			var el = document.getElementById("list");
+			var lilist = $api.domAll(el, 'li');
+			for(var a = 0; a < lilist.length; a++){
+				shoplist.push($api.attr(lilist[a], 'id'));
+			}
+		}
+
+
+
+	</script>
+</html>

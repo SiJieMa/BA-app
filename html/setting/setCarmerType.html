@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>设置拍照相机用什么相机</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			.setcarmer {
+				width: 100%;
+				height: 50px;
+				float: left;
+				border-bottom: 1px solid #CCCCCC;
+			}
+			.setcarmer .oneitem {
+				width: auto;
+				margin-left: 2%;
+				float: left;
+				line-height: 50px;
+				height: 50px;
+			}
+			.setcarmer .twoitem {
+				width: 80px;
+				text-align: right;
+				margin-right: 2%;
+				float: right;
+				line-height: 50px;
+				height: 50px;
+				text-decoration: underline;
+				color: #007AFF;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="setcarmer">
+			<span id="carmeritem" class="oneitem">您当前使用相机为:手机相机</span>
+			<span onclick="changecarmer()" class="twoitem">更换</span>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var CarmerTypeUserSet = $api.getStorage('CarmerTypeUserSet');
+			if(isempty(CarmerTypeUserSet)){
+				document.getElementById("carmeritem").innerHTML = '您当前使用相机为:手机相机';
+			}else{
+				if(CarmerTypeUserSet == 'xitong'){
+					document.getElementById("carmeritem").innerHTML = '您当前使用相机为:手机相机';
+				}else if(CarmerTypeUserSet == 'zidingyi'){
+					document.getElementById("carmeritem").innerHTML = '您当前使用相机为:自定义相机';
+				}
+			}
+		};
+		function changecarmer() {
+			api.actionSheet({
+				title : '选择使用相机',
+				cancelTitle : '取消',
+				buttons : ['手机相机', '自定义相机']
+			}, function(ret, err) {
+				var index = ret.buttonIndex;
+				if(index == 1){
+					document.getElementById("carmeritem").innerHTML = '您当前使用相机为:手机相机';
+					$api.setStorage('CarmerTypeUserSet','xitong');
+				}else{
+					document.getElementById("carmeritem").innerHTML = '您当前使用相机为:自定义相机';
+					$api.setStorage('CarmerTypeUserSet','zidingyi');
+				}
+			});
+		}
+	</script>
+</html>

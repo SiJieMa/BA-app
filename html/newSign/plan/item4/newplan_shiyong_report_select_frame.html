@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>缺货报告选择商品</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			input,button,select,textarea{
+			outline:none;
+			box-shadow:none;
+			background:none;
+			border: none;
+			-webkit-tap-highlight-color:rgba(0,0,0,0); 
+			}
+			textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+			.search{ width: 100%; height: 60px; float: left; border-bottom: 1px solid #EFEFEF;}
+			.search .sao{ width: 60px; height: 60px; float: left; background-image: url('../../../../image/newSign/newsignsao.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.search .searchmsg{ border-radius: 50px; margin-top: 4px; border: 1px solid #EFEFEF; width: -webkit-calc(100% - 122px); width: -moz-calc(100% - 122px); width: calc(100% - 122px); height: 50px; float: left;}
+			.search .refush{ width: 60px; height: 60px; float: left; background-image: url('../../../../image/newSign/newsignrefush.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.search .searchmsg input{ font-size: 14px; margin-left: 10px; margin-right: 10px; color: #999; margin-top: 10px; margin-bottom: 10px; width: -webkit-calc(100% - 80px); width: -moz-calc(100% - 80px); width: calc(100% - 80px); height: 30px; line-height: 30px; float: left;}
+			.search .searchmsg .search{ width: 50px; height: 50px; float: left; background-image: url('../../../../image/newSign/newsignsearch.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.title{ width: 100%; height: 50px; float: left; border-bottom: 1px solid #EFEFEF; font-size: 14px;}
+			.title .item1{ width: 70%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.title .item2{ width: 30%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		
+		</style>
+	</head>
+	<body>
+	
+		<div class="search">
+			<button class="sao" onclick="opensaoyisao()"></button>
+			<div class="searchmsg">
+				<input id="searchcontext" placeholder="输入名称或编码" />
+				<button class="search" onclick="searchlist()"></button>
+			</div>
+			<button class="refush" onclick="refushlist()"></button>
+		</div>
+		<div class="title">
+			<span class="item1">产品名称</span>
+			<span class="item2">选择</span>
+		</div>
+		<div class="queding">
+			<button class="next">下一步</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/getFzimu.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/SelectArray.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript">
+	
+		var UIListCheck;
+		var isupdate = 0;//0不需要更新 1需要
+		
+		//经过筛选之后的商品列表
+		var researchlist = new Array();
+		var ibrandid;
+		apiready = function() {
+			ibrandid = api.pageParam.ibrandid;
+			InitHasSelect();
+			UIListCheck = api.require('UIListCheck');
+			getShopList();
+			
+			$(".next").click(function(){
+				//需要处理选中之后的所有商品 重新拼接数组
+				var selectgoodlist = new Array();
+				for(var a = 0; a < researchlist.length; a++){
+					var object = new Object();
+					var iProuductId = researchlist[a].id;
+					object.employee_id = iProuductId;
+					var cProductFullName = researchlist[a].cProductFullName;
+					var iProductBrand = researchlist[a].iProductBrand;
+					object.name = cProductFullName;
+					var storeNameFirst = getPinYinFirstCharacter(cProductFullName, "", true);
+					object.phonetic = storeNameFirst;
+					object.remark = cProductFullName + '(' + researchlist[a].cProductProductCode + ')';
+					object.selected = true;
+					var isturnpage = false;
+					for(var b = 0; b < Haslist.length; b++){
+						var iProductIdonline = Haslist[b];
+						if(iProuductId == iProductIdonline){
+							isturnpage = true;
+						}
+					}
+					if(isturnpage){
+						selectgoodlist.push(object);
+					}
+				}
+				api.openWin({
+	                name: 'newplan_shiyong_report_selectok_win',
+	                url: 'widget://html/newSign/plan/item4/newplan_shiyong_report_selectok_win.html',
+	                pageParam: {
+	                	data: api.pageParam.page,
+				        brandname : api.pageParam.brandname,
+						ibrandid: api.pageParam.ibrandid,
+				        selectgoodlist: selectgoodlist,
+				        title : api.pageParam.title,
+						isupdate: isupdate
+	                }
+                });
+			});
+			
+		};
+	
+		function getShopList(){
+			api.showProgress({
+            });
+            var getinitlist = api.pageParam.getinitlist;
+            if(getinitlist.length){
+            	isupdate = 1;
+            }
+            researchlist = new Array();
+			var posturl = 'ActionApi/T_Product/GetProductList';
+			var body = new Object();
+			body.producttype = 3;
+			$newapi.newpost(posturl, body, 30000, function(ret, err){
+				if(ret){
+					if(ret.length == 0){
+						api.hideProgress();
+						api.toast({
+	                        msg:'暂无商品'
+                        });
+					}else{
+						researchlist = ret;
+						var contactslist = new Array();
+						for(var a = 0; a < ret.length; a++){
+							var object = new Object();
+							var iProuductId = ret[a].id;
+							object.employee_id = iProuductId;
+							var cProductFullName = ret[a].cProductFullName;
+							var iProductBrand = ret[a].iProductBrand;
+							
+							if(typeof(cProductFullName) == 'undefined'){
+								continue;
+							}
+							if(iProductBrand != ibrandid){
+								continue;
+							}
+							
+							object.name = cProductFullName;
+							var storeNameFirst = getPinYinFirstCharacter(cProductFullName, "", true);
+							object.phonetic = storeNameFirst;
+							object.remark = cProductFullName + '(' + ret[a].cProductProductCode + ')';
+							var isselected = false;
+							for(var b = 0; b < Haslist.length; b++){
+								var iProductIdonline = Haslist[b];
+								if(iProuductId == iProductIdonline){
+									isselected = true;
+								}
+							}
+							
+							object.selected = isselected;
+							contactslist.push(object);
+						}
+						initlist(contactslist);
+						if(contactslist.length == 0){
+							api.toast({
+		                        msg:'暂无商品'
+	                        });
+						}
+					}
+				}else{
+					api.hideProgress();
+					api.confirm({
+					    title: '提示',
+					    msg: '获取商品列表失败,是否重试?',
+					    buttons: ['确定', '退出']
+					}, function(aa, bb) {
+					    var index = aa.buttonIndex;
+					    if(index == 1){
+					    	getShopList();
+					    }else{
+					    	api.closeWin({
+                            });
+					    }
+					});
+				}
+			});
+		}
+		
+		
+		function initlist(contacts){
+			UIListCheck.open({
+			    rect:{
+			       x: -70,
+			       y: 112,
+			       w: api.frameWidth+70,
+			       h: api.frameHeight - 172
+			    },
+			    contacts:contacts,
+			    fixedOn: api.frameName
+			}, function(ret) {
+				api.hideProgress();
+			    if (ret) {
+			    	if(ret.eventType == "click"){
+				    	clicklist(ret.contact.employee_id, ret.selected);
+			    	}
+			    } 
+			});
+		}
+		
+		function opensaoyisao(){
+			var FNScanner = api.require('FNScanner');
+			FNScanner.open({
+				sound: 'widget://res/di.wav',
+			    autorotation: false
+			}, function(ret, err) {
+			    if (ret) {
+			        if(ret.eventType == "success"){
+			        	var content = ret.content;
+						$("#searchcontext").val(content);
+			        }
+			    }
+			});
+		}
+		
+		
+		function searchlist(){
+			var searchmsg = $("#searchcontext").val();
+			if(searchmsg.trim().length == 0){
+				api.toast({
+	                msg:'请输入要搜索的内容'
+                });
+                return;
+			}
+			
+			var contactslist = new Array();
+			for(var a = 0; a < researchlist.length; a++){
+				var object = new Object();
+				var iProuductId = researchlist[a].id;
+				object.employee_id = iProuductId;
+				var cProductFullName = researchlist[a].cProductFullName;
+				var iProductBrand = researchlist[a].iProductBrand;
+				if(typeof(cProductFullName) == 'undefined'){
+					continue;
+				}
+				if(iProductBrand != ibrandid){
+					continue;
+				}
+				object.name = cProductFullName;
+				var storeNameFirst = getPinYinFirstCharacter(cProductFullName, "", true);
+				object.phonetic = storeNameFirst;
+				object.remark = cProductFullName + '(' + researchlist[a].cProductProductCode + ')';
+				
+				
+				var isallowinsert = 0;
+				if(researchlist[a].cProductProductCode.indexOf(searchmsg) > -1){
+					isallowinsert = 1;
+				}
+				if(cProductFullName.indexOf(searchmsg) > -1){
+					isallowinsert = 1;
+				}
+				
+				if(isallowinsert == 0){
+					continue;
+				}
+				
+				var isselected = false;
+				for(var b = 0; b < Haslist.length; b++){
+					var iProductIdonline = Haslist[b];
+					if(iProuductId == iProductIdonline){
+						isselected = true;
+					}
+				}
+				
+				object.selected = isselected;
+				contactslist.push(object);
+			}
+			if(contactslist.length == 0){
+				api.toast({
+                    msg:'暂无商品'
+                });
+				iosreloadlist(contactslist);
+			}else{
+				UIListCheck.reloadData({
+				    contacts:contactslist
+				});
+			}
+		}
+		
+		
+		function iosreloadlist(contactslist){
+			var systemType = api.systemType;
+			if(systemType == "ios"){
+				UIListCheck.close();
+				setTimeout(function(){
+					UIListCheck.open({
+					    rect:{
+					       x: 0,
+					       y: 112,
+					       w: api.frameWidth,
+					       h: api.frameHeight - 172
+					    },
+					    contacts:contactslist,
+					    fixedOn: api.frameName
+					}, function(ret) {
+					});
+				}, 500);
+			}else{
+				UIListCheck.reloadData({
+				    contacts:contactslist
+				});
+			}
+		}
+		
+		
+		function refushlist(){
+			$("#searchcontext").val("");
+			var contactslist = new Array();
+			for(var a = 0; a < researchlist.length; a++){
+				var object = new Object();
+				var iProuductId = researchlist[a].id;
+				object.employee_id = iProuductId;
+				var cProductFullName = researchlist[a].cProductFullName;
+				var iProductBrand = researchlist[a].iProductBrand;
+				if(typeof(cProductFullName) == 'undefined'){
+					continue;
+				}
+				if(iProductBrand != ibrandid){
+					continue;
+				}
+				object.name = cProductFullName;
+				var storeNameFirst = getPinYinFirstCharacter(cProductFullName, "", true);
+				object.phonetic = storeNameFirst;
+				object.remark = cProductFullName + '(' + researchlist[a].cProductProductCode + ')';
+				
+				var isselected = false;
+				for(var b = 0; b < Haslist.length; b++){
+					var iProductIdonline = Haslist[b];
+					if(iProuductId == iProductIdonline){
+						isselected = true;
+					}
+				}
+				
+				object.selected = isselected;
+				contactslist.push(object);
+			}
+			if(contactslist.length == 0){
+				api.toast({
+                    msg:'暂无商品'
+                });
+                return;
+			}
+			
+			UIListCheck.reloadData({
+			    contacts:contactslist
+			});
+			
+		}
+		
+	</script>
+</html>

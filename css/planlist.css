@@ -1,0 +1,11 @@
+
+html,body{ background-color: #FFFFFF;}
+.rili{ width: 100%; height: auto; float: left;}
+.planlist{ width: 100%; height: auto; float: left; border-top: 1px solid #f2f2f2;}
+.planlist ul{overflow: scroll; width: 100%; height: auto; float: left;}
+.planlist ul li{ width: 100%; height: auto; float: left; border-bottom: 1px solid #f2f2f2;}
+.planlist ul li span{ width: 96%; margin-left: 2%; height: 50px; line-height: 50px; float: left; font-size: 16px; color: #666;}
+ 
+.bottommenu{ border-top: 1px solid #f2f2f2; background-color: #71C4E4; width: 100%; position: fixed; height: auto; left: 0; bottom: 0;}
+.bottommenu .plantext{ width: 100%; height: 50px; line-height: 50px; text-align: center; float: left; color: #fff;}
+.bottommenu .huise{ background-color: #3DB7E6;}

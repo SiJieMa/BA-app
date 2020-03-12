@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>异常原因</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/less/panDian_shenhedetail.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="item3">
+				<div class="title-shen">
+					<span class="shen-dian">·</span>
+					<span class="title-left">审批进度：{{progressname}}</span>
+					<div class="progress" @click="isshowprogress">
+						<span class="detailbtn">进度详情</span>
+						<img v-if="showprogress == false" class="btnimg" src="../../../image/5A8FFFjt.png" />
+						<img v-if="showprogress == true" class="btnimg" src="../../../image/5A8FFFup.png" />
+					</div>
+				</div>
+				<ul v-if="showprogress == true">
+					
+					<div class="shen-xian">
+						<!-- 下面有几条 上面就加几条虚线 -->
+						<i class="shen-xian-item" v-for="(item, index) in splist" v-if="index != 0"></i>
+					</div>
+					
+					<!-- <li>
+						<span class="dian2">·</span>
+						<span class="time">2020 1/13 14:00</span>
+						<span class="name1">大区经理审批</span>
+					</li> -->
+					<li v-for="item in splist">
+						<span class="dian2 lan">·</span>
+						<span class="time">{{item.dtCreateTime}}</span>
+						<span class="name1">{{item.cAuthorNode}}</span>
+					</li>
+				</ul>
+			</div>
+			<div class="list">
+				<ul class="listui">
+					<li class="listli" v-for="item in list">
+						<div class="good">
+							<i class="dian">·</i>
+							<span class="name" v-text="item.cProductFullName"></span>
+						</div>
+						<div class="item1">
+							<span class="left" v-text="item.isyingkui"></span>
+							<span class="right" v-text="item.cReportSkuType"></span>
+						</div>
+						<div class="item2">
+							<span class="left">真实库存：</span>
+							<span class="right" v-text="item.RealTimeInventory"></span>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<div v-if="isshowbtn" class="shenhebtn">
+				<div class="item4">
+					<button class="no" @click="notallowpass">审核不通过</button>
+					<button class="yes" @click="allowpass">审核通过</button>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/es6/pandian/pandian_shenhe_detail-compiled.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vant@2.4/lib/vant.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					creportskucode: "",
+					list: [],
+					splist: [],
+					showprogress: false,
+					progressname: '待审核',
+					isshowbtn: false
+				},
+				created: function() {
+					var chulimsg = api.pageParam.chulimsg;
+					if(chulimsg == "待处理"){
+						this.isshowbtn = true;
+					}
+					initlist(this);
+				},
+				mounted: function() {},
+				updated: function() {},
+				methods: {
+					allowpass: function(){
+						shenhepandian(this, 1);
+					},
+					notallowpass: function(){
+						shenhepandian(this, 2);
+					},
+					isshowprogress: function(){
+						var that = this;
+						if(that.splist.length == 0){
+							return;
+						}
+						if(that.showprogress){
+							that.showprogress = false;
+						}else{
+							that.showprogress = true;
+						}
+					}
+				}
+			});
+		}
+	</script>
+</html>

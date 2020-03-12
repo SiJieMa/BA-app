@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>SKU</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/skupandian.css"/>
+		<style>
+			.inputdiv{ width: 100%; height: 49px; position: fixed; top: 0; left: 0; border-bottom: 1px solid #f5f5f5; background-color: #FFFFFF;}
+			.inputdiv input{ outline: none; margin-left: 10px; margin-right: 10px; width: 100px; height: 30px; line-height: 30px; margin-top: 9.5px; float: left; font-size: 16px; color: #333;}
+			.inputdiv .titleone1{ width: 80px; height: 49px; float: right;  font-size: 15px; background-color: #FFFFFF;}
+			.inputdiv .titleone1 .itemmiddle{overflow: hidden; text-overflow:ellipsis; white-space:nowrap; margin-top: 0; width: 60px; height: 49px; line-height: 49px; float: left; font-size: 15px; color: #666;}
+			.inputdiv .titleone1 .fa{ width: 20px; height: 49px; line-height: 49px; float: right; font-size: 20px; color: #666;}
+			.inputdiv img{ width: 20px; height: 20px; padding: 15px 5px; float: right;}
+			.inputdiv .huanyuan{ width: 50px; height: 49px; line-height: 20px; color: #666; padding-top: 5px; font-size: 16px; text-align: center; float: right;}
+
+			.selectshoplist{ width: 100%; height: 100%; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: #FFFFFF; z-index: 999;}
+			.selectshoplist span{ width: 100%; height: 50px; line-height: 50px; float: left; margin-top: 100px; text-align: center; font-size: 18px; color: #666;}
+		</style>
+	</head>
+	<body>
+
+		<div id="selectshoplist" class="selectshoplist">
+			<span onclick="openshoplist()">点击选择门店</span>
+		</div>
+
+		<div class="inputdiv">
+			<input id="inputchazhao" placeholder="名称或代码" />
+			<span class="huanyuan" onclick="huanyuanshangpin()">还原<br>列表</span>
+			<img onclick="search_widthshangpin()" src="../../image/search.png" />
+			<img onclick="saoyisaosearchshangpincode()" src="../../image/saoyisao.png" />
+			<div onclick="init_bottom_menu()" class="titleone1">
+				<span class="itemmiddle" id="init_bottom_menu">全部</span>
+				<i class="fa fa-angle-down" aria-hidden="true"></i>
+			</div>
+		</div>
+		<div class="title">
+			<span class="one">即时库存</span>
+			<span class="one">盘点库存</span>
+			<span class="one"></span>
+			<span class="one"></span>
+		</div>
+		<div class="list">
+			<ul id="fenlist">
+				<!--<li>
+					<span class="two">货品名称货品名称货品名称货品名称</span>
+					<span class="one">1</span>
+					<div class="onediv">
+						<div class="pingfen">
+							<input oninput="numchangeinput(this)" type="tel" />
+						</div>
+					</div>
+					<div class="onediv">
+						<div class="pingfen">
+							<input type="tel" />
+						</div>
+					</div>
+					<div class="onediv">
+						<div class="pingfen">
+							<input type="tel" />
+						</div>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+		 <div class="tijiao" onclick="postSKUdata()">提交</div> 
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/sku_db.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript">
+
+		/**
+		 *用户选择的即将搜索的品牌
+		 */
+		var select_user_pinpai = '11111111';
+		apiready = function() {
+			var inputchazhaoel = document.getElementById("inputchazhao");
+			var inputwidth = api.frameWidth - 210;
+			$api.css(inputchazhaoel,'width:'+inputwidth+'px');
+		};
+
+
+		function openshoplist(){
+			api.openWin({
+			    name: 'select_shop_win',
+			    url: 'widget://html/BA/skushoplist/select_shop_win.html'
+			});
+			api.addEventListener({
+			    name: 'selectshopidthis'
+			}, function(ret, err) {
+			    istoreid = ret.value.shopid;
+			    var elselectshoplist = document.getElementById("selectshoplist");
+			    $api.css(elselectshoplist,'display: none;');
+			    api.closeWin({
+			    	name: 'select_shop_win'
+                });
+                api.removeEventListener({name: 'selectshopidthis'});
+                showcangku();
+			});
+		}
+
+		var iStoreHouseId;
+		function showcangku(){
+			var zidian = $api.getStorage("CangKuList");
+			var namelist = new Array();
+			var nameidlist = new Array();
+			for(var a = 0; a < zidian.length; a++){
+				namelist.push(zidian[a].cDictName);
+				nameidlist.push(zidian[a].cDictValue);
+			}
+			api.actionSheet({
+			    title: '选择仓库',
+			    cancelTitle: '取消',
+			    buttons: namelist
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= namelist.length){
+					iStoreHouseId = nameidlist[index - 1];
+					jiazai();
+					console.log(iStoreHouseId);
+			    	getskulist();
+			    }else{
+			    	var elselectshoplist = document.getElementById("selectshoplist");
+			    	$api.css(elselectshoplist,'display: block;');
+			    }
+			});
+		}
+
+		/**
+		 *扫一扫获取条形码
+		 */
+		function saoyisaosearchshangpincode(){
+			var FNScanner = api.require('FNScanner');
+			FNScanner.open({
+				sound: 'widget://res/di.wav',
+			    autorotation: false
+			}, function(ret, err) {
+			    if (ret) {
+			        if(ret.eventType == "success"){
+			        	var content = ret.content;
+						document.getElementById("inputchazhao").value = content;
+						search_widthshangpin();
+			        }
+			    }
+			});
+		}
+
+
+		/**
+		 *查询代码或者商品信息来筛选列表
+		 */
+		function search_widthshangpin(){
+			var inputchazhaoMSG = document.getElementById("inputchazhao").value;
+			var fenlistel = document.getElementById("fenlist");
+		    	var fenlistdomall = $api.domAll(fenlistel, 'li');
+		    	for(var a = 0; a < fenlistdomall.length; a++){
+		    		var cProductFullName = $api.attr(fenlistdomall[a], "cProductFullName");
+		    		var cProductProductCode = $api.attr(fenlistdomall[a], "cProductProductCode");
+		    		var iProductBrand = $api.attr(fenlistdomall[a], "iProductBrand");
+		    		if(select_user_pinpai != "11111111"){
+			    		if((iProductBrand == select_user_pinpai)&&((cProductFullName.indexOf(inputchazhaoMSG) > -1)||(cProductProductCode.indexOf(inputchazhaoMSG) > -1))){
+			    			$api.css(fenlistdomall[a],'display: block;');
+			    		}else{
+			    			$api.css(fenlistdomall[a],'display: none;');
+			    		}
+		    		}else{
+			    		if((cProductFullName.indexOf(inputchazhaoMSG) > -1)||(cProductProductCode.indexOf(inputchazhaoMSG) > -1)){
+			    			$api.css(fenlistdomall[a],'display: block;');
+			    		}else{
+			    			$api.css(fenlistdomall[a],'display: none;');
+			    		}
+		    		}
+		    	}
+		}
+
+		function huanyuanshangpin(){
+			document.getElementById("init_bottom_menu").innerHTML = '全部';
+			var fenlistel = document.getElementById("fenlist");
+		    	var fenlistdomall = $api.domAll(fenlistel, 'li');
+		    	for(var a = 0; a < fenlistdomall.length; a++){
+		    		$api.css(fenlistdomall[a],'display: block;');
+		    	}
+		}
+
+		function numchangeinput(tag){
+
+			$(tag).val($(tag).val().replace(/[^0-9]/g,''));
+
+		}
+		function numchangeinputdaidian(tag){
+
+			$(tag).val($(tag).val().replace(/[^0-9]/g,''));
+
+			var object = new Object();
+			var montherid = $api.attr(tag, "montherid");
+			var typename = $api.attr(tag, "typename");
+			var monther_html = document.getElementById(montherid);
+
+
+			var jinhuo_html = document.getElementById("jinhuo"+montherid);
+			var xiaoshounum_html = document.getElementById("xiaoshounum"+montherid);
+			var xiaoshoumoney_html = document.getElementById("xiaoshoumoney"+montherid);
+
+			object.iProuductId = montherid;
+            object.taskid = taskid;
+            object.istoreid = istoreid;
+            object.iInventoryId = $api.attr(monther_html, "iInventoryId");
+            object.iProductBrand = $api.attr(monther_html, "iProductBrand");
+            object.jinhuo = $api.val(jinhuo_html);
+            object.xiaoshounum = $api.val(xiaoshounum_html);
+            object.xiaoshoumoney = $api.val(xiaoshoumoney_html);
+            object.today = today();
+            object.oneitem = "";
+            object.twoitem = "";
+            object.threeitem = "";
+            object.fouritem = "";
+
+			newchenlie_list(object);
+		}
+
+
+		function deal_dblist(ret){
+			for(var a = 0; a < ret.data.length; a++){
+				var iProuductId = ret.data[a].iProuductId;
+				document.getElementById("jinhuo"+iProuductId).value = ret.data[a].jinhuo;
+				document.getElementById("xiaoshounum"+iProuductId).value = ret.data[a].xiaoshounum;
+				document.getElementById("xiaoshoumoney"+iProuductId).value = ret.data[a].xiaoshoumoney;
+			}
+		}
+
+
+
+
+		var istoreid = '';
+
+		var taskid = '';
+
+		function getskulist(){
+			var body = new Object();
+			body.istoreid = istoreid;
+			body.istorehouse = iStoreHouseId;
+			//console.log(JSON.stringify(body));
+			$kunchi.kunchipost("ActionApi/T_Report_Sku/T_Report_SkusInventoryStore", body, function(ret,err){
+				tingzhi();
+				//console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+				if(ret){
+					showalltypelist();
+					if(ret.length == 0){
+						api.alert({
+						    title: '提示',
+						    msg: '您所选择的门店暂无库存商品记录.',
+						}, function(aaa, bbb) {
+							api.closeWin({
+	                        });
+						});
+					}else{
+						dealxml(ret);
+					}
+				}else{
+					tingzhi();
+					api.alert({
+					    title: '提示',
+					    msg: '当前网络环境较差，无法获取对应库存信息。',
+					}, function(aaa, bbb) {
+						api.closeWin({
+                        });
+					});
+				}
+			});
+		}
+
+
+		function dealxml(ret){
+			var fenlistel = document.getElementById("fenlist");
+			document.getElementById("fenlist").innerHTML = '';
+			for(var a = 0; a < ret.length; a++){
+
+
+				var iReceiptNumber = ret[a].iReceiptNumber;
+				var iSalesCount = ret[a].iSalesCount;
+				var iSalesAmount = ret[a].iSalesAmount;
+				if(isempty(iReceiptNumber)){
+					iReceiptNumber = '';
+				}
+				if(isempty(iSalesCount)){
+					iSalesCount = '';
+				}
+				if(isempty(iSalesAmount)){
+					iSalesAmount = '';
+				}
+
+				var cProductPackage = ret[a].cProductPackage;
+				var iProductUnit = ret[a].iProductUnit;
+//				if(isempty(cProductPackage)){
+//					cProductPackage = '-';
+//				}
+//				if(isempty(iProductUnit)){
+//					iProductUnit = '-';
+//				}
+
+				var html = '<li id="'+ret[a].iProuductId+'" iInventoryId='+ret[a].iInventoryId+' iProuductId="'+ret[a].iProuductId+'" iProductBrand="'+ret[a].iProductBrand+'" cProductFullName="'+ret[a].cProductFullName+'" cProductProductCode="'+ret[a].cProductProductCode+'">'
+					+			'<span class="two">'+ret[a].cProductFullName+'<br /><i>包装(毫升/大小等):'+cProductPackage+' 计量单位(瓶/支等):'+iProductUnit+'</i></span>'
+					+			'<span class="three">商品编号:'+ret[a].cProductProductCode+'</span>'
+					+			'<span id="kucun'+ret[a].iProuductId+'" iCurrentInventory="'+ret[a].iCurrentInventory+'" class="one">'+ret[a].iInventoryNew+'</span>'
+					+			'<div class="onediv">'
+					+				'<div class="pingfen">'
+					+					'<input oninput="numchangeinput(this)" montherid="'+ret[a].iProuductId+'" typename="jinhuo" id="jinhuo'+ret[a].iProuductId+'" type="tel" />'
+					+				'</div>'
+					+			'</div>'
+					+		'</li>';
+
+				$api.append(fenlistel, html);
+			}
+		}
+
+		function init_bottom_menu(){
+			api.actionSheet({
+			    title: '选择品牌',
+			    cancelTitle: '取消',
+			    buttons: typenamelist
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= typenamelist.length){
+			    		select_user_pinpai = typeidlist[index - 1];
+			    			document.getElementById("init_bottom_menu").innerHTML = typenamelist[index - 1];
+			    }
+			});
+		}
+
+		/**
+		 *将分类添加到数组中 用来分类商品
+		 */
+		var typenamelist = new Array();
+		var typeidlist = new Array();
+		function showalltypelist(){
+			typenamelist.push("全部");
+			typeidlist.push("11111111");
+			var allgoodtype = $api.getStorage("allgoodtype");
+			if(allgoodtype.length != 0){
+				for(var a = 0; a < allgoodtype.length; a++){
+					typenamelist.push(allgoodtype[a].BrandName);
+					typeidlist.push(allgoodtype[a].BrandID);
+				}
+			}
+		}
+
+
+		function postSKUdata(){
+			var objectarray = new Array();
+			var fenlistel = document.getElementById("fenlist");
+		    	var fenlistdomall = $api.domAll(fenlistel, 'li');
+
+		    	/**
+		    	 *判断用户是否有填写错误的东西
+		    	 */
+		    	var isrewrite = 0;
+		    	/**
+		    	 *如果有销售数量那么销售金额不能为0
+		    	 */
+		    	var isxiaoshou0 = 0;
+
+		    	for(var a = 0; a < fenlistdomall.length; a++){
+		    		var iProuductId = $api.attr(fenlistdomall[a], "iProuductId");
+		    		var iInventoryId = $api.attr(fenlistdomall[a], "iInventoryId");
+
+		    		var kucunhtml = document.getElementById("kucun"+iProuductId);
+		    		var kucun = $api.attr(kucunhtml, 'iCurrentInventory');
+
+		    		var jinhuo = document.getElementById("jinhuo"+iProuductId).value;
+		    		if(jinhuo.trim().length == 0){
+		    			continue;
+		    		}
+
+					var body = new Object();
+					body.iProuductId = iProuductId;
+					body.iKucunOpening = '';
+					body.iDeliveryMonth = '';
+					body.iSaleMonth = '';
+					body.iCurrentInventory = kucun;
+					body.iSalesCount = 0;
+					body.iSalesAmount = 0;
+					body.iReceiptNumber = jinhuo;
+					body.cReportType = '实盘';
+					body.iTaskId = taskid;
+					body.dtReportTime = $kunchi.todaydate();
+					body.dtCreateTime = '';
+					body.iStoreId = istoreid;
+					body.iUserId = $api.getStorage('id');
+					if(isempty(iInventoryId)){
+						iInventoryId = null;
+					}
+					body.iInventoryId = iInventoryId;
+					objectarray.push(body);
+		    	}
+
+		    	if(objectarray.length == 0){
+		    		alert('尚未填写任何更改信息');
+		    		return;
+		    	}
+
+		    	jiazai();
+		    	
+		    	var posturl = '';
+		    	if(iStoreHouseId == "1"){
+		    		posturl = 'ActionApi/T_Report_Sku/SaveSkuInventory';
+		    	}else if(iStoreHouseId == "2"){
+		    		posturl = 'ActionApi/T_Report_Sku/SaveSkuInventoryCanPin';
+		    	}else if(iStoreHouseId == "3"){
+		    		posturl = 'ActionApi/T_Report_Sku/SaveSkuInventoryWuLiao';
+		    	}
+		    	
+		    	console.log(JSON.stringify(objectarray));
+				$kunchi.kunchipost(posturl, objectarray, function(ret,err){
+					tingzhi();
+					//[{"id":12,"iProuductId":1,"iKucunOpening":null,"iDeliveryMonth":null,"iSaleMonth":null,"iCurrentInventory":0,"iSalesCount":0,"iSalesAmount":0,"iReceiptNumber":5,"cReportType":"SKU日销报告","iTaskId":null,"dtReportTime":"2018-01-26T00:00:00","dtCreateTime":"2018-01-26T17:33:47.523","iStoreId":"00000000-0000-0000-0000-000000000000","iUserId":"9b7c6dc5-39e4-4e51-8484-e9e030d52ef9","iInventoryId":null,"T_Task":null}]----""
+					console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+					if(ret){
+						deal_all_skulist();
+						api.alert({
+						    title: '提示',
+						    msg: '库存盘点成功.',
+						}, function(aaa, bbb) {
+							api.closeWin({
+	                        });
+						});
+					}else{
+						if (err.statusCode == "406") {
+							alert(err.msg);
+						}else{
+							alert("保存失败,请检查网络后重试.");
+						}
+						//post_other_errorinfo(JSON.stringify(objectarray), $api.getStorage("id"), "ActionApi/T_Report_Sku/T_Report_Skus",  JSON.stringify(err));
+					}
+				});
+			}
+
+
+	</script>
+</html>

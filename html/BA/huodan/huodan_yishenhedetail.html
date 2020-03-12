@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>已审核详情</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			.goodinfo{ width: 100%; height: auto; float: left;}
+			.goodinfo ul{ width: 100%; height: auto; float: left;}
+			.goodinfo ul li{ position: relative; padding: 5px 0; margin-top: 5px; border-radius: 5px; width: 94%; margin-left: 3%; margin-right: 3%; height: auto; float: left; background-color: #f5f5f5;}
+			.goodinfo ul li .name{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%;}
+			.goodinfo ul li .name .left{ font-size: 14px; width: 80px; height: 25px; line-height: 25px; float: left; font-style: normal;}
+			.goodinfo ul li .name .right{ color: #666; width: auto; height: auto; line-height: 25px; float: left; font-style: normal;}
+			.goodinfo ul li .imglist{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%;}
+			.goodinfo ul li .imglist img{ width: 50px; height: 50px; float: left; margin: 5px 4px 5px 0;}
+			.goodinfo ul li .inputnum{ width: 90%; margin-left: 5%; margin-right: 5%; float: left;}
+			.goodinfo ul li .inputnum .editname{ width: 80px; line-height: 25px; height: 25px; float: left; font-size: 14px;}
+			.goodinfo ul li .inputnum .editnum{ margin-bottom: 5px; width: 100px; height: 25px; float: left; background-color: #FFFFFF;}
+			.goodinfo ul li .inputnum .editnum input{ width: 90px; margin-left: 5px; margin-right: 5px; float: left; outline: none; height: 20px; line-height: 20px; margin-top: 2.5px; text-align: center; }
+			.goodinfo ul li .delxml{ position: absolute; width: 20px; height: 20px; padding: 20px; top: 0; right: 0; z-index: 999;}
+			
+		</style>
+	</head>
+	<body>
+		<div class="goodinfo">
+			<ul id="list">
+				<!--<li>
+					<span class="name"><i class="left">商品名称:</i><i class="right">商品名称商品名称商品名称商品名称</i></span>
+					<span class="name"><i class="left">商品编号:</i><i class="right">RRRRRRRRRRRRRRR</i></span>
+					<span class="name"><i class="left">申请数量:</i><i class="right">RRRRRRRRRRRRRRR</i></span>
+					<div class="inputnum">
+						<span class="editname">申请数量:</span>
+						<div class="editnum">
+							<input readonly="readonly" />
+						</div>
+					</div>
+					<div class="inputnum">
+						<span class="editname">申请数量:</span>
+						<div class="editnum">
+							<input readonly="readonly" />
+						</div>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+	
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+		/**
+		 *储存已经有的商品列表 
+		 */
+		var shoplist = new Array();
+		
+		/**
+		 *即将保存的数据 
+		 */
+		var saveobject = new Object();
+		
+		var iOrderId;
+		/**
+		 *判断是否有更新 
+		 */
+		var isupdatetime = 0;
+		
+		var torderidJuJue;
+	
+		apiready = function() {
+			jiazai();
+			getdetail();
+		};
+		
+		var readonly = '';
+		function getdetail(){
+			$kunchi.kunchiget("ActionApi/T_Orders/GetT_Orders/"+api.pageParam.page.id, '', function(ret,err){
+				//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+				if(ret){
+					var el = document.getElementById("list");
+					document.getElementById("list").innerHTML = '';
+					tingzhi();
+					if(ret[0].T_OrderDetail.length > 0){
+						var retiOrderType = ret[0].iOrderType;
+						for(var a = 0; a < ret[0].T_OrderDetail.length; a++){
+							iStoreHouseId = ret[0].T_OrderDetail[0].iStoreHouseId;
+							var shenqingIcount = ret[0].T_OrderDetail[a].iCount;
+							var iModifyCount = ret[0].T_OrderDetail[a].iModifyCount;
+									
+							var html = '<li id="'+ret[0].T_OrderDetail[a].iProId+'" iStoreHouseId="'+ret[0].T_OrderDetail[a].iStoreHouseId+'" value="'+ret[0].T_OrderDetail[a].cProductCodeNc+'" isnew="old">'
+									+		'<span class="name"><i class="left">商品名称:</i><i class="right">'+ret[0].T_OrderDetail[a].cProductFullName+'</i></span>'
+									+		'<span class="name"><i class="left">商品编号:</i><i class="right">'+ret[0].T_OrderDetail[a].cProductProductCode+'</i></span>'
+									+		'<div class="inputnum">'
+									+			'<span class="editname">申请数量:</span>'
+									+			'<div class="editnum">'
+									+				'<input readonly="readonly" value="'+shenqingIcount+'" />'
+									+			'</div>'
+									+		'</div>'
+									+		'<div class="inputnum">'
+									+			'<span class="editname">审批数量:</span>'
+									+			'<div class="editnum">'
+									+				'<input readonly="readonly" value="'+iModifyCount+'" />'
+									+			'</div>'
+									+		'</div>'
+									+		'<div class="inputnum">'
+									+			'<span class="editname">商品单价:</span>'
+									+			'<div class="editnum">'
+									+				'<input readonly="readonly" value="'+ret[0].T_OrderDetail[a].iPrice+'" />'
+									+			'</div>'
+									+		'</div>'
+									+	'</li>';
+							$api.append(el, html);
+						}
+					}
+				}else{
+					alert("网络错误,请稍后重试.");
+				}
+			});
+		}
+	</script>
+</html>

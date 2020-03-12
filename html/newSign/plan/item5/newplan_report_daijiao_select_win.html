@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>通用窗口</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body, header, section, footer, nav, div, ul, ol, li, img, a, span, em, del, center, strong, var, fieldset, form, label, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea {
+				margin: 0;
+				border: 0;
+				padding: 0;
+				font-family: Tahoma, Geneva, sans-serif;
+				font-style: normal;
+			}
+			html, body {
+				-webkit-touch-callout: none;
+				-webkit-text-size-adjust: none;
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-user-select: none;
+			}
+			header, footer, section, nav, img, a, button, em, del, strong, var, fieldset, label, cite, small, time, mark, code, figcaption, figure, textarea {
+				display: block;
+			}
+			header, section, footer, nav {
+				position: relative;
+				overflow: hidden;
+			}
+			ol, ul {
+				list-style: none;
+			}
+			input, button, textarea {
+				border: 0;
+				margin: 0;
+				padding: 0;
+				font-size: 1em;
+				line-height: 1em;
+				-webkit-appearance: none;
+				background-color: rgba(0, 0, 0, 0);
+			}
+			span {
+				display: inline-block;
+			}
+			a, a:visited {
+				text-decoration: none;
+			}
+			html, body {
+				height: 100%;
+			}
+			#header {
+				background-color: #71C4E4;
+				width: 100%;
+			}
+			#wrap {
+				height: 100%;
+				display: -webkit-box;
+				display: -webkit-flex;
+				display: flex;
+				-webkit-box-orient: vertical;
+				-webkit-flex-flow: column;
+				flex-flow: column;
+			}
+			#main {
+				-webkit-box-flex: 1;
+				-webkit-flex: 1;
+				flex: 1;
+			}
+			#nav {
+				display: -webkit-box;
+				height: 44px;
+			}
+			#left {
+				width: 80px;
+				color: #000;
+				background: url(../../../../image/fanhui_bai.png) no-repeat 14px 12px;
+				-webkit-background-size: 20px 20px;
+			}
+			#left > span {
+				margin-top: 13px;
+				margin-left: 36px;
+				font-size: 18px;
+				height: 18px;
+				line-height: 18px;
+			}
+			#middle {
+				-webkit-box-flex: 1;
+				width: 100%;
+				display: -webkit-box;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+			}
+			#title {
+				font-size: 18px;
+				text-align: center;
+				color: #fff;
+			}
+			#right {
+				width: 80px;
+			}
+			section {
+				-webkit-box-flex: 1;
+			}
+			body {
+				background-color: #fff;
+			}
+			#main {
+				overflow: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<header id='header'>
+				<nav id="nav">
+					<a id="left" onclick="api.closeWin();"> <span></span> </a>
+					<div id="middle">
+						<strong id="title">选择带教BA</strong>
+					</div>
+					<a id="right"> <span></span></a>
+				</nav>
+			</header>
+			<div id="main"></div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var header = $api.byId('header');
+			var footer = $api.byId('footer');
+			$api.fixStatusBar(header);
+			$api.fixTabBar($api.byId('footer'));
+			var main = $api.byId('main');
+			var mainPos = $api.offset(main);
+			var headerPos = $api.offset(header);
+			var footerPos = $api.offset(footer);
+			//console.log($api.getStorage('winheight') - headerPos.h - footerPos.h);
+			var huamianwin;
+			if (isempty($api.getStorage('winheight'))) {
+				huamianwin = api.winHeight;
+			} else {
+				huamianwin = $api.getStorage('winheight');
+			}
+			api.openFrame({
+				name : "newplan_quehuo_report_select_frame",
+				url : "widget://html/newSign/plan/item5/newplan_report_daijiao_select_frame.html",
+				rect : {
+					x : 0,
+					y : headerPos.h,
+					w : 'auto',
+					h : huamianwin - headerPos.h - footerPos.h
+				},
+				pageParam : {
+					page : api.pageParam.data,
+					brandname : api.pageParam.brandname,
+					ibrandid: api.pageParam.brandid,
+					headerPos : headerPos.h,
+					h : huamianwin - headerPos.h - footerPos.h
+				},
+				reload : false,
+				progress : {
+					type : "page",
+					color : "#ff0000"
+				},
+				bounces : false,
+				bgColor : 'rgba(255,255,255,255)',
+				vScrollBarEnabled : false,
+				hScrollBarEnabled : false
+			});
+		};
+		function isempty(str) {
+			if (( typeof (str) == 'undefined') || (str == null) || (str == "null") || (str == "") || (str == "undefined")) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+	</script>
+</html>

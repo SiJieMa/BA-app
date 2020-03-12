@@ -1,0 +1,21 @@
+html, body{ background-color: #fff;}
+.biaogetitle{ width: 96%; padding: 0 2% 0 2%; height: auto; float: left; background-color: #f2f2f2; color: #666;}
+.biaogetitle .two{ width: 40%; height: 50px; line-height: 50px; float: left; text-align: center; font-size: 14px;}
+.biaogetitle .one{ width: 20%; height: 50px; line-height: 50px; float: left; text-align: center; font-size: 14px;}
+
+.biaoge{ width: 100%; height: auto; position: absolute; top: 50px; left: 0; bottom: 0; overflow-y: scroll;}
+.biaoge ul{ width: 100%; height: auto; float: left;}
+.biaoge ul li{ font-size: 16px; color: #666; width: 100%; height: auto; float: left; border-bottom: 1px solid #f2f2f2;}
+.biaoge ul li .two{ width: 39.5%; height: 50px; float: left; line-height: 25px; text-align: center; border-right: 1px solid #f2f2f2;}
+.biaoge ul li .two i{ font-size: 13px; font-style: normal;}
+.biaoge ul li .one{ width: 19.5%; height: 50px; float: left; line-height: 50px; text-align: center; border-right: 1px solid #f2f2f2;}
+.biaoge ul li .last{border-right: 0 solid #f2f2f2;}
+.biaoge ul li .inputnum{ background-image: url(../image/tableback.png); background-size: 96% 96%; background-position: center; background-repeat: no-repeat;}
+.biaoge ul li:nth-child(2n) .two{ background-color: #f2f2f2;}
+
+.keyboard{ display: none; width: 100%; height: auto; position: fixed; bottom: 0; left: 0; background-color: #FFFFFF; z-index: 9999;}
+.keyboard span{ font-size: 20px; width: 50px; height: 50px; float: left; line-height: 50px; text-align: center; border-right: 1px solid #f2f2f2; border-top: 1px solid #f2f2f2;}
+.keyboard i{ font-size: 20px; width: 50px; height: 50px; float: left; line-height: 50px; text-align: center; border-right: 1px solid #f2f2f2; border-top: 1px solid #f2f2f2;}
+.numkeyboard{ background-color: #f2f2f2;}
+.keyboard .del{ background-color: #71C4E4; color: #fff;}
+.keyboard .numkeydel{ background-color: #3DB7E6;}

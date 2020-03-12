@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>注册</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/register.css" />
+	</head>
+	<body id="body">
+		<div id="wrap">
+			<div id="header"></div>
+			<div id="main">
+				<div class="sumb">
+					<div class="item">
+						<i class="fa fa-user" aria-hidden="true"></i>
+						<input type="text" id="username" placeholder="账号" />
+					</div>
+					<div class="item">
+						<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+						<input type="password" id="password" placeholder="密码" />
+					</div>
+					<div class="item">
+						<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+						<input type="repeatepassword" id="password" placeholder="重复密码" />
+					</div>
+				</div>
+				<div tapmode="liActive" onclick="openregister()" class="login">
+					注册
+				</div>
+				<div class="yuedu" onclick="openxieyi()">
+					点击上面的注册按钮,即表示你同意<i>《</i><i class="name">BA管理软件用户服务协议</i><i>》</i>
+				</div>
+				<span class="textspan">客服电话：13021379906
+					<br/>
+					上海鲲驰贸易发展有限公司
+					<br/>
+					版本号1.0</span>
+			</div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+		};
+		function openregister() {
+			var username = document.getElementById("username").value;
+			var password = document.getElementById("password").value;
+			var repeatepassword = document.getElementById("repeatepassword").value;
+			if (username.trim().length == 0) {
+				alert("请输入登录账号");
+				return;
+			}
+			if (password.trim().length == 0) {
+				alert("请输入登录密码");
+				return;
+			}
+			if (repeatepassword.trim().length == 0) {
+				alert("请输入确认密码");
+				return;
+			}
+			if (password != repeatepassword) {
+				alert("密码输入不一致");
+				return;
+			}
+			$api.setStorage("jia_zhanghao", username);
+			$api.setStorage("jia_mima", password);
+			api.alert({
+				title : '提示',
+				msg : '注册成功',
+			}, function(ret, err) {
+				api.closeWin({
+                });
+			});
+		}
+
+		function openxieyi() {
+			openpage("xieyi_win", "sxieyi_frame", "服务协议", "widget://html/tools/xieyi.html", "");
+		}
+	</script>
+</html>

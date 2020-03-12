@@ -1,0 +1,31 @@
+[{"iStoreId":"00000000-0000-0000-0000-000000000000","cStoreFullName":"测试门店","cStoreCode":"WSTTest","cLon":null,"cLat":null,"iUserId":"30981d57-8442-4926-bf21-500b32b3c6b4","dtPlantTime":"2018-01-04T00:00:00","iRorptId":17274,"iWorkType":1,"iStatue":0},{"iStoreId":null,"cStoreFullName":"列检查报告","cStoreCode":null,"cLon":null,"cLat":null,"iUserId":"30981d57-8442-4926-bf21-500b32b3c6b4","dtPlantTime":"2018-01-04T00:00:00","iRorptId":17277,"iWorkType":1,"iStatue":0}]
+
+CREATE TABLE eventlist(iStoreId varchar(255), cStoreFullName varchar(255), cStoreCode varchar(255), cLon varchar(255), cLat varchar(255), dtPlantTime varchar(255), iRorptId varchar(255), iWorkType varchar(255), iStatue varchar(255))
+
+
+CREATE TABLE signinlist(signpicname varchar(255), signlon varchar(255), signlat varchar(255), signaddress varchar(255), signtime varchar(255), iRorptId varchar(255))
+
+CREATE TABLE signoutlist(signpicname varchar(255), signlon varchar(255), signlat varchar(255), signaddress varchar(255), signtime varchar(255), iRorptId varchar(255))
+
+CREATE TABLE chenlielist(leftgood varchar(255), rightgood varchar(255), hascuxiao varchar(255), chenlie varchar(255), cuxiao varchar(255), jingpin varchar(255), fenlei1 varchar(255), fenlei2 varchar(255), fenlei3 varchar(255), pinpai1 varchar(255), pinpai2 varchar(255), pinpai3 varchar(255), iRorptId varchar(255))
+
+CREATE TABLE quehuolist(pinpai1 varchar(255), pinpai2 varchar(255), pinpai3 varchar(255), fenlei1 varchar(255), fenlei2 varchar(255), fenlei3 varchar(255), quehuo varchar(255), iRorptId varchar(255))
+
+CREATE TABLE daijiaofenlist(pinpai1 varchar(255), pinpai2 varchar(255), pinpai3 varchar(255), jiaodu1 varchar(255), jiaodu2 varchar(255), jiaodu3 varchar(255), normalfen varchar(255), pingfen varchar(255), iRorptId varchar(255))
+
+CREATE TABLE daijiaopiclist(pinpai1 varchar(255), pinpai2 varchar(255), pinpai3 varchar(255), thisfudao varchar(255), nextfudao varchar(255), bapiclist varchar(255), pinggupiclist varchar(255), iRorptId varchar(255))
+
+
+
+
+
+
+ActionApi/T_WorkReport/PostT_WorkReport
+
+
+
+
+
+
+
+

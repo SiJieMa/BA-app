@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>缺货报告选择商品</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			input,button,select,textarea{
+			outline:none;
+			box-shadow:none;
+			background:none;
+			border: none;
+			-webkit-tap-highlight-color:rgba(0,0,0,0); 
+			}
+			textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+			.search{ width: 100%; height: 60px; float: left; border-bottom: 1px solid #EFEFEF;}
+			.search .sao{ width: 60px; height: 60px; float: left; background-image: url('../../../../image/newSign/newsignsao.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.search .searchmsg{ border-radius: 50px; margin-top: 4px; border: 1px solid #EFEFEF; width: -webkit-calc(100% - 122px); width: -moz-calc(100% - 122px); width: calc(100% - 122px); height: 50px; float: left;}
+			.search .refush{ width: 60px; height: 60px; float: left; background-image: url('../../../../image/newSign/newsignrefush.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.search .searchmsg input{ font-size: 14px; margin-left: 10px; margin-right: 10px; color: #999; margin-top: 10px; margin-bottom: 10px; width: -webkit-calc(100% - 80px); width: -moz-calc(100% - 80px); width: calc(100% - 80px); height: 30px; line-height: 30px; float: left;}
+			.search .searchmsg .search{ width: 50px; height: 50px; float: left; background-image: url('../../../../image/newSign/newsignsearch.png'); background-position: center; background-repeat: no-repeat; background-size: 30px 30px;}
+			.title{ width: 100%; height: 50px; float: left; border-bottom: 1px solid #EFEFEF; font-size: 14px;}
+			.title .item1{ width: 70%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.title .item2{ width: 30%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		
+		</style>
+	</head>
+	<body>
+		<div class="title">
+			<span class="item1">产品名称</span>
+			<span class="item2" id="sontitle">选中</span>
+		</div>
+		<div class="queding">
+			<button class="isok">确定</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript">
+		var UIListCheck;
+		var guid;
+		apiready = function() {
+			console.log(JSON.stringify(api.pageParam));
+			$("#sontitle").html(api.pageParam.sontitle);
+			UIListCheck = api.require('UIListCheck');
+			initlist();
+			
+			$(".isok").click(function(){
+				api.showProgress({
+                });
+                var ret = UIListCheck.getSelectedSync();
+                var objectArray = new Array();
+                for(var a = 0; a < ret.contacts.length; a++){
+                	var object = new Object();
+                	object.UUID = newguid();
+                	object.iReportId = api.pageParam.page.iRorptId;
+                	object.iStoreId = api.pageParam.page.iStoreId;
+                	object.iBrandId = api.pageParam.ibrandid;
+                	object.cBrandName = api.pageParam.brandname;
+                	object.iProductId = ret.contacts[a].employee_id;
+                	object.cProductName = ret.contacts[a].name;
+                	object.isHave = 1;
+                	object.iSkuType = api.pageParam.iSkuType;
+                	object.cSkuType = api.pageParam.cSkuType;
+                	objectArray.push(object);
+                }
+                //console.log(JSON.stringify(objectArray));
+				uploadreport(objectArray);
+			});
+			
+		};
+		
+		function uploadreport(objectArray){
+			if(objectArray.length == 0){
+				api.hideProgress();
+				alert('请至少选择一件商品');
+				return;
+			}
+			var isupdate = api.pageParam.isupdate;
+			var url = 'ActionApi/T_ReportStock/PostT_ReportStock';
+			if(isupdate == 1){
+				url = 'ActionApi/T_ReportStock/PutT_ReportStock';
+			}
+			$kunchi.kunchipost(url, objectArray, function(ret,err){
+				api.hideProgress();
+				if(ret){
+					openAlert('Alert','widget://html/newSign/dialog/Alert.html');
+				}else{
+					openAlert('AlertErr','widget://html/newSign/dialog/AlertErr.html');
+				}
+			});
+		}
+		
+		function openAlert(name, html){
+			var framename = name;
+			api.openFrame({
+					name: name,
+					url: html,
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)'
+			});
+			setTimeout(function(){
+				if(framename == "Alert"){
+					api.closeToWin({
+					    name: 'newplan_huopin_win'
+					});
+				}else{
+					api.closeFrame({
+						name: framename
+                    });
+				}
+			}, 2000);
+		}
+		
+		
+		function initlist(){
+			UIListCheck.open({
+			    rect:{
+			       x: -70,
+			       y: 50,
+			       w: api.frameWidth + 70,
+			       h: api.frameHeight - 110
+			    },
+			    contacts:api.pageParam.selectgoodlist,
+			    fixedOn: api.frameName
+			}, function(ret) {
+			    if (ret) {
+			    } 
+			});
+		}
+		
+		function newguid() {
+		    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		        return v.toString(16);
+		    });
+		}
+		
+	</script>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>申请促销计划</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			html, body{ background-color: #FFFFFF;}
+			i{ font-style: normal;}
+			.qudao{ width: 80%; height: auto; margin-left: 10%; margin-right: 10%; float: left; margin-top: 10px;}
+			.qudao .name{ width: 50px; height: 40px; line-height: 40px; float: left; text-align: center; font-size: 14px;}
+			.qudao .list{ width: calc(100% - 52px); height: 40px; float: left; border: 1px solid #ccc;}
+			.qudao .list span{ width: auto; height: 40px; line-height: 40px; float: left; font-size: 14px; margin-left: 10px;}
+			.qudao .list img{ width: 20px; height: 20px; float: right; margin: 10px;}
+			.rili{ width: 80%; margin-left: 10%; margin-right: 10%; height: auto; float: left; margin-top: 10px;}
+			.rili .riqi{ width: 50px; height: 40px; line-height: 40px; float: left; font-size: 14px; text-align: center;}
+			.rili .rilidemo{ width: calc(100% - 50px); height: auto; float: left;}
+			.rili .xuanzetishi{ width: 100%; height: 20px; line-height: 20px; float: left; color: #ff0000; font-size: 12px; text-align: center;}
+			.mendian{ width: 80%; height: auto; margin-left: 10%; margin-right: 10%; float: left; margin-top: 10px;}
+			.mendian .name{ width: 50px; height: 40px; line-height: 40px; float: left; text-align: center; font-size: 14px;}
+			.mendian .selectmendian{ margin-top: 20px;width: calc(100% - 50px); height: auto; float: left; line-height: 30px; margin-top: 5px; font-size: 14px; background-color: #169bd5; color: #fff; border-radius: 5px; text-align: center;}
+			.mendian .shopnum{ width: 100%; height: 40px; line-height: 40px; float: left; font-size: 14px; text-align: center;}
+			.next{margin-top: 50px; margin-bottom: 50px; width: 60%; height: auto; margin-left: calc(10% + 50px); float: left; line-height: 40px; font-size: 14px; background-color: #169bd5; color: #fff; border-radius: 5px; text-align: center;}
+
+		</style>
+	</head>
+	<body id="body">
+		<div class="qudao">
+			<span class="name">渠道</span>
+			<div class="list" onclick="openqudao()">
+				<span id="qudaoname"></span>
+				<img src="../../image/shixia.png" alt="">
+			</div>
+		</div>
+		<div class="qudao">
+			<span class="name">品牌</span>
+			<div onclick="openpinpai()" class="list">
+				<span id="pinpainame"></span>
+				<img src="../../image/shixia.png" alt="">
+			</div>
+		</div>
+		<div class="rili">
+			<span class="riqi">日期</span>
+			<div class="rilidemo" id="rili">
+			</div>
+			<span class="xuanzetishi">提示:一个计划最多不超过7天</span>
+		</div>
+		<div class="mendian">
+			<span class="name">门店</span>
+			<span class="selectmendian" onclick="opengoodselect()">点击选择活动门店</span>
+			<span class="shopnum">您已选择  <i id="shopnum">0</i>  家门店</span>
+		</div>
+		<div class="next" onclick="next()">
+			下一步
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../script/b.js"></script>
+	<script type="text/javascript">
+		var tijiaojson = {};
+		var starttime = '';
+		var stoptime = '';
+		var buttons;
+		var allgoodtype;
+		apiready = function() {
+
+			// var openriliID = $api.getStorage('openriliID');
+			// if(!isempty(openriliID)){
+			// 	var UICalendar = api.require('UICalendar');
+			// 	UICalendar.close({id:openriliID});
+			// }
+			setTimeout("openrili()",300);
+			allgoodtype = $api.getStorage('allgoodtype');
+			// console.log(JSON.stringify(allgoodtype));
+			buttons = new Array();
+			//默认为第一个的ID
+			document.getElementById("pinpainame").innerHTML = allgoodtype[0].BrandName;
+			cPlantBrand = allgoodtype[0].BrandID;
+			tijiaojson.cPlantBrand = cPlantBrand;
+			for(var a = 0; a < allgoodtype.length; a++){
+				buttons.push(allgoodtype[a].BrandName);
+			}
+			getcustomer();
+		};
+
+		//初始化获取渠道列表 ActionApi/T_Customer/GetT_Customer
+		var custormer;
+		function getcustomer(){
+			jiazai();
+			var url = 'ActionApi/T_Customer/POST_Customer';
+			$kunchi.kunchipost(url, "", function(ret,err){
+  			//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+  			tingzhi();
+  			if(ret){
+						custormer = ret;
+						tijiaojson.cPlantCode = custormer[0].id;
+						document.getElementById("qudaoname").innerHTML = custormer[0].cCustomerFullName;
+  			}else{
+					api.confirm({
+					    title: '提示',
+					    msg: '当前网络错误,是否重新获取?',
+					    buttons: ['确定', '退出']
+					}, function(ccc, ddd) {
+					    var index = ccc.buttonIndex;
+							if(index == 1){
+								getcustomer();
+							}else {
+								api.closeWin();
+							}
+					});
+  			}
+  		}, 30);
+		}
+
+		function openqudao(){
+			var menulist = new Array();
+			for(var a = 0; a < custormer.length; a++){
+				menulist.push(custormer[a].cCustomerFullName);
+			}
+			api.actionSheet({
+			    cancelTitle: '取消选择',
+			    buttons: menulist
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+					if(index > menulist.length){
+            return;
+          }
+					if(index <= menulist.length){
+						tijiaojson.cPlantCode = custormer[index - 1].id;
+						document.getElementById("qudaoname").innerHTML = custormer[index - 1].cCustomerFullName;
+					}
+			});
+		}
+
+		//选择的品牌的ID
+		var cPlantBrand;
+		function openpinpai(){
+			api.actionSheet({
+			    cancelTitle: '取消选择',
+			    buttons: buttons
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+					if(index <= buttons.length){
+						document.getElementById("pinpainame").innerHTML = allgoodtype[index - 1].BrandName;
+						cPlantBrand = allgoodtype[index - 1].BrandID;
+						//设置提交的品牌
+						tijiaojson.cPlantBrand = cPlantBrand;
+					}
+			});
+		}
+		var shoplist = new Array();
+		function opengoodselect(){
+			openpage("zg_create_selectShop_win", "zg_create_selectShop_frame", "选择门店", "widget://html/zmcu/zg_create_selectShop.html", {shoplist: shoplist});
+			api.addEventListener({
+				    name: 'zmcslecetshop'
+				}, function(ret, err) {
+				    shoplist = ret.value.key1;
+						document.getElementById("shopnum").innerHTML = shoplist.length;
+			});
+		}
+
+		function next(){
+			tijiaojson.cUserId = $api.getStorage('id');
+			tijiaojson.iPlantStatue = "0";
+			tijiaojson.cPlantRemark = "";
+
+
+			if(selectdatelist.length == 0){
+				alert('请选择促销活动日期');
+				return;
+			}
+			openpage("zg_create_setTime_win", "zg_create_setTime_frame", "设置活动时间", "widget://html/zmcu/zg_create_setTime.html", {
+				tijiaojson: tijiaojson,
+				shoplist: shoplist,
+				datelist: selectdatelist
+			});
+		}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		var selectdatelist = new Array();
+		function openrili(){
+			b.openZDdiy({
+				width: (api.frameWidth *4 / 5) - 50,//整个控件宽度
+				itemheight: 40,//每行日期的高度
+				daytextsize: 16,//日期的文字大小
+				id: "rili",//设置的布局
+				selectimg: '../../image/zmcselect.png',//选中的背景图
+				leftimg: '../../image/zmcleft.png',//上个月背景图
+				rightimg: '../../image/zmcright.png',//下个月背景图
+				mainbac: '#FAFFF9',//整体背景色
+				titlebac: '#FDE102',//头部背景色
+				isfromtoday: true,//当天之前的是否不可以点击
+				datelong: 7,//最长可以选择几天
+				startime: '',//默认选中的开始时间
+				stoptime: '',//默认选中的结束时间
+				daterange: function(datelistret, startret, stopret){
+					//console.log(datelistret);//如果超过了7天的话 返回的都是false
+					if(datelistret != "false"){
+						selectdatelist = datelistret;
+					}else if(datelistret == "false"){
+						api.toast({
+						    msg: '最多只能选择7天的活动日期',
+						    duration: 2000,
+						    location: 'bottom'
+						});
+						selectdatelist = [];
+					}
+				}
+			});
+		}
+
+	</script>
+</html>

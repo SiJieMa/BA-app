@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>业务指标</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/BA_index_sign.css" />
+	</head>
+	<body>
+		<div class="index-main" id="app">
+			<div class="index-main-rili" id="indexmainrili"></div>
+			<!--第二条item-->
+			<div class="index-main-item2">
+				<span class="index-main-item2-leftmsg">
+					日均拜访：<i v-text="rijun"></i> 家
+				</span>
+				<span class="index-main-item2-rightmsg">
+					拜访总计：<i v-text="zongji"></i> 家
+				</span>
+			</div>
+			<!--巡店流程列表  237进店   236 出店 -->
+			<div class="index-main-signlist" v-show="isshowdetail">
+				<ul v-for="item in everydata">
+					<li class="index-main-signlist-signin" v-if="item.cinType == '237'">
+						<div class="index-main-signlist-lefttime" v-text="item.dtinStore"></div>
+						<div class="index-main-signlist-img">
+							<div class="index-main-signlist-img-circle">
+								<img src="../../image/BA_index_sign/instore.png" />
+							</div>
+							<i class="index-main-signlist-lineback"></i>
+						</div>
+						<div class="index-main-signlist-rightmsg">
+							<span class="index-main-signlist-rightmsg-up">进店</span>
+							<span class="index-main-signlist-rightmsg-down">{{item.cstoreFullName}}，距店{{item.ioffset}}</span>
+						</div>
+					</li>
+					<li class="index-main-signlist-signout" v-if="item.cinType == '236'">
+						<div class="index-main-signlist-lefttime" v-text="item.dtinStore"></div>
+						<div class="index-main-signlist-img">
+							<div class="index-main-signlist-img-circle">
+								<img src="../../image/BA_index_sign/instore.png" />
+							</div>
+							<i class="index-main-signlist-lineback"></i>
+						</div>
+						<div class="index-main-signlist-rightmsg">
+							<span class="index-main-signlist-rightmsg-up">离店</span>
+							<span class="index-main-signlist-rightmsg-down">{{item.cstoreFullName}}，距店{{item.ioffset}}</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/es6/eBA_index_sign-compiled.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="../../script/jquery-1.8.3.min.js"></script>
+	<script src="../../script/bami.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					year: '',
+					month: '',
+					datalist: [],
+					rijun: 0,
+					zongji: 0,
+					todaydate: '',
+					isfirstshow: 0,//第一次打开获取一下 后面的点击再触发
+					everydata: [],
+					isshowdetail: false
+				},
+				created:function(){
+					var now = new Date();
+					var year = now.getFullYear();
+					var month = now.getMonth() + 1;
+					if (month < 10)
+						month = "0" + month;
+						
+					this.year = year;
+					this.month = month;
+					
+					this.rijun = api.pageParam.item1;
+					this.todaydate = $kunchi.todaydate();
+				},
+				mounted:function(){
+					var starttime = this.year + "-" + this.month;
+					this.postdata(starttime);
+				},
+				methods: {
+					postonedaydb: function(){
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						body.startime = this.todaydate;
+						console.log(JSON.stringify(body));
+						$kunchi.kunchipost("ActionApi/KPI/KPI_DayAccessByTime", body, function(ret,err){
+							console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							api.hideProgress();
+							if(ret){
+								showdetail(ret);
+							}else{
+								api.toast({
+	                                msg:'获取当日拜访详情失败'
+                                });
+							}
+						});
+					},
+					postdata: function(startime){
+						api.showProgress({
+							modal: true
+						});
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						body.startime = startime;
+						console.log(JSON.stringify(body));
+						$kunchi.kunchipost("ActionApi/KPI/KPI_DayAccess", body, function(ret,err){
+							// [{"dtPlantTime":"2020-01-08T00:00:00","amount":1},{"dtPlantTime":"2020-01-09T00:00:00","amount":1},{"dtPlantTime":"2020-01-10T00:00:00","amount":1},{"dtPlantTime":"2020-01-13T00:00:00","amount":1}]
+							console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							api.hideProgress();
+							if(ret){
+								initpage(ret);
+							}else{
+								api.alert({
+								    title: '提示',
+								    msg: '当前网络错误,请稍后重试.',
+								}, function(ret, err) {
+									api.closeWin({
+					                });
+								});
+							}
+						});
+					},
+					showcalendar: function(){
+						ba.initcalendar({
+							html: "#indexmainrili",
+							liyear: this.year, //打开日历默认显示的年
+							lidays: this.month, //打开日历默认显示的月
+							cwidth: api.frameWidth, //日历宽度
+							cheight: 300, //日历高度
+							bleftbtn: "../../image/BA_index_sign/jiantouleft.png", //左侧箭头图片
+							brightbtn: "../../image/BA_index_sign/jiantouright.png", //右侧箭头图片
+							bdatacolor: "#12B3B4", //中间年月颜色
+							bdatasize: "15px", //中间年月字体大小
+							btitlesize: "12px", //星期的一排的字体大小
+							btitlecolor: "#333333", //星期的一排的字体大小
+							bitemmargin: 10, //每个日历背景色的间隔
+							bliback: "rgba(0,0,0,0.3)", //日历默认背景圆圈颜色
+							blisize: "15px", //日历的日子的默认文字大小
+							blicolor: "#666666", //日历日子的默认文字颜色
+							bdiansize: "50px", //圆点大小
+							bdiancolor: "#ff0000", //圆点颜色
+							bulback: "#ffffff", //UL的背景颜色
+							bulpadding: "10", //ul的PADDING值
+							blistyle: [],
+							bdayliststyleitembackcolor: "#E8E8E8",
+							bdayliststyle: this.datalist,
+							leftbtn: function(msg) {
+								console.log(msg);
+								reloadrili(msg)
+							},
+							rightbtn: function(msg) {
+								console.log(msg);
+								reloadrili(msg)
+							},
+							clickdatetime: function(time){
+								appvue.todaydate = time;
+								console.log(time);
+								appvue.postonedaydb();
+							}
+						});
+					},
+					apptoastmsg: function(){
+						api.toast({
+	                        msg:'获取拜访覆盖率失败'
+                        });
+					}
+				},
+				beforeUpdate:function(){
+				},
+				updated:function(){
+				}
+			});
+		}
+	</script>
+</html>

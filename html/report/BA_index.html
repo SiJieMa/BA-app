@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>业务指标</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/BA_index.css" />
+	</head>
+	<body>
+		<div class="index-main" id="app">
+			<!-- 头部第一个item布局 -->
+			<div class="index-head">
+				<div class="index-title">
+					<img class="index-title-img" src="../../image/BA_index/logod.png" />
+					<div class="index-title-context">
+						<span class="index-title-context-item1">业绩指标</span>
+						<span class="index-title-context-item2">当前数据截止于{{dbtime}}</span>
+					</div>
+				</div>
+				<div class="index-nummoney">
+					<div class="index-nummoney-shop">
+						<span class="index-nummoney-shop-item1">{{baifangnum}}<i>家</i></span>
+						<span class="index-nummoney-shop-item2">今日已拜访</span>
+					</div>
+					<i class="line"></i>
+					<div class="index-nummoney-num">
+						<span class="index-nummoney-num-item1">{{chuxiaonum}}<i>元</i></span>
+						<span class="index-nummoney-num-item2">本月促销业绩</span>
+					</div>
+				</div>
+			</div>
+
+			<!--第二个布局 进度条-->
+			<!--<div class="index-pro">
+				<div class="index-pro-left">
+					<div class="index-pro-left-progress">
+						<div class="index-pro-left-progress-title">
+							<h6 class="index-pro-left-progress-title-item1">门店覆盖与执行</h6>
+							<h6 class="index-pro-left-progress-title-item2">60%</h6>
+						</div>
+						<div class="index-pro-left-progress-line">
+							<i class="index-pro-left-progress-line-back"></i>
+							<i class="index-pro-left-progress-line-percent"></i>
+						</div>
+					</div>
+					<div class="index-pro-left-progress">
+						<div class="index-pro-left-progress-title">
+							<h6 class="index-pro-left-progress-title-item1">门店覆盖与执行</h6>
+							<h6 class="index-pro-left-progress-title-item2">60%</h6>
+						</div>
+						<div class="index-pro-left-progress-line">
+							<i class="index-pro-left-progress-line-back"></i>
+							<i class="index-pro-left-progress-line-percent"></i>
+						</div>
+					</div>
+					<div class="index-pro-left-progress">
+						<div class="index-pro-left-progress-title">
+							<h6 class="index-pro-left-progress-title-item1">门店覆盖与执行</h6>
+							<h6 class="index-pro-left-progress-title-item2">60%</h6>
+						</div>
+						<div class="index-pro-left-progress-line">
+							<i class="index-pro-left-progress-line-back"></i>
+							<i class="index-pro-left-progress-line-percent"></i>
+						</div>
+					</div>
+				</div>
+				<div class="index-pro-right">
+					<span class="index-pro-right-title">KPI完成度</span>
+					<div class="index-pro-right-circle">
+						<div class="index-pro-right-circle-huan">
+						</div>
+					</div>
+					<span class="index-pro-right-history">历史业绩 ></span>
+
+				</div>
+			</div>-->
+
+
+			<!--九宫格布局-->
+			<div class="index-block">
+				<ul>
+					<li v-for="itemment in ninemenu" :itemname="itemment.name" v-on:click="opendetail($event, itemment.name, itemment.count)" v-if="itemment.name != '本月促销业绩' && itemment.name != '今日已拜访'">
+						<span class="index-block-title" v-text="itemment.name"></span>
+						<span class="index-block-percent">{{itemment.avg}}%</span>
+						<span class="index-block-detail" v-if="itemment.name == '拜访覆盖率'">日均<i>{{itemment.count}}</i>家<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == '拜访完成度'"><i>{{itemment.count}}</i>项未完成<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == '周末促销'">已达<i>{{itemment.count}}</i>元<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == 'BA业绩'">已达<i>{{itemment.count}}</i>元<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == 'BA签到'"><i>{{itemment.count}}</i>异常<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == '带教覆盖率'">未带教<i>{{itemment.count}}</i>个<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == 'BA在岗率'">未到岗<i>{{itemment.count}}</i>个<i class="rightjian">></i></span>
+						<span class="index-block-detail" v-if="itemment.name == '库存差异'">差异><i>{{itemment.count}}</i>%<i class="rightjian">></i></span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/es6/eBA_index-compiled.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script>
+		var appvue;
+		apiready = function(){
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					dbtime: "---",
+					baifangnum: 0,
+					chuxiaonum: 0,
+					ninemenu: [{
+						name:"拜访覆盖率",
+						count:0,
+						avg: 0
+					},{
+						name:"拜访完成度",
+						count:0,
+						avg: 0
+					},{
+						name:"周末促销",
+						count:0,
+						avg: 0
+					},{
+						name:"BA业绩",
+						count:0,
+						avg: 0
+					},{
+						name:"BA签到",
+						count:0,
+						avg: 0
+					},{
+						name:"带教覆盖率",
+						count:0,
+						avg: 0
+					},{
+						name:"BA在岗率",
+						count:0,
+						avg: 0
+					},{
+						name:"库存差异",
+						count:0,
+						avg: 0
+					}],
+					isclick: false
+				},
+				beforeCreate: function() {
+				},
+				created: function() {
+					this.dbtime = $kunchi.todaytime();
+				},
+				mounted:function(){
+					this.postdata();
+				},
+				methods:{
+					postdata: function(){
+						api.showProgress({
+							modal: true
+						});
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						$kunchi.kunchipost("ActionApi/KPI/KPIHome", body, function(ret,err){
+							//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							//[{"name":"BA业绩","count":105974,"avg":0},{"name":"BA在岗率","count":0,"avg":100},{"name":"拜访完成","count":790,"avg":12.41},{"name":"本月促销金额","avg":0},{"name":"带教覆盖率","count":17,"avg":19.05},{"name":"今日拜访","count":0,"avg":0},{"name":"周末促销","count":500,"avg":0}]
+							api.hideProgress();
+							if(ret){
+								shownine(ret);
+							}else{
+								api.alert({
+								    title: '提示',
+								    msg: '当前网络错误,请稍后重试.',
+								}, function(ret, err) {
+									api.closeWin({
+                                    });
+								});
+							}
+						}, 40);
+					},
+					opendetail: function(event, name, count){
+						switch (name){
+							case '拜访覆盖率':
+								appvue.opendetailclick('BA_index_sign_win', 'widget://html/report/BA_index_sign_win.html', count);
+								break;
+							case '拜访完成度':
+								appvue.opendetailclick('BA_plan_win', 'widget://html/report/BA_plan_win.html', count);
+								break;
+							case 'BA签到':
+								appvue.opendetailclick('BA_Attendance_win', 'widget://html/report/BA_Attendance_win.html', count);
+								break;
+							case '带教覆盖率':
+								appvue.opendetailclick('BA_wei_win', 'widget://html/report/BA_wei_win.html', count);
+								break;
+							case 'BA业绩':
+								appvue.opendetailclick('BA_zhibiao_win', 'widget://html/report/BA_zhibiao_win.html', count);
+								break;
+							case 'BA在岗率':
+								appvue.opendetailclick('BA_zaigang_win', 'widget://html/report/BA_zaigang_win.html', count);
+								break;
+							default:
+								break;
+						}
+					},
+					opendetailclick: function(name, url, item1){
+						if(this.isclick)
+							api.openWin({
+								name: name,
+								url: url,
+								slidBackEnabled: false,
+								pageParam: {
+									item1: item1
+								}
+							});
+					}
+				},
+				updated:function(){
+					this.isclick = true;
+				}
+			});
+		}
+	</script>
+</html>

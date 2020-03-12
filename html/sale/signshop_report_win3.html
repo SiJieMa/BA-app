@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<title>BA带教报告-详情</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			html, body, header, section, footer, nav, div, ul, ol, li, img, a, span, em, del, center, strong, var, fieldset, form, label, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea {
+				margin: 0;
+				border: 0;
+				padding: 0;
+				font-family: Tahoma, Geneva, sans-serif;
+				font-style: normal;
+			}
+			html, body {
+				-webkit-touch-callout: none;
+				-webkit-text-size-adjust: none;
+				-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+				-webkit-user-select: none;
+			}
+			header, footer, section, nav, img, a, button, em, del, strong, var, fieldset, label, cite, small, time, mark, code, figcaption, figure, textarea {
+				display: block;
+			}
+			header, section, footer, nav {
+				position: relative;
+				overflow: hidden;
+			}
+			ol, ul {
+				list-style: none;
+			}
+			input, button, textarea {
+				border: 0;
+				margin: 0;
+				padding: 0;
+				font-size: 1em;
+				line-height: 1em;
+				-webkit-appearance: none;
+				background-color: rgba(0, 0, 0, 0);
+			}
+			span {
+				display: inline-block;
+			}
+			a, a:visited {
+				text-decoration: none;
+			}
+			html,body{
+		        height: 100%;
+		    }
+			#wrap{
+		        height: 100%;
+		        display: -webkit-box;
+		        display: -webkit-flex;
+		        display: flex;
+		        -webkit-box-orient: vertical;
+		        -webkit-flex-flow: column;
+		               flex-flow: column;
+		    }
+			#main{
+		        -webkit-box-flex: 1; 
+		        -webkit-flex: 1;
+		        flex: 1;
+		    }
+			#header {
+				background-color: #71C4E4;
+			}
+			#nav {
+				display: -webkit-box;
+				height: 44px;
+			}
+			#left {
+				width: 80px;
+				color: #000;
+				background: url(../../image/fanhui_bai.png) no-repeat 14px 12px;
+				-webkit-background-size: 20px 20px;
+			}
+			#left > span {
+				margin-top: 13px;
+				margin-left: 36px;
+				font-size: 18px;
+				height: 18px;
+				line-height: 18px;
+			}
+			#right > span {
+				margin-top: 13px;
+				margin-left: 36px;
+				font-size: 16px;
+				height: 18px;
+				line-height: 18px;
+				color: #FFFFFF;
+			}
+			#middle {
+				-webkit-box-flex: 1;
+				width: 100%;
+				display: -webkit-box;
+				-webkit-box-pack: center;
+				-webkit-box-align: center;
+			}
+			#title {
+				font-size: 16px;
+				text-align: center;
+				color: #fff;
+			}
+			#right {
+				width: 80px;
+			}
+			section {
+				-webkit-box-flex: 1;
+			}
+			body {
+				background-color: #fff;
+			}
+			.tab {
+				width: 100%;
+				height: 40px;
+				float: left;
+				border-bottom: 1px solid #f2f2f2;
+				background-color: #fff;
+			}
+			.tab .tabdiv {
+				width: 50%;
+				height: 40px;
+				float: left;
+			}
+			.tab .tabdiv span {
+				width: 80%;
+				margin-left: 10px;
+				float: left;
+				line-height: 38px;
+				text-align: center;
+				color: #666;
+				font-size: 15px;
+			}
+			.tab .active span {
+				border-bottom: 2px solid #71C4E4;
+				color: #71C4E4;
+			}
+			#main {
+				overflow: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="wrap">
+			<header id='header'>
+				<nav id="nav">
+					<a id="left" onclick="api.closeWin();"> <span></span> </a>
+					<div id="middle">
+						<strong id="title">BA带教报告查询</strong>
+					</div>
+					<a id="right" onclick="tijiao()"> <span>保存</span></a>
+				</nav>
+				<div id="tablist" class="tab">
+					<div onclick="changetab(this)" num="0" class="tabdiv active">
+						<span>评分</span>
+					</div>
+					<div onclick="changetab(this)" num="1" class="tabdiv">
+						<span>拍照</span>
+					</div>
+				</div>
+			</header>
+			<div id="main"></div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript">
+		var headerPos;
+		apiready = function() {
+			var header = $api.byId('header');
+			$api.fixStatusBar(header);
+			$api.fixTabBar($api.byId('footer'))
+			headerPos = $api.offset(header);
+			var main = $api.byId('main');
+			var mainPos = $api.offset(main);
+			api.openFrame({
+				name : 'select_balist',
+				url : 'widget://html/sale/select_balist.html',
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				},
+				bounces : false,
+				bgColor : 'rgba(0,0,0,0.5)',
+				pageParam : {
+					iStoreId : api.pageParam.iStoreId
+				}
+			});
+			api.addEventListener({
+				name : 'selectbainfo'
+			}, function(ret, err) {
+				var bauserid = ret.value.key1;
+				
+				open_indexpage(bauserid);
+				
+				api.closeFrame({
+				    name: 'select_balist'
+				});
+			});
+			
+		};
+		
+		function open_indexpage(bauserid){
+			api.openFrameGroup({
+				name : 'badaijiao',
+				rect : {
+					x : 0,
+					y : headerPos.h,
+					w : 'auto',
+					h : 'auto'
+				},
+				frames : [{
+					name : 'signshop_report_301',
+					url : 'widget://html/sale/signshop_report_301.html',
+					bgColor : 'rgba(255,255,255,255)',
+					bounces : false,
+					vScrollBarEnabled : false,
+					hScrollBarEnabled : false,
+					pageParam : {
+						tagid : api.pageParam.tagid,
+						tagname : api.pageParam.tagname,
+						BrandID : api.pageParam.BrandID,
+						BrandName : api.pageParam.BrandName,
+						iStoreId : api.pageParam.iStoreId,
+						iReportId : api.pageParam.iReportId,
+						name : api.pageParam.name,
+						zidiantype : api.pageParam.zidiantype,
+						cStoreFullName : api.pageParam.cStoreFullName,
+						iRorptListTime : api.pageParam.iRorptListTime,
+						cStoreCode : api.pageParam.cStoreCode,
+						bauserid: bauserid
+					}
+				}, {
+					name : 'signshop_report_302',
+					url : 'widget://html/sale/signshop_report_302.html',
+					bgColor : 'rgba(255,255,255,255)',
+					bounces : false,
+					vScrollBarEnabled : false,
+					hScrollBarEnabled : false,
+					pageParam : {
+						tagid : api.pageParam.tagid,
+						tagname : api.pageParam.tagname,
+						BrandID : api.pageParam.BrandID,
+						BrandName : api.pageParam.BrandName,
+						iStoreId : api.pageParam.iStoreId,
+						iReportId : api.pageParam.iReportId,
+						name : api.pageParam.name,
+						zidiantype : api.pageParam.zidiantype,
+						cStoreFullName : api.pageParam.cStoreFullName,
+						iRorptListTime : api.pageParam.iRorptListTime,
+						cStoreCode : api.pageParam.cStoreCode,
+						bauserid: bauserid
+					}
+				}]
+			}, function(ret, err) {
+				var index = ret.index;
+			});
+		}
+		
+		function changetab(tag) {
+			var el = document.getElementById("tablist");
+			var ellist = $api.domAll(el, ".tabdiv");
+			for (var a = 0; a < ellist.length; a++) {
+				$api.removeCls(ellist[a], 'active');
+			}
+			$api.addCls(tag, 'active');
+			api.setFrameGroupIndex({
+				name : 'badaijiao',
+				index : $api.attr(tag, 'num')
+			});
+		}
+
+		function tijiao() {
+			api.sendEvent({
+				name : 'batijiao'
+			});
+		}
+	</script>
+</html>

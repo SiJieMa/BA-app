@@ -1,0 +1,16 @@
+
+body { background-color: #ffffff;}
+.signindiv{ width: 100%; height: auto; float: left;}
+.signoutdiv{ width: 100%; height: auto; float: left;} 
+
+.signindiv .signinno{ display: none; width: 100%; height: 250px; float: left; line-height: 250px; text-align: center; font-size: 18px; border-bottom: 1px solid #f2f2f2;}
+.signindiv .signinhas{ display: none; width: 100%; height: auto; float: left; border-bottom: 1px solid #f2f2f2;}
+.signindiv .signinhas .signinmsg{ font-size: 15px; width: calc(100% - 150px); height: 175px; float: left; line-height: 25px; padding-top: 75px; text-align: center; }
+.signindiv .signinhas .picurl{ width: 150px; height: 250px; float: left;}
+
+
+.signoutdiv .signoutno{ display: none; width: 100%; height: 250px; float: left; line-height: 250px; text-align: center; font-size: 18px; border-bottom: 1px solid #f2f2f2;}
+.signoutdiv .signouthas{ display: none; width: 100%; height: auto; float: left;}
+.signoutdiv .signouthas .signoutmsg{ font-size: 15px; width: calc(100% - 150px); height: 175px; float: left; line-height: 25px; padding-top: 75px; text-align: center; }
+.signoutdiv .signouthas .picurl{ width: 150px; height: 250px; float: left;}
+

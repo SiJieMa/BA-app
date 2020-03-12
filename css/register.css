@@ -1,0 +1,129 @@
+#wrap {
+	height: 100%;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-flex-flow: column;
+}
+#header {
+	text-align: center;
+	color: #fff;
+	width: 100%;
+}
+#header h1 {
+	font-size: 20px;
+	height: 44px;
+	line-height: 44px;
+	margin: 0em;
+	color: #fff;
+}
+#main {
+	-webkit-box-flex: 1;
+	-webkit-flex: 1;
+}
+#footer {
+	background-color: #81a9c3;
+	width: 100%;
+	text-align: center;
+}
+#footer h5 {
+	color: white;
+}
+.con {
+	font-size: 28px;
+	text-align: center;
+}
+.logo {
+	width: 100%;
+	margin-top: 30px;
+	height: 150px;
+	position: relative;
+	float: left;
+}
+.logo img {
+	width: 180px;
+	height: 150px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+}
+.sumb{
+	width: 80%;
+	margin-left: 10%;
+	margin-top: 50px;
+	margin-right: 10%;
+	float: left;
+	height: auto;
+}
+.sumb .item{
+	margin: 0 1px;
+	height: auto;
+	background-color: #f2f2f2;
+	margin-bottom: 10px;
+	border: 1px solid #cccccc;
+}
+.sumb .item:hover .fa{
+	color: #333;
+}
+.sumb .item .fa{
+	width: 40px;
+	height: 38px;
+	margin-top: 2px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 20px;
+	color: #999;
+}
+.sumb .item input{
+	margin: 7px 5px;
+	height: 25px;
+	line-height: 25px;
+	font-size: 15px;
+	outline:none;
+}
+.login{
+	width: 80%;
+	margin-left: 10%;
+	margin-right: 10%;
+	float: left;
+	height: 40px;
+	background-color: #71c4e4;
+	color: #FFFFFF;
+	line-height: 40px;
+	text-align: center;
+	margin-top: 20px;
+	font-size: 16px;
+}
+.liActive{
+	background-color: #3db7e6;
+}
+.textspan{
+	width: 80%;
+	margin-left: 10%;
+	margin-top: 30px;
+	margin-right: 10%;
+	float: left;
+	text-align: center;
+	font-size: 12px;
+	color: #666;
+}
+.yuedu{
+	width: 80%;
+	margin-left: 10%;
+	float: left;
+	height: auto;
+	line-height: 25px;
+	font-size: 13px;
+}
+.yuedu i{
+	font-style: normal;
+	margin-top: 10px;
+	color: #3DB7E6;
+}
+.yuedu .name{
+	font-style: normal;
+	color: #3DB7E6;
+	text-decoration:underline
+}

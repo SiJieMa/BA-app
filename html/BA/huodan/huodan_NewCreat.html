@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>最新的创建货单</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			body, html{ background-color: #f5f5f5;}
+			.dingdanhao{ background-color: #FFFFFF; display: none; width: 100%; margin-bottom: 5px; margin-top: 8px; height: auto; float: left;}
+			.dingdanhao .danhao{ margin-left: 10px; width: 80px; height: 40px; float: left; line-height: 40px;}
+			.dingdanhao .inputdanhao{ width: 150px; height: 30px; line-height: 30px; margin-top: 5px; float: left; outline: none; font-size: 15px;}
+			.dingdanhao .saodanhao{ width: 25px; height: 25px; float: right; padding: 7.5px; margin-right: 10px;}
+			.address{ display: none; background-color: #FFFFFF; margin-top: 10px; width: 100%; width: calc(100% - 4px); padding-top: 10px; padding-bottom: 5px; height: auto; float: left; border: 2px dashed #71C4E4;}
+			.address img{ width: 8%; margin-left: 46%; margin-right: 46%; float: left; height: auto;}
+			.address span{ width: 100%; height: 30px; float: left; line-height: 30px; text-align: center; color: #71C4E4; font-size: 17px;}
+			.addressdiv{ display: none; background-color: #FFFFFF; width: 100%; height: auto; float: left; border-bottom: 2px dashed #71C4E4; padding-bottom: 10px;}
+			.addressdiv .addressmsg{ width: 90%; height: auto; float: left;}
+			.addressdiv .addressmsg .oneitem{ width: 100%; height: auto; float: left;}
+			.addressdiv .addressmsg .oneitem .name{ width: auto; height: 40px; line-height: 40px; margin-left: 10px; float: left;}
+			.addressdiv .addressmsg .oneitem .phone{ width: auto; height: 40px; line-height: 40px; margin-right: 10px; float: right;}
+			.addressdiv .addressmsg .useraddress{ margin-left: 10px; margin-right: 10px; float: left; line-height: 25px; font-size: 14px;}
+			.addressdiv .right{ width: 10%; margin-top: 30px; float: left;}
+			.goodlist{ width: 100%; height: auto; float: left; background-color: #71C4E4; margin-top: 10px;}
+			.goodlist .title{ width: auto; margin-left: 10px; height: 45px; line-height: 45px; float: left; color: #FFFFFF; font-size: 16px;}
+			.goodlist .addgood{ width: 20px; height: 20px; padding: 12.5px 10px; float: right;}
+			.gooddetail{ width: 100%; height: auto; float: left;}
+			.gooddetail ul{ width: 100%; height: auto; float: left;}
+			.gooddetail ul li{ position: relative; padding-top: 5px; padding-bottom: 5px; border-radius: 5px; background-color: #FFFFFF; width: 96%; margin-left: 2%; margin-right: 2%; height: auto; float: left; margin-top: 5px;}
+			.gooddetail ul li .downimg{ margin-right: 5px; margin-top: 5px; width: 30px; height: 30px; position: absolute; top: 0; right: 0;}
+			.gooddetail ul li .item1{ width: 90%; font-size: 14px; margin-left: 5%; margin-right: 5%; height: auto; float: left; line-height: 25px; }
+			.gooddetail ul li .item1 i{ font-style: normal; float: left;}
+			.gooddetail ul li .item1 .num16{ font-size: 18px;}
+			.gooddetail ul li .item1 .width80{ width: 80px;}
+			.gooddetail ul li .item2{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%;}
+			.gooddetail ul li .item2 .leftitem{ width: 80px; height: 25px; float: left; line-height: 25px;}
+			.gooddetail ul li .item2 .numinput{ width: 100px; height: 25px; float: left; border-bottom: 1px solid #CCCCCC;}
+			.gooddetail ul li .item2 .numinput input{ width: 100px; height: 20px; line-height: 20px; float: left; margin-top: 2.5px; outline: none; text-align: center;}
+			.gooddetail ul li .imagelist{ margin-top: 5px; width: 100%; height: auto; float: left;}
+			.gooddetail ul li .imagelist .titlepic{ background-color: #f2f2f2; color: #71C4E4; width: 90%; padding-left: 5%; padding-right: 5%; height: 40px; float: left; line-height: 40px;}
+			.gooddetail ul li .imagelist img{ width: 50px; height: 50px; float: left; margin: 5px;}
+			
+			.mendianinfo{ display: none; border-radius:5px; width: 96%; background-color: #ffffff; padding-left: 2%; padding-right: 2%; height: auto; float: left; border-bottom: 1px solid #f5f5f5;}
+			.mendianinfo .shopid{ width: calc(96% - 40px); height: 40px; float: left; line-height: 40px;}
+			.mendianinfo .shopid input{ width: 96%; height: 30px; line-height: 30px; margin-top: 5px; float: left; outline: none;}
+			.mendianinfo .search{ width: 30px; height: 30px; float: left; padding: 5px;}
+			.mendianinfoshow{ display: none; margin-top: 8px; background-color: #ffffff; width: 100%; height: auto; float: left; border-bottom: 5px;}
+			.mendianinfoshow .mendianname{ width: 98%; margin-left: 2%; height: 40px; line-height: 40px; float: left; font-size: 15px; color: #666;}
+			.mendianinfoshow .selecttype{ width: 98%; margin-left: 2%; height: auto; float: left;}
+			.mendianinfoshow .selecttype span{ width: auto; height: 40px; line-height: 40px; float: left; font-size: 15px; color: #666;}
+			.mendianinfoshow .selecttype img{ width: 20px; height: 20px; float: right; margin-top: 10px;}
+
+		</style>
+	</head>
+	<body>
+		<div class="dingdanhao">
+			<span class="danhao">物流单号:</span>
+			<input id="wuliudanhao" type="tel" class="inputdanhao" placeholder="请输入快递单号" />
+			<img class="saodanhao" onclick="opensaoyisao()" src="../../../image/saoyisao.png" />
+		</div>
+		
+		<div class="mendianinfoshow">
+			<div id="mendiandiaoboone" class="mendianinfo">
+				<div class="shopid">
+					<input id="mendianbianhao" placeholder="请输入对方门店号" />
+				</div>
+				<img onclick="searchmendianhao()" class="search" src="../../../image/search.png" />
+			</div>
+			<span id="mendianname" class="mendianname">门店名称:</span>
+			<div onclick="showlistmenu()" class="selecttype">
+				<span id="duifangleixing">点击选择对方类型</span>
+				<img src="../../../image/right6.png" />
+			</div>
+		</div>
+		
+		<div onclick="openaddresslist()" id="addUserAddress" class="address">
+			<img src="../../../image/addlan.png" />
+			<span>点击添加收货人信息</span>
+		</div>
+		<div onclick="openaddresslist()" id="showUserAddress" class="addressdiv">
+			<div class="addressmsg">
+				<div class="oneitem">
+					<span id="recivename" class="name"></span>
+					<span id="recivephone" class="phone"></span>
+				</div>
+				<span id="reciveaddress" class="useraddress"></span>
+			</div>
+			<img class="right" src="../../../image/right6.png" />
+		</div>
+		
+		<div class="goodlist">
+			<span class="title">商品列表</span>
+			<img onclick="addGood()" class="addgood" src="../../../image/addfff.png" />
+		</div>
+		<div class="gooddetail">
+			<ul id="goodList">
+				<!--<li>
+					<span class="item1"><i class="width80">商品名称: </i><i>机房里的撒酒疯离开大树</i></span>
+					<span class="item1"><i class="width80">商品编码: </i><i>商品编辑啊房间打扫垃圾分类</i></span>
+					<span class="item1"><i class="width80">大仓数量: </i><i class="num16">88</i></span>
+					<span class="item1"><i class="width80">可申请数量: </i><i class="num16">999</i></span>
+					<div class="item2">
+						<span class="leftitem">所需数量:</span>
+						<div class="numinput">
+							<input />
+						</div>
+					</div>
+					<div class="item2">
+						<span class="leftitem">销售金额:</span>
+						<div class="numinput">
+							<input />
+						</div>
+					</div>
+					<div class="imagelist">
+						<span class="titlepic">点击拍照:</span>
+						<img src="../../../image/addlan.png" />
+					</div>
+					<img class="downimg"  src="../../../image/sangedian.png"/>
+				</li>-->
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+	
+		var iStoreHouseId;
+	
+		apiready = function() {
+			jiazai();
+			initHtml();
+		};
+		/**
+		 *初始化页面 
+		 */
+		function initHtml(){
+			var listid = api.pageParam.page.listid;
+			var addUserAddress = document.getElementById("addUserAddress");
+			if(listid == $api.getStorage('diaohuodan')){
+				$api.css(addUserAddress,'display: block;');
+			}
+			//物料单
+			if(listid == $api.getStorage('wuliaodan')){
+				$api.css(addUserAddress,'display: block;');
+				iStoreHouseId = 3;
+			}
+			
+			tingzhi();
+		}
+		
+		function addGood(){
+			var listid = api.pageParam.page.listid;
+			//调货单 调用试用品的接口列表
+			openpage("addgoodlist_win", "addgoodlist_frame", "选择商品", "widget://html/BA/huodan/goodlist/good.html", {listid: listid});
+			
+			GetEventGoodInfo();
+		}
+		
+		/**
+		 *点击打开收货地址 
+		 */
+		function openaddresslist(){
+			openpage("addresslist_win", "addresslist_frame", "收货地址列表", "widget://html/BA/huodan/address/addresslist.html", "");
+			api.addEventListener({
+			    name: 'SelectThisAddress'
+			}, function(ret, err) {
+			    var name = ret.value.name;
+			    var phone = ret.value.phone;
+			    var address = ret.value.address;
+			    document.getElementById("recivename").innerHTML = name;
+			    document.getElementById("recivephone").innerHTML = phone;
+			    document.getElementById("reciveaddress").innerHTML = address;
+			    var addUserAddress = document.getElementById("addUserAddress");
+			    $api.css(addUserAddress,'display: none;');
+			    var showUserAddress = document.getElementById("showUserAddress");
+			    $api.css(showUserAddress,'display: block;');
+			    setTimeout("CancleEvent()", 300);
+			});
+
+		}
+		/**
+		 *关闭广播接听 
+		 */
+		function CancleEvent(){
+			api.removeEventListener({
+			    name: 'SelectThisAddress'
+			});
+			api.closeWin({
+				name: 'addresslist_win'
+            });
+		}
+		/**
+		 *接收选择的商品参数 
+		 */
+		function GetEventGoodInfo(){
+			api.addEventListener({
+			    name: 'GetEventGoodInfo'
+			}, function(ret, err) {
+			    var iProuductId = ret.value.iProuductId;
+			    var cProductFullName = ret.value.cProductFullName;
+			    var cProductProductCode = ret.value.cProductProductCode;
+			    var iRequestable = ret.value.iRequestable;
+			    InsertGoodHtml(iProuductId, cProductFullName, cProductProductCode, iRequestable);
+			    api.closeWin({
+			    	name: 'addgoodlist_win'
+                });
+			});
+		}
+		
+		function InsertGoodHtml(iProuductId, cProductFullName, cProductProductCode, iRequestable){
+			var el = document.getElementById("goodList");
+			var listid = api.pageParam.page.listid;
+			var html = '';
+			//物料单
+			if(listid == $api.getStorage('wuliaodan')){
+				html = '<li value="'+iProuductId+'" name="'+cProductFullName+'" code="'+cProductProductCode+'">'
+					+		'<span class="item1"><i class="width80">商品名称: </i><i>'+cProductFullName+'</i></span>'
+					+		'<span class="item1"><i class="width80">商品编码: </i><i>'+cProductProductCode+'</i></span>'
+					+		'<span class="item1"><i class="width80">可申请数量: </i><i class="num16">'+iRequestable+'</i></span>'
+					+		'<div class="item2">'
+					+			'<span class="leftitem">所需数量:</span>'
+					+			'<div class="numinput">'
+					+				'<input totalnum="'+iRequestable+'" />'
+					+			'</div>'
+					+		'</div>'
+					+	'</li>';
+				$api.prepend(el, html);
+			}
+		}
+		
+		
+		/**
+		 *点击确定 
+		 */
+		function queding(aaa, bbb){
+			if(aaa){
+				var el = document.getElementById("goodList");
+				var json = new Object();
+				json.cOrderCode = null;
+				json.iOrderType = api.pageParam.page.listid;
+				json.iPreparedId = $api.getStorage("id");
+				json.dtPrepTime = $kunchi.todaytime();
+				/**
+				 *用来判断是否还可以继续 
+				 */
+				var iscontune = 0;
+				if(!get_huodan_type()){
+					if(aaa.length == 2){
+						for(var a = 0; a < aaa.length; a++){
+							if(aaa[a].RoleName == '业务主管'){
+								json.iDirectorId = aaa[a].UserID;
+							}else{
+								json.iAuthorizeId = aaa[a].UserID;
+							}
+						}
+						iscontune = 0;
+					}
+					if(aaa.length == 1){
+						json.iDirectorId = aaa[0].UserID;
+						json.iAuthorizeId = aaa[0].UserID;
+						iscontune = 0;
+					}
+					if(aaa.length == 0){
+						iscontune = 1;
+						json.iDirectorId = null;
+						json.iAuthorizeId = null;
+					}
+					/**
+					 *判断收货地址有没有 
+					 */
+					var recivename = document.getElementById("recivename").innerHTML;
+					if(recivename == ""){
+						alert("尚未选择收货地址.");
+						iscontune = 1;
+						return;
+					}
+				}
+				
+				
+				if(iscontune == 0){
+					json.iAuthoState = $api.getStorage('baiAuthoState');
+					json.iOrderState = $api.getStorage('baiOrderState');
+					
+					json.iStoreId = selectshopid;
+					json.iStoreHouseId = iStoreHouseId;
+					json.cRemark = '';//备注
+					var recivename = document.getElementById("recivename").innerHTML;
+					var recivephone = document.getElementById("recivephone").innerHTML;
+					var reciveaddress = document.getElementById("reciveaddress").innerHTML;
+					json.cSignName = recivename;
+					json.cSignTele = recivephone;
+					json.cSignAddress = reciveaddress;
+					
+					var orderdetaillist = [];
+					var indexlist = 0;
+					
+					
+					for(var cc = 0; cc < $api.domAll(el, 'li').length; cc++){
+						var orderdetailjson = new Object();
+						var iproductid = $api.attr($api.domAll(el, 'li')[cc], 'value');
+						orderdetailjson.iProId = iproductid;
+						
+						var inputel = $api.domAll(el, 'input')[cc];
+						var inputelnum = document.getElementById(inputel).value;
+						orderdetailjson.iCount = inputelnum;
+						orderdetailjson.iPrice = 0;
+						orderdetailjson.iMoney = 0;
+						orderdetailjson.iStoreHouseId = iStoreHouseId;
+						
+						orderdetaillist[cc] = orderdetailjson;
+					}
+					json.T_OrderDetail = orderdetaillist;
+					if(iscontune == 0){
+						if(orderdetaillist == 0){
+							alert("您没有填写任何商品信息.");
+							return;
+						}
+						$api.setStorage("tijiaohuodan",json);
+						openpage('show_huodan_new_win', 'show_huodan_new_frame', '确认订单', "widget://html/BA/huodan/show_huodan_new.html", {listid: api.pageParam.listid});
+					}else{
+						alert("您填写的报表有问题,请修改后提交.");
+					}
+				}
+				
+			}else{
+				alert(bbb.msg);
+			}
+			
+		}
+		
+		function queding(){
+		 	if(!get_huodan_type()){
+			 	jiazai();
+				var body = new Object();
+				body.userid = $api.getStorage('id');
+				body.ordertype = api.pageParam.listid;
+				$kunchi.kunchipost("ActionApi/T_Orders/GetUserAuthor", body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+					tingzhi();
+					if(ret){
+						if(ret.length == 0){
+							upload_baogao(true, false);
+						}else{
+							upload_baogao(ret, err);
+						}
+					}else{
+						api.alert({
+						    title: '提示',
+						    msg: err.msg,
+						}, function(abcd, efgh) {
+						});
+					}
+				});
+		 	}else{
+		 		upload_baogao(true, false);
+		 	}
+		}
+		
+		
+	</script>
+</html>

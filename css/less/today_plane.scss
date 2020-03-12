@@ -1,0 +1,67 @@
+html, body {
+	width: 100%;
+	height: auto;
+	float: left;
+}
+.title {
+	width: 100%;
+	height: auto;
+	float: left;
+	background-color: #f2f2f2;
+	.one {
+		width: 70%;
+		height: 50px;
+		float: left;
+		line-height: 50px;
+		text-align: center;
+		font-size: 15px;
+		color: #666;
+	}
+	.two {
+		width: 30%;
+		height: 50px;
+		float: left;
+		line-height: 50px;
+		text-align: center;
+		font-size: 15px;
+		color: #666;
+	}
+}
+.planlist {
+	width: 100%;
+	height: auto;
+	float: left;
+	ul{
+		width: 100%;
+		height: 100%;
+		float: left;
+		li{
+			width: 100%;
+			height: auto;
+			float: left;
+			border-bottom: 1px solid #f2f2f2;
+			.name{
+				width: 70%;
+				height: 50px;
+				line-height: 50px;
+				float: left;
+				font-size: 15px;
+				color: #333;
+				text-align: center;
+				i{
+					font-style: normal;
+					color: #ff0000;
+				}
+			}
+			.stautes{
+				width: 30%;
+				height: 50px;
+				line-height: 50px;
+				float: left;
+				font-size: 15px;
+				color: #333;
+				text-align: center;
+			}
+		}
+	}
+}

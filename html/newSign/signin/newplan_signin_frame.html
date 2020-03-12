@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>进店打卡页面</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			button{ outline: none;}
+			.signbtn{ width: auto; height: auto; float: left; display: none;}
+			.signbtn .btn{
+				width: 150px; height: 150px; float: left; background-color: #71C4E4; border-radius: 75px;
+			}
+			.signbtn .btn .signbtnmsg{
+				width: 100%; height: 100%; float: left; text-align: center; line-height: 150px; font-size: 25px; color: #FFFFFF;
+			}
+			.pianyiliang{ width: 100%; height: 50px; float: left; text-align: center; margin-top: 50px;  display: none;}
+			.pianyiliang span{ width: auto; height: 50px; line-height: 50px; font-size: 16px; color: #333;}
+			.pianyiliang i{ font-style: normal;}
+			.pianyiliang button{ width: 50px; height: 50px; line-height: 50px; font-size: 16px; color: #FF0000; outline: none;}
+			.signdetail{ width: 100%; height: auto; float: left; display: none;}
+			.signdetail ul{ width: 100%; height: auto; float: left;}
+			.signdetail ul li{ width: 100%; height: auto; float: left; border-bottom: 1px solid #F5F5F5;}
+			.signdetail ul li .title{ margin-left: 5%; width: auto; height: 50px; line-height: 50px; float: left; font-size: 16px; color: #666;}
+			.signdetail ul li .signinPic{ width: 100px; height: 160px; float: right; margin-right: 5%; margin-top: 5px; margin-bottom: 5px; background-color: #EEEEEE;}
+			.signdetail ul li .rightmsg{ margin-right: 5%; width: -moz-calc(90% - 100px); width: -webkit-calc(90% - 100px); width: calc(90% - 100px); height: auto; line-height: 25px; margin-top: 12.5px; float: right; font-size: 16px; color: #666;}
+			.btnbottom{ display: none; width: 100%; height: 60px; background-color: #EEEEEE; position: fixed; left: 0; bottom: 0;}
+			.btnbottom .reloadlocation{ border-radius: 5px; width: 30%; margin-left: 5%; margin-right: 5%; height: 50px; margin-top: 5px; line-height: 50px; float: left; text-align: center; font-size: 16px; color: #FFFFFF; background-color: #666;}
+			.btnbottom .queding{ border-radius: 5px; width: 50%; margin-left: 5%; margin-right: 5%; height: 50px; margin-top: 5px; line-height: 50px; float: left; text-align: center; font-size: 16px; color: #FFFFFF; background-color: #71C4E4;}
+			.btnbottomdone{ display: none; width: 100%; height: 60px; background-color: #EEEEEE; position: fixed; left: 0; bottom: 0;}
+			.btnbottomdone button{ border-radius: 5px; width: 90%; margin-left: 5%; margin-right: 5%; height: 50px; margin-top: 5px; line-height: 50px; float: left; text-align: center; font-size: 16px; color: #FFFFFF; background-color: #71C4E4;}
+		</style>
+	</head>
+	<body id="body">
+		<div class="signbtn" id="signbtn">
+			<div class="btn">
+				<button onclick="startNewPhoto()" class="signbtnmsg">进店打卡</button>
+			</div>
+		</div>
+		<div class="pianyiliang" id="signDistanceHtml">
+			<span>您当前位置的偏移量为: <i id="newdistance">0</i>米</span>
+			<button onclick="refushNewLocation()">刷新</button>
+		</div>
+		
+		<div id="signdetail" class="signdetail">
+			<ul>
+				<li>
+					<span class="title">进店照片:</span>
+					<img onclick="showpictop()" id="signInPic" class="signinPic" />
+				</li>
+				<li>
+					<span class="title">进店时间:</span>
+					<span id="jsonintime" class="rightmsg"></span>
+				</li>
+				<li>
+					<span class="title">您当前位于:</span>
+					<span class="rightmsg" id="yonghudizhi"></span>
+				</li>
+				<li>
+					<span class="title">当前偏移量为:</span>
+					<span id="pianyiliang" class="rightmsg"></span>
+				</li>
+			</ul>
+		</div>
+		<div id="btnbottom" class="btnbottom">
+			<button onclick="refushNewLocation()" class="reloadlocation">重新定位</button>
+			<button onclick="quedingPostSignin()" class="queding">确定打卡</button>
+		</div>
+		<div class="btnbottomdone" id="btnbottomdone">
+			<button onclick="api.closeWin();">确定</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newGps.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newDistance.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newSynthesis.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newSignCarmer.js"></script>
+	<script type="text/javascript">
+	
+		//当前位置偏移量
+		var distanceTOshop = 0;
+		//判断当前用户是否已经打过卡了    0没有打过卡 1打过卡
+		var issignin;
+	
+		var shoplon, shoplat;
+		var userlon = 0, userlat = 0;
+		//拍照之后的图片地址
+		var uploadpicname;
+		
+		var InOutMsg;
+		apiready = function() {
+			//console.log(JSON.stringify(api.pageParam));
+			shoplon = api.pageParam.page.cLon;
+			shoplat = api.pageParam.page.cLat;
+			inithtml();	
+			initpic();
+			
+			
+			//先判断是否有进店打卡，有就省略所有的一下信息
+			InOutMsg = api.pageParam.InOutMsg;
+			var index;
+			var cInType = $api.getStorage('zidianjiexicInType');
+			var isstartlocation = false;
+			for(var ccc = 0; ccc < InOutMsg.length; ccc++){
+				var cInTypeonline = InOutMsg[ccc].cInType;
+				if(cInTypeonline == cInType){
+					isstartlocation = true;
+					index = ccc;
+				}
+			}
+			if(!isstartlocation){
+				$("#signbtn").css("display", "block");
+				$("#signDistanceHtml").css("display", "block");
+				startlocation();	
+			}else{
+				showSignInformation(index);
+			}
+		};
+		
+		function inithtml(){
+			var winheight = api.winHeight;
+			var winwidth = api.winWidth;
+			var signbtnhtml = document.getElementById("signbtn");
+			var marginleft = (winwidth - 150) / 2;
+			var margintop = (winheight - 250) / 2;
+			$api.css(signbtnhtml,'margin-left: '+marginleft+'px;');
+			$api.css(signbtnhtml,'margin-top: '+margintop+'px;');
+		}
+		
+		//展示用户已经打卡的信息
+		function showSignInformation(index){
+			$("#signbtn").css("display", "none");
+			$("#signDistanceHtml").css("display", "none");
+			$("#signdetail").css("display", "block");
+			$("#btnbottom").css("display", "none");
+			$("#btnbottomdone").css("display", "block");
+			$("#signInPic").attr("src", ($api.posturllujie + 'Content/UploadFiles/mobile/' + InOutMsg[index].cInPicPath));
+			$("#jsonintime").html(InOutMsg[index].dtInStore.replace("T", " "));
+			$("#pianyiliang").html(InOutMsg[index].iOffset+"米");
+			get_lonlat_address(InOutMsg[index].cInLon, InOutMsg[index].cInLat, function(retadd, erradd){
+				if(retadd){
+					if(retadd.status == 1){
+						//返回地址描述
+						$("#yonghudizhi").html(retadd.regeocode.formatted_address);
+					}else{
+						$("#yonghudizhi").html("网络错误,无法显示,不影响使用.");
+					}
+				}else{
+					$("#yonghudizhi").html("网络错误,无法显示,不影响使用.");
+				}
+			});
+		}
+		
+		function startlocation(){
+			api.showProgress({
+			    title: '请稍等',
+			    text: '正在获取位置'
+			});
+			getuserelocation(function(state, lon, lat, time){
+				if(state == "0"){
+					getdistance(shoplon, shoplat, lon, lat, function(mi){
+						userlon = lon;
+						userlat = lat;
+						distanceTOshop = mi;
+						$("#newdistance").html(distanceTOshop);
+						$("#pianyiliang").html(distanceTOshop+"米");
+						api.hideProgress();
+					})
+				}else{
+					distanceTOshop = 0;
+					$("#newdistance").html("0");
+					$("#pianyiliang").html("0米");
+					api.hideProgress();
+				}
+			});
+		}
+		//刷新当前用户的地理位置
+		function refushNewLocation(){
+			startlocation();
+		}
+		//点击拍照进行打卡
+		function startNewPhoto(){
+			api.addEventListener({
+			    name: 'PaiPicFinish'
+			}, function(ret, err) {
+			    var PaiPicFinish = ret.value.PaiPicFinish;
+			    if(PaiPicFinish == 'ok'){
+			    	api.closeWin({
+					    name: 'DIYCarmerWin'
+					});
+					api.closeWin({
+					    name: 'showCarmerPicSale'
+					});
+					api.removeEventListener({
+					    name: 'PaiPicFinish'
+					});
+					isallowbtn = 0;
+			    	showPicToHmtl();
+			    }
+			});
+			openDiyCarmerPaiZhao(api.pageParam.page.cStoreFullName, "进店打卡", "进店打卡");
+		}
+		
+		
+		function showpictop(){
+		
+			var urlpic = $("#signInPic").attr("src");
+			if(urlpic != ""){
+				api.openFrame({
+					name : 'showpic_sale',
+					url : 'widget://html/sale/showpic_sale.html',
+					rect : {
+						x : 0,
+						y : 0,
+						w : 'auto',
+						h : 'auto'
+					},
+					bounces : false,
+					bgColor : 'rgba(0,0,0,0.3)',
+					pageParam : {
+						url : urlpic
+					}
+				});
+			}
+		}
+		
+		
+		
+		function showPicToHmtl(){
+			uploadpicname = DiyCarmerFinishChu_name;
+			//隐藏打卡按钮 展示详情按钮
+			$("#signbtn").css("display", "none");
+			$("#signDistanceHtml").css("display", "none");
+			$("#signdetail").css("display", "block");
+			$("#btnbottom").css("display", "block");
+			$("#signInPic").attr("src", ('data:image/jpg;base64,' + DiyCarmerFinishChu_url));
+			$("#jsonintime").html($kunchi.todaytime());
+			
+			//获取当前地理位置
+			if(userlon == 0){
+				$("#yonghudizhi").html("网络错误,无法显示,不影响使用.");
+			}else{
+				get_lonlat_address(userlon, userlat, function(retadd, erradd){
+					if(retadd){
+						if(retadd.status == 1){
+							//返回地址描述
+							$("#yonghudizhi").html(retadd.regeocode.formatted_address);
+						}else{
+							$("#yonghudizhi").html("网络错误,无法显示,不影响使用.");
+						}
+					}else{
+						$("#yonghudizhi").html("网络错误,无法显示,不影响使用.");
+					}
+				});
+			}
+			api.hideProgress();
+		}
+		
+		//打卡信息上传服务器
+		var isallowPostSign = 0;//0能点击 1不能点击
+		function quedingPostSignin(){
+			if(isallowPostSign === 0){
+				isallowPostSign = 1;
+			}
+			api.showProgress({
+			    title: '请稍等',
+			    text: '正在打卡'
+			});
+			var dtInStore = $kunchi.todaytime();
+			var cInType = $api.getStorage('zidianjiexicInType');
+			var body = new Object();
+			var storeid = api.pageParam.page.iStoreId;
+			if (isemptynew(storeid)) {
+				storeid = null;
+			}
+			body.iReportId = api.pageParam.page.iRorptId;
+			body.iStoreId = storeid;
+			body.iUserId = $api.getStorage("id");
+			body.dtInStore = dtInStore;
+			body.cInPicPath = $kunchi.gettodaydate() + '/' + uploadpicname;
+			body.cInLon = userlon;
+			body.cInLat = userlat;
+			body.cInType = cInType;
+
+			/**
+			 * 上传报告的时候 要停止后台上传图片否则无法离店
+			 */
+			$api.setStorage("iscloseupload","1");
+			api.cancelAjax({
+			    tag: 'uploadpic'
+			});
+
+			body.iOffset = distanceTOshop;
+		
+		
+			$newapi.newpost("ActionApi/Patrol/PostT_WorkStore", body, 30000, function(ret, err){
+				isallowPostSign = 0;
+				api.hideProgress();
+				if(ret){
+					api.sendEvent({
+					    name: 'reloadsignstate'
+					});
+					api.alert({
+					    title: '提示',
+					    msg: '打卡成功',
+					}, function(aa, bb) {
+						api.closeWin({
+                        });
+					});
+				}else{
+					api.alert({
+					    title: '提示',
+					    msg: '打卡失败',
+					}, function(aa, bb) {
+						api.closeWin({
+                        });
+					});
+				}
+			});
+		}
+		
+		
+	</script>
+</html>

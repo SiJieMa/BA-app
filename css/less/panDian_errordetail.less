@@ -1,0 +1,198 @@
+@import 'main.less';
+
+
+.list{
+	#main.displaycss();
+	#main.calc20();
+	margin: 10px 10px 10px 10px;
+	flex-direction: column;
+	.listui{
+		width: 100%;
+		height: 100%;
+		.listli{
+			width: 100%;
+			height: auto;
+			#main.displaycss();
+			flex-direction: column;
+			border: 1px solid #EFEFEF;
+			border-radius: 5px;
+			margin-top: 5px;
+			.good{
+				width: 100%;
+				height: 45px;
+				#main.displaycss();
+				flex-direction: row;
+				.dian{
+					width: 8px;
+					height: 8px;
+					background-color: #666666;
+					border-radius: 8px;
+					margin: 18.5px 5px 18.5px 15px;
+				}
+				.name{
+					flex: 1;
+					height: 45px;
+					line-height: 45px;
+					color: #666666;
+					font-size: 0.9375rem;
+				}
+			}
+			.item1{
+				width: 100%;
+				height: 25px;
+				#main.displaycss();
+				flex-direction: row;
+				.left{
+					width: 80px;
+					margin-left: 18px;
+					height: 25px;
+					line-height: 25px;
+					color: #333333;
+					font-size: 0.875rem;
+				}
+				.right{
+					flex: 1;
+					height: 25px;
+					line-height: 25px;
+					color: #333333;
+					font-size: 0.875rem;
+					text-align: right;
+					margin-right: 10px;
+				}
+			}
+			.item2{
+				width: 100%;
+				height: 25px;
+				#main.displaycss();
+				flex-direction: row;
+				.left{
+					width: 80px;
+					margin-left: 18px;
+					height: 25px;
+					line-height: 25px;
+					color: #333333;
+					font-size: 0.875rem;
+				}
+				.right{
+					flex: 1;
+					height: 25px;
+					line-height: 25px;
+					color: #333333;
+					text-align: right;
+					font-size: 0.875rem;
+					margin-right: 10px;
+				}
+			}
+		}
+	}
+}
+
+.item3{
+	height: auto;
+	margin: 10px;
+	padding: 10px 0;
+	border: 1px solid #EFEFEF;
+	border-radius: 5px;
+	#main.calc20();
+	.title-shen{
+		width: 100%;
+		height: 40px;
+		#main.flex();
+		flex-direction: row;
+		
+		.shen-dian{
+			width: 40px;
+			height: 25px;
+			line-height: 25px;
+			text-align: center;
+			color: #5A8FFF;
+			font-size: 3.125rem;
+		}
+		.title-left{
+			flex: 1;
+			height: 25px;
+			line-height: 25px;
+			font-size: 0.8125rem;
+			color: #444444;
+		}
+		.progress{
+			width: 100px;
+			height: 25px;
+			#main.displaycss();
+			flex-direction: row;
+			.detailbtn{
+				width: 75px;
+				height: 25px;
+				line-height: 25px;
+				color: #5A8FFF;
+				text-align: right;
+				font-size: 0.875rem;
+			}
+			.btnimg{
+				width: 20px;
+				height: 20px;
+				margin: 2.5px;
+			}
+		}
+	}
+	
+	
+	ul{
+		width: 100%;
+		height: auto;
+		#main.displaycss();
+		flex-direction: column;
+		position: relative;
+		
+		
+		.shen-xian{
+			position: absolute;
+			width: 1px;
+			margin-left: 20px;
+			margin-top: 12.6px;
+			left: 0;
+			top: 0;
+			border-left: 1px dashed #5A8FFF;
+			#main.flex();
+			flex-direction: column;
+			.shen-xian-item{
+				height: 25px;
+				width: 1px;
+			}
+		}
+		
+		li{
+			width: 100%;
+			height: 25px;
+			#main.displaycss();
+			flex-direction: row;
+			.dian2{
+				width: 40px;
+				height: 25px;
+				line-height: 25px;
+				text-align: center;
+				font-size: 2.8125rem;
+				color: #999999;
+			}
+			.lan{
+				color: #5A8FFF;
+			}
+			.time{
+				flex: 1;
+				color: #888888;
+				height: 25px;
+				line-height: 25px;
+				font-size: 0.8125rem;
+			}
+			.name1{
+				width: 100px;
+				text-align: right;
+				height: 25px;
+				line-height: 25px;
+				color: #888888;
+				font-size: 0.8125rem;
+				margin-right: 5px;
+			}
+		}
+	}
+}

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>选择品牌</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			button{ outline: none;}
+			.pinpailist{ width: 100%; height: auto; float: left; margin-bottom: 60px;}
+			.pinpailist ul{ width: 100%; height: auto; float: left;}
+			.pinpailist ul li{ width: 100%; height: auto; float: left; border-bottom: 2px solid #F5F5F5;}
+			.pinpailist ul li button{ width: -moz-calc(90% - 20px);  width: -webkit-calc(90% - 20px);  width: calc(90% - 20px); font-size: 16px; text-align: left; height: 50px; line-height: 50px; float: left; margin-left: 5%; }
+			.pinpailist ul li img{ display: none; width: 20px; height: 20px; float: left; margin: 15px 5% 15px 0;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		</style>
+	</head>
+	<body>
+		<div class="pinpailist">
+			<ul id="pinpailist">
+				<!--<li>
+					<button>门店负责人</button>
+					<img src="../../../../image/newSign/newsignok.png" />
+				</li>-->
+			</ul>
+		</div>
+		<div class="queding">
+			<button onclick="api.closeWin();">确定</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+		};
+		
+		//获取沟通的事情
+		function getToutong(){
+			
+			var object = new Object();
+			object.ireportid = api.pageParam.page.iRorptId;
+			object.ibrandid = api.pageParam.brandid;
+			object.istoreid = api.pageParam.page.iStoreId;
+			$newapi.newpost("ActionApi/T_WeiChat/Get_T_WeiChatList", object, 30000, function(ret, err){
+				//console.log(JSON.stringify(ret) + "===" + JSON.stringify(err));
+				api.hideProgress();
+				if(ret){
+					if(ret.length != 0){
+						for(var a = 0; a < ret.length; a++){
+							var iChatType = ret[a].iChatType;
+							$("#img"+iChatType).css("display", "block");
+							var buttonid = $("#img"+iChatType).attr("buttonid");
+							$("#"+buttonid).attr("hasjson", JSON.stringify(ret[a]));
+						}
+					}
+				}else{
+					api.confirm({
+					    title: '提示',
+					    msg: '获取数据失败,是否重新获取',
+					    buttons: ['重新获取', '退出']
+					}, function(aa, bb) {
+					    var index = aa.buttonIndex;
+					    if(index == 1){
+					    	api.showProgress({
+							    title: '请稍等',
+							    text: '初始化列表'
+							});
+					    	getToutong();
+					    }else{
+					    	api.closeWin({
+                            });
+					    }
+					});
+				}
+			});
+		}
+		
+		function initList(){
+			api.showProgress({
+			    title: '请稍等',
+			    text: '初始化列表'
+			});
+			$("#pinpailist").html("");
+			var WeiChatList = $api.getStorage("WeiChatList");
+			if(typeof(WeiChatList) == 'undefined'){
+				api.toast({
+	                msg:'请回到首页刷新数据'
+                });
+                api.hideProgress();
+                return;
+			}
+			for(var a = 0; a < WeiChatList.length; a++){
+				var html = '<li><button hasjson="" id="list'+WeiChatList[a].id+'">'+WeiChatList[a].cDictName+'</button><img id="img'+WeiChatList[a].id+'" buttonid="list'+WeiChatList[a].id+'" src="../../../../image/newSign/newsignok.png" /></li>';
+				$("#pinpailist").append(html);
+				var object = new Object();
+				object.cDictName = WeiChatList[a].cDictName;
+				object.id = WeiChatList[a].id;
+				$("#list"+WeiChatList[a].id).bind('click', object, function(msg){
+					OpenItem(msg.data.id, msg.data.cDictName);
+				});
+			}
+			getToutong();
+		}
+		
+		function OpenItem(id, name){
+			if(id == '640'){
+				api.openWin({
+				    name: 'newplan_ba_win',
+				    url: 'widget://html/newSign/plan/item1/newplan_ba_win.html',
+				    pageParam: {
+				        title: name,
+				        data: api.pageParam.page,
+				        wetypeid: id,
+				        ibrandid: api.pageParam.brandid,
+				        hasjson: $("#list"+id).attr("hasjson")
+				    }
+				});
+			}else if(id == '639'){
+				api.openWin({
+				    name: 'newplan_fuzeren_win',
+				    url: 'widget://html/newSign/plan/item1/newplan_fuzeren_win.html',
+				    pageParam: {
+				        title: name,
+				        data: api.pageParam.page,
+				        wetypeid: id,
+				        ibrandid: api.pageParam.brandid,
+				        hasjson: $("#list"+id).attr("hasjson")
+				    }
+				});
+			}
+		}
+		
+	</script>
+</html>

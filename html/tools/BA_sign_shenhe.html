@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>签到页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/sign.css"/>
+		<style>
+			.userlocation{
+				width: 100%;
+				height: auto;
+				line-height:30px;
+				float: left;
+				border-bottom: 1px solid #EFEFEF;
+			}
+		</style>
+	</head>
+	<body id="body">
+		<span class="userlocation" id="showuserlocation">您当前所在的位置为:</span>
+		<div id="signall" class="sign">
+			<div onclick="openshangban()" class="item">
+				<div id="infotext" class="info">
+					<span value="上班打卡" id="signin" class="infoone">点击上班签到</span>
+					<span id="signinaddress" class="workname">上班地址:
+						<br/>
+					</span>
+					<span id="signintime" class="worktime">签到时间:
+						<br/>
+					</span>
+				</div>
+				<img id="signinpic" spanid="signin" value="上班打卡" src="../../image/signcarmer.png" class="workpic" />
+			</div>
+			<div onclick="openxiaban()" class="item">
+				<div id="infotext" class="info">
+					<span value="下班打卡" id="signout" class="infoone">点击下班签到</span>
+					<span id="signoutaddress" class="workname">下班地址:
+						<br/>
+					</span>
+					<span id="signouttime" class="worktime">签到时间:
+						<br/>
+					</span>
+				</div>
+				<img id="signoutpic" spanid="signout" value="下班打卡" src="../../image/signcarmer.png" class="workpic" />
+			</div>
+		</div>
+		<div id="container"></div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/gps.js"></script>
+	<script type="text/javascript" src="../../script/gaodemap.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+		/**
+		 *拍照之后回去的参数信息
+		 */
+		var arraylist = [];
+		var cSignType = '';
+		apiready = function() {
+			var infotextel = document.getElementById("signall");
+			var eldomall = $api.domAll(infotextel, "#infotext");
+			var infotextwith = api.winWidth - 150;
+			for (var a = 0; a < eldomall.length; a++) {
+				$api.css(eldomall[a], 'width: ' + infotextwith + 'px;');
+			}
+			FastClick.attach(document.body);
+			
+			if(typeof($api.getStorage("shenheshangban")) != 'undefined'){
+				var elsignin = document.getElementById("signin");
+				var elsigninaddress = document.getElementById("signinaddress");
+				var elsignintime = document.getElementById("signintime");
+				$api.css(elsignin, "display: none;");
+				$api.css(elsigninaddress, "display: block;");
+				$api.css(elsignintime, "display: block;");
+				document.getElementById("signintime").innerHTML = "签到时间:<br/>" + $api.getStorage("shenheshangban").signintime;
+				document.getElementById("signinaddress").innerHTML = "上班人员:<br/>" + $api.getStorage("shenheshangban").signinaddress;
+				document.getElementById("signinpic").src = $api.getStorage("shenheshangban").signinpic;
+			}
+			if(typeof($api.getStorage("shenhexiaban")) != 'undefined'){
+				var signoutaddress = document.getElementById("signoutaddress");
+				var signouttime = document.getElementById("signouttime");
+				$api.css(signout, "display: none;");
+				$api.css(signoutaddress, "display: block;");
+				$api.css(signouttime, "display: block;");
+				document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + $api.getStorage("shenhexiaban").signouttime;
+				document.getElementById("signoutaddress").innerHTML = "下班人员:<br/>" + $api.getStorage("shenhexiaban").signoutaddress;
+				document.getElementById("signoutpic").src = $api.getStorage("shenhexiaban").signoutpic;
+			}
+			
+			
+			getuserelocation(function(state, lon, lat, time){
+				console.log("获取位置完成");
+				if(state == 0){
+					get_lonlat_address(lon, lat, function(ret, err){
+						if(ret){
+							document.getElementById("showuserlocation").innerHTML = '您当前所在的位置为:'+ret.regeocode.formatted_address;
+						}else{
+							document.getElementById("showuserlocation").innerHTML = '获取当前位置失败,请稍后重试.';
+						}
+					});
+				}else{
+					document.getElementById("showuserlocation").innerHTML = '获取当前位置失败,请稍后重试.';
+				}
+			});
+			
+		};
+		function openshangban() {
+			api.getPicture({
+				sourceType : 'camera',
+				encodingType : 'jpg',
+				mediaValue : 'pic',
+				destinationType : 'url',
+				allowEdit : false,
+				quality : 50,
+				saveToPhotoAlbum : false
+			}, function(ret, err) {
+				if (ret) {
+					var elsignin = document.getElementById("signin");
+					var elsigninaddress = document.getElementById("signinaddress");
+					var elsignintime = document.getElementById("signintime");
+					$api.css(elsignin, "display: none;");
+					$api.css(elsigninaddress, "display: block;");
+					$api.css(elsignintime, "display: block;");
+					document.getElementById("signintime").innerHTML = "签到时间:<br/>" + $kunchi.todaytime();
+					document.getElementById("signinaddress").innerHTML = "上班人员:<br/>" + $api.getStorage("jia_zhanghao");
+					document.getElementById("signinpic").src = ret.data;
+					var object = new Object();
+					object.signintime = $kunchi.todaytime();
+					object.signinaddress = $api.getStorage("username");
+					object.signinpic = ret.data;
+					$api.setStorage("shenheshangban",object);
+					
+				}
+			});
+		}
+
+		function openxiaban() {
+			api.getPicture({
+				sourceType : 'camera',
+				encodingType : 'jpg',
+				mediaValue : 'pic',
+				destinationType : 'url',
+				allowEdit : false,
+				quality : 50,
+				saveToPhotoAlbum : false
+			}, function(ret, err) {
+				if (ret) {
+					var signoutaddress = document.getElementById("signoutaddress");
+					var signouttime = document.getElementById("signouttime");
+					$api.css(signout, "display: none;");
+					$api.css(signoutaddress, "display: block;");
+					$api.css(signouttime, "display: block;");
+					document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + $kunchi.todaytime();
+					document.getElementById("signoutaddress").innerHTML = "下班人员:<br/>" + $api.getStorage("jia_zhanghao");
+					document.getElementById("signoutpic").src = ret.data;
+					var object = new Object();
+					object.signouttime = $kunchi.todaytime();
+					object.signoutaddress = $api.getStorage("username");
+					object.signoutpic = ret.data;
+					
+					$api.setStorage("shenhexiaban",object);
+				}
+			});
+		}
+	</script>
+</html>

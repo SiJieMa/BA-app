@@ -1,0 +1,162 @@
+@import "main.less";
+
+.list{
+	#main.calc10();
+	margin: 5px;
+	
+	ul{
+		width: 100%;
+		height: 100%;
+		#main.flex();
+		flex-direction: column;
+		li{
+			#main.calc20();
+			padding: 10px 10px;
+			height: auto;
+			border: 1px solid #EFEFEF;
+			border-radius: 5px;
+			margin-top: 5px;
+			
+			.title{
+				width: 100%;
+				height: 40px;
+				#main.flex();
+				flex-direction: row;
+				.lan{
+					color: #5A8FFF;
+				}
+				.hong{
+					color: #FE6161;
+				}
+				.dian{
+					width: 20px;
+					height: 40px;
+					line-height: 40px;
+					text-align: center;
+					font-size: 50px;
+				}
+				.state{
+					flex: 1;
+					height: 40px;
+					line-height: 40px;
+					font-size: 0.8125rem;
+				}
+				.user{
+					width: 80px;
+					height: 40px;
+					line-height: 40px;
+					font-size: 0.8125rem;
+					color: #444444;
+					text-align: right;
+					margin-right: 10px;
+				}
+				
+			}
+			
+			.shopname{
+				width: 100%;
+				height: auto;
+				margin-top: 10px;
+				#main.flex();
+				flex-direction: column;
+				
+				.name{
+					width: 100%;
+					height: 40px;
+					line-height: 40px;
+					font-size: 0.9375rem;
+					color: #333333;
+				}
+				.hui{
+					#main.flex();
+					flex-direction: row;
+					width: 100%;
+					font-size: 0.75rem;
+					color: #999999;
+					.code{
+						width: 100px;
+						height: 30px;
+						line-height: 30px;
+					}
+					.city{
+						flex: 1;
+						height: 30px;
+						line-height: 30px;
+					}
+					.time{
+						width: 100px;
+						height: 30px;
+						line-height: 30px;
+						text-align: right;
+					}
+				}
+			}
+			
+		}
+	}
+}
+
+.context{
+	width: -moz-calc(~"100% - 20px");
+	width: -webkit-calc(~"100% - 20px");
+	width: calc(~"100% - 20px");
+	height: 100%;
+	margin: 10px 10px;
+	#main.displaycss();
+	flex-direction: column;
+	
+	.selectitem{
+		flex: 3;
+		width: 100%;
+		margin-top: 50px;
+		.title{
+			width: 100%;
+			height: 40px;
+			line-height: 40px;
+			font-size: 0.9375rem;
+			color: #333333;
+		}
+		.select{
+			width: 100%;
+			height: auto;
+			#main.displaycss();
+			flex-direction: row;
+			.item{
+				background-color: #F8F8F8;
+				color: #444444;
+				flex: 1;
+				margin: 0 5px;
+				height: 30px;
+				line-height: 30px;
+				font-size: 0.9375rem;
+				text-align: center;
+			}
+			.activecss{
+				background-color: #5A8FFF;
+				color: #FFFFFF;
+			}
+		}
+	}
+	.selectbtn{
+		flex: 1;
+		width: 100%;
+		#main.displaycss();
+		flex-direction: row;
+		justify-content: space-around;
+		button{
+			width: 30%;
+			height: 30px;
+			text-align: center;
+			font-size: 0.8125rem;
+			border-radius: 6px;
+		}
+		.reload{
+			background-color: #F8F8F8;
+			color: #333333;
+		}
+		.queding{
+			background-color: #5A8FFF;
+			color: #FFFFFF;
+		}
+	}
+}

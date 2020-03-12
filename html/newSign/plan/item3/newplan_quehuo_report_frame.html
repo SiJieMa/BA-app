@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>门店负责人</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			input,button,select,textarea{
+			outline:none;
+			box-shadow:none;
+			background:none;
+			border: none;
+			-webkit-tap-highlight-color:rgba(0,0,0,0); 
+			}
+			textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+			.pinpailist{ width: 100%; height: auto; float: left; margin-bottom: 60px;}
+			.pinpailist .item1{ width: 90%; margin-left: 5%; margin-right: 5%; border-bottom: 1px solid #EFEFEF; height: 50px; float: left;}
+			.pinpailist .item1 .ishu{ font-size: 15px; width: auto; height: 50px; line-height: 50px; float: left; color: #666;}
+			.pinpailist .item1 button{background-color: #fff; font-size: 14px; color: #666; border: 1px solid #666; margin-left: 5px; border-radius: 5px; float: right; width: 60px; height: 25px; line-height: 25px; margin-top: 12.5px;}
+			.pinpailist .item1 .native{background-color: #71C4E4; color: #FFFFFF; border: 1px solid #71C4E4;}
+			.pinpailist .item2{ width: 90%; margin-left: 5%; margin-right: 5%; border-bottom: 1px solid #EFEFEF; height: 50px; float: left;}
+			.pinpailist .item2 .name{ width: 80px; height: 50px; line-height: 50px; float: left; color: #666;}
+			.pinpailist .item2 input{ width: -moz-calc(90% - 80px); width: -webkit-calc(90% - 80px); width: calc(90% - 80px); height: 30px; line-height: 30px; float: left; margin-top: 10px;}
+			.pinpailist .item3{ width: 90%; margin-left: 5%; margin-right: 5%; border-bottom: 1px solid #EFEFEF; height: auto; float: left;}
+			.pinpailist .item3 .itempic{ margin: 5px 0; border-radius: 5px; width: 30%; margin-left: 1.5%; margin-right: 1.5%; height: 100px; float: left; background-color: #D9D9D9;}
+			.pinpailist .item3 .itempic img{ width: 100%; height: 100%; float: left; border-radius: 5px;}
+			.pinpailist .item3 .itempic .add{ width: 40px; height: 40px; float: left; margin-left: -moz-calc(50% - 20px); margin-left: -webkit-calc(50% - 20px); margin-left: calc(50% - 20px); margin-top: 30px;}
+			.pinpailist .item3 .information{ width: 98.5%; margin-left: 1.5%; height: 50px; line-height: 50px; float: left; color: #D9D9D9; font-size: 14px;}
+			.pinpailist .item4{ width: 90%; margin-left: 5%; margin-right: 5%; height: auto; float: left;}
+			.pinpailist .item4 textarea{ border-radius: 5px; color: #999; padding: 10px 2%; width: 96%; height: 150px; line-height: 30px; font-size: 15px; float: left; margin-top: 10px;  background-color: #D9D9D9;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		</style>
+	</head>
+	<body>
+		<div class="pinpailist">
+			<div class="item1">
+				<span class="ishu">是否缺货</span>
+				<button class="no">否</button>
+				<button class="yes">是</button>
+			</div>
+		</div>
+		<div class="queding">
+			<button onclick="savequehuo()">保存</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript">
+		var isonline;//0直接关闭  1保存否关闭
+		function savequehuo(){
+			if(typeof(isonline) == 'undefined'){
+				alert("请选择是否缺货");
+			}
+			if(isonline == 1){
+				nogoodlist();
+			}
+			if(isonline == 0){
+				api.closeWin({
+                });
+			}
+		}
+	
+	
+		apiready = function() {
+			$(".ishu").html($api.getStorage("shifouquehuo"));
+			$(".yes").click(function(){
+				$(".yes").addClass("native");
+				$(".no").removeClass("native");
+				//1是用来缺货
+				isonline = 0;
+				api.openWin({
+	                name: 'newplan_quehuo_report_select_win',
+	                url: 'widget://html/newSign/plan/item3/newplan_quehuo_report_select_win.html',
+				    pageParam: {
+				        type: '1',
+				        title: '缺货情况',
+				        data: api.pageParam.page,
+				        brandname : api.pageParam.brandname,
+						ibrandid: api.pageParam.ibrandid,
+				        iSkuType : api.pageParam.iSkuType,
+						cSkuType : api.pageParam.cSkuType,
+						getinitlist : api.pageParam.getinitlist,
+						sontitle: '缺货',
+						slectpagename: api.pageParam.slectpagename
+				    }
+                });
+				
+			})
+			$(".no").click(function(){
+				$(".no").addClass("native");
+				$(".yes").removeClass("native");
+				isonline = 1;
+			})
+			gettype();
+		};
+		
+		function gettype(){
+			var getinitlist = api.pageParam.getinitlist;
+			var iSkuType = api.pageParam.iSkuType;
+			var ishas = 0;
+			var ishave = 1;
+			for(var a = 0; a < getinitlist.length; a++){
+				if(iSkuType == getinitlist[a].iSkuType){
+					ishas = 1;
+					ishave = getinitlist[a].isHave;
+				}
+			}
+			if(ishas == 1){
+				$(".yes").addClass("native");
+				$(".no").removeClass("native");
+			}
+			if(ishave == 0){
+				$(".no").addClass("native");
+				$(".yes").removeClass("native");
+			}
+		}
+		
+		
+		
+		var isupdate = 0;
+		function nogoodlist(){
+			if(api.pageParam.getinitlist.length != 0){
+				isupdate = 1;
+			}
+			var UUID;
+			UUID = newguid();
+            var objectArray = new Array();
+        	var object = new Object();
+        	object.UUID = UUID;
+        	object.iReportId = api.pageParam.page.iRorptId;
+        	object.iStoreId = api.pageParam.page.iStoreId;
+        	object.iBrandId = api.pageParam.ibrandid;
+        	object.cBrandName = api.pageParam.brandname;
+        	object.isHave = 0;
+        	object.iSkuType = api.pageParam.iSkuType;
+        	object.cSkuType = api.pageParam.cSkuType;
+        	objectArray.push(object);
+			var url = 'ActionApi/T_ReportStock/PostT_ReportStock';
+			if(isupdate == 1){
+				url = 'ActionApi/T_ReportStock/PutT_ReportStock';
+			}
+			api.showProgress({
+            });
+			$newapi.newpost(url, objectArray, 30000,function(ret,err){
+				api.hideProgress();
+				if(ret){
+					api.closeWin({
+                    });
+				}else{
+					api.toast({
+	                    msg:'保存失败'
+                    });
+				}
+			});
+			
+		}
+		
+		function newguid() {
+		    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		        return v.toString(16);
+		    });
+		}
+		
+	</script>
+</html>

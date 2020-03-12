@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>添加商品列表</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			.list{ width: 100%; height: auto; float: left; margin-bottom: 40px;}
+			.list ul{ width: 100%; height: auto; float: left;}
+			.list ul li{ font-size: 15px; padding-top: 5px; padding-bottom: 5px; width: 96%; height: auto; float: left; padding-left: 2%; padding-right: 2%; border-bottom: 1px solid #999999;}
+			.list ul li .one{ width: calc(96% - 40px); height: auto;  line-height: 20px; float: left;}
+			.list ul li .select{ width: 25px; height: 25px; padding: 7.5px; float: right;}
+			.list ul li .two{ width: calc(96% - 40px); height: auto;  line-height: 20px; float: left; font-size: 14px; color: #666;}
+			.queding{ font-size: 15px; width: 100%; height: 40px; line-height: 40px; position: fixed; background-color: #FF0000; color: #FFFFFF; text-align: center; bottom: 0; left: 0;}
+		</style>
+	</head>
+	<body>
+	
+		<div class="list">
+			<ul id="list">
+				<!--<li>
+					<span class="one">商品名称(商品编号:88888888)</span>
+					<img class="select" src="../../../image/duihaohui.png" />
+					<span class="two">规格规格规格规格规格规格规格</span>
+				</li>-->
+			</ul>
+		</div>
+		<div onclick="quedingtianjia()" class="queding">确定</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+	
+		apiready = function() {
+			api.showProgress({
+			    modal: true
+			});
+			getDcang();
+		};
+		
+		
+		function getDcang(){
+			$kunchi.kunchiget("ActionApi/T_Product/Get_T_Product", "", function(ret,err){
+				api.hideProgress();
+				//console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+				if(ret){
+					if(ret.length == 0){
+						api.alert({
+						    title: '提示',
+						    msg: '暂无商品记录',
+						}, function(aaa, bbb) {
+							api.closeWin({
+	                        });
+						});
+					}else{
+						dealxml(ret);
+					}
+				}else{
+					api.alert({
+					    title: '提示',
+					    msg: '当前网络环境较差，无法获取对应库存信息。',
+					}, function(aaa, bbb) {
+						api.closeWin({
+                        });
+					});
+				}
+			});
+		}
+		
+		function dealxml(ret){
+			var shoplist = api.pageParam.page.shoplist;
+			var el = document.getElementById("list");
+			document.getElementById("list").innerHTML = '';
+			
+			for(var a = 0; a < ret.length; a++){
+				var isshow = 0;
+				var iProuductId = ret[a].id;
+				
+				for(var b = 0; b < shoplist.length; b++){
+					var hasselectid = shoplist[b];
+					if(hasselectid == iProuductId){
+						isshow = 1;
+					}
+				}
+				if(isshow == 0){
+					var html = '<li id="'+ret[a].id+'">'
+							+			'<span class="one">'+ret[a].cProductFullName+'</span>'
+							+			'<img id="'+ret[a].id+'" name="'+ret[a].cProductFullName+'" code="'+ret[a].cProductProductCode+'" cProductCodeNc="'+ret[a].cProductCodeNc+'" selectthis="0" onclick="selectthis(this)" monthid="'+ret[a].id+'" class="select" src="../../../image/duihaohui.png" />'
+							+			'<span class="two">商品编号:'+ret[a].cProductProductCode+'</span>'
+							+		'</li>';
+					$api.append(el, html);
+				}
+			}
+		}
+		
+		
+		function selectthis(tag){
+			var monthid = $api.attr(tag, "monthid");
+			var imgid = $api.attr(tag, "imgid");
+			var img_select = $api.attr(tag, 'selectthis');
+			if(img_select == 0){
+				$api.attr(tag, 'selectthis', "1");
+				$api.attr(tag, 'src', "../../../image/duihaolan.png");
+			}else{
+				$api.attr(tag, 'selectthis', "0");
+				$api.attr(tag, 'src', "../../../image/duihaohui.png");
+			}
+		}
+		
+		var shop_good_list = new Array();
+		
+		function quedingtianjia(){
+			shop_good_list = new Array();
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "img");
+			for(var a = 0; a < ellist.length; a++){
+				if($api.attr(ellist[a], "selectthis") == "1"){
+					var object = new Object();
+					object.name = $api.attr(ellist[a], 'name');
+					object.code = $api.attr(ellist[a], 'code');
+					object.id = $api.attr(ellist[a], 'id');
+					object.cProductCodeNc = $api.attr(ellist[a], 'cProductCodeNc');
+					shop_good_list.push(object);
+				}
+			}
+			$api.setStorage('tianjiakucun',shop_good_list);
+			api.sendEvent({
+	            name:'tianjiakucun_storge'
+            });
+		}
+		
+		
+	</script>
+</html>

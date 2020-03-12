@@ -1,0 +1,75 @@
+.menu {
+  width: -moz-calc(100% - 40px);
+  width: -webkit-calc(100% - 40px);
+  width: calc(100% - 40px);
+  margin: 0 20px;
+  height: 130px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+}
+.menu .lansediv {
+  background-image: linear-gradient(#CEE6FE, #CDE1FF);
+}
+.menu .fensediv {
+  background-image: linear-gradient(#FFDDDD, #FFDDDD);
+}
+.menu .chengsediv {
+  background-image: linear-gradient(#FFE9CC, #FFEDD5);
+}
+.menu .menu-item {
+  width: 100%;
+  height: 130px;
+  margin: 10px 0;
+  border-radius: 7px;
+  position: relative;
+}
+.menu .menu-item .menu-item-one {
+  width: 100%;
+  height: 30px;
+  margin-top: 20px;
+  float: left;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.menu .menu-item .menu-item-one .menu-item-color {
+  width: 5px;
+  margin-top: 7.5px;
+  margin-left: 10px;
+  height: 15px;
+  background-color: #75A5FD;
+  border-radius: 5px;
+}
+.menu .menu-item .menu-item-one .menu-item-title {
+  width: auto;
+  height: 30px;
+  margin-left: 10px;
+  line-height: 30px;
+  color: #444444;
+  font-size: 17px;
+}
+.menu .menu-item .menu-item-one .lanse {
+  background-color: #75A5FD;
+}
+.menu .menu-item .menu-item-one .fense {
+  background-color: #FE6060;
+}
+.menu .menu-item .menu-item-one .chengse {
+  background-color: #FFB64B;
+}
+.menu .menu-item .bottomimg {
+  width: auto;
+  height: 80px;
+  float: left;
+}
+.menu .menu-item .rightimg {
+  width: 80px;
+  height: 80px;
+  margin-top: 25px;
+  position: absolute;
+  top: 0;
+  right: 0;
+}

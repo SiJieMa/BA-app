@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>缺货报告选择商品</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			input,button,select,textarea{
+			outline:none;
+			box-shadow:none;
+			background:none;
+			border: none;
+			-webkit-tap-highlight-color:rgba(0,0,0,0); 
+			}
+			textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+			.title{ width: 100%; height: 50px; float: left; border-bottom: 1px solid #EFEFEF; font-size: 14px;}
+			.title .item1{ width: 70%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.title .item2{ width: 30%; height: 50px; line-height: 50px; float: left; text-align: center; color: #999;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		
+		</style>
+	</head>
+	<body>
+		<div class="title">
+			<span class="item1">姓名</span>
+			<span class="item2">选择</span>
+		</div>
+		<!--<div class="queding">
+			<button onclick="nextselect()" class="next">下一步</button>
+		</div>-->
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../../../script/getFzimu.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newdaijiaodb.js"></script>
+	<script type="text/javascript">
+		var UIListCheck;
+		var ishasba = false;
+		var isallowclick = true;
+		
+		var djdbhand;
+		apiready = function() {
+			//console.log(JSON.stringify(api.pageParam));
+			showbalistonline();
+			//api.pageParam.ibrandid    api.pageParam.page.iRorptId
+			djdbhand = new djdbinit();
+			djdbhand.init();
+		};
+		
+		
+		function nextselect(){
+			if(ishasba){
+				if(isallowclick){
+					isallowclick = false;
+					var ret = UIListCheck.getSelectedSync();
+					isallowclick = true;
+					if(ret.contacts.length == 0){
+						alert('没有选择带教BA');
+						return;
+					}
+					api.openWin({
+		                name: 'newplan_report_daijiao_win',
+		                url: 'widget://html/newSign/plan/item5/newplan_report_daijiao_win.html',
+		                pageParam: {
+		                	data: api.pageParam.page,
+					        brandname : api.pageParam.brandname,
+							ibrandid: api.pageParam.ibrandid,
+					        selectgoodlist: ret
+		                }
+	                });
+				}
+			}else{
+				alert('暂无BA可以带教');
+			}
+		}
+		
+		
+		function showbalistonline(){
+			api.showProgress({
+				text: "正在加载BA"
+            });
+			var url = 'ActionApi/T_WorkReport/Get_BAByStoreId';
+			var json = {'storeid': api.pageParam.page.iStoreId};
+			$kunchi.kunchipost(url, json, function(ret,err){
+				if(ret){
+					if(ret.length == 0){
+						api.hideProgress();
+						api.toast({
+	                        msg:'暂无BA'
+                        });
+					}else{
+						var listnew = new Array();
+						for(var a = 0; a < ret.length; a++){
+							var object = new Object();
+							object.employee_id = ret[a].UserID;
+							object.name = ret[a].RealName;
+							object.customerTypes = ret[a].UserName;
+							listnew.push(object);
+						}
+						if(listnew.length > 0){
+							initlist(listnew);
+							ishasba = true;
+						}else{
+							ishasba = false;
+						}
+					}
+				}else{
+					api.hideProgress();
+					api.confirm({
+					    title: '错误提示',
+					    msg: '获取当前门店BA失败，重新获取或者稍后重试?',
+					    buttons: ['重新获取', '退出']
+					}, function(ccc, ddd) {
+					    var index = ccc.buttonIndex;
+					    if(index == 1){
+					    	showbalistonline();
+					    }else{
+					    	api.closeWin({
+                            });
+					    }
+					});
+				}
+			});
+		}
+		
+		function initlist(contacts){
+			var UIListCard = api.require('UIListCard');
+			var contactsbalist = contacts;
+            UIListCard.open({
+                rect : {
+                    x: 0,
+			        y: 0,
+			        w: api.frameWidth,
+			        h: api.frameHeight
+                },
+                contacts : contacts,
+                fixedOn : api.frameName
+            }, function(aaa) {
+            	api.hideProgress();
+            	//{"key":"S","section":0,"index":0,"contact":{"employee_id":"71411636-8418-4708-a10a-e8054e5bba81","name":"孙丽君","customerTypes":"13401579728"},"eventType":"click"}
+            	//console.log(JSON.stringify(aaa));
+                if (aaa) {
+                    if(aaa.eventType == 'click'){
+                    	api.openWin({
+			                name: 'newplan_report_daijiao_win',
+			                url: 'widget://html/newSign/plan/item5/newplan_report_daijiao_win.html',
+			                pageParam: {
+			                	data: api.pageParam.page,
+						        brandname : api.pageParam.brandname,
+								ibrandid: api.pageParam.ibrandid,
+						        selectgoodlist: aaa,
+						        contactsbalist: contactsbalist
+			                }
+		                });
+                    }
+                }
+            });
+			
+		}
+		
+	</script>
+</html>

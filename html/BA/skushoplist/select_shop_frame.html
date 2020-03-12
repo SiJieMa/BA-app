@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>搜索门店</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			.inputdiv{ width: 100%; height: 49px; position: fixed; top: 0; left: 0; z-index: 9; border-bottom: 1px solid #f5f5f5; background-color: #FFFFFF;}
+			.inputdiv input{ outline: none; margin-left: 10px; margin-right: 10px; width: 100px; height: 30px; line-height: 30px; margin-top: 9.5px; float: left; font-size: 16px; color: #333;}
+			.inputdiv .titleone1{ width: 80px; height: 49px; float: right;  font-size: 15px; background-color: #FFFFFF;}
+			.inputdiv .titleone1 .itemmiddle{overflow: hidden; text-overflow:ellipsis; white-space:nowrap; margin-top: 0; width: 60px; height: 49px; line-height: 49px; float: left; font-size: 15px; color: #666;}
+			.inputdiv .titleone1 .fa{ width: 20px; height: 49px; line-height: 49px; float: right; font-size: 20px; color: #666;}
+			.inputdiv img{ width: 30px; height: 29px; padding: 10px 0; float: right;}
+			.inputdiv .huanyuan{ width: 60px; height: 49px; line-height: 20px; color: #666; padding-top: 5px; font-size: 16px; text-align: center; float: right;}
+			.shoplist{ width: 100%; height: auto; float: left; margin-top: 50px;}
+			.shoplist ul{ width: 100%; height: auto; float: left;}
+			.shoplist ul li{ width: 90%; height: auto; padding-left: 5%; padding-right: 5%; float: left; border-bottom: 1px solid #f5f5f5;}
+			.shoplist ul li .name{ width: auto; height: 50px; line-height: 50px; font-size: 17px; float: left;}
+			.shoplist ul li .code{ width: auto; height: 50px; line-height: 50px; font-size: 17px; float: right;}
+		</style>
+	</head>
+	<body>
+		<div class="inputdiv">
+			<input id="inputchazhao" placeholder="名称或代码" />
+			<span class="huanyuan" onclick="init_bottom_menu()">还原<br>列表</span>
+			<img onclick="search_widthshangpin()" src="../../../image/search.png" />
+			<div onclick="init_bottom_menu()" class="titleone1">
+				<span class="itemmiddle" id="init_bottom_menu">全部</span>
+				<i class="fa fa-angle-down" aria-hidden="true"></i>
+			</div>
+		</div>
+		<div class="shoplist">
+			<ul id="shoplist">
+				<!--<li>
+					<span class="name">门店名称</span>
+					<span class="code">门店编码</span>
+				</li>-->
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/db.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			api.showProgress({
+			    modal: true
+			});
+			get_shopinfo();
+
+			api.addEventListener({
+			    name:'scrolltobottom',
+			    extra:{
+			        threshold:50            //设置距离底部多少距离时触发，默认值为0，数字类型
+			    }
+			}, function(ret, err){
+				if(isallowload == 0){
+				    showlistshop();
+				}
+			});
+
+		};
+
+		var isallowload = 0;
+		var mendian;
+
+
+		function get_shopinfo(){
+			if($api.getStorage("roleName") == "BA人员"){
+				var body = new Object();
+				body.iuserid = $api.getStorage("id");
+				$kunchi.kunchipost("ActionApi/T_Store/T_StoreByUserId", body, function(ret,err){
+					//console.log(JSON.stringify(ret)+"---"+JSON.stringify(err));
+					if(ret){
+						if(ret.length == 0){
+							api.hideProgress();
+							api.alert({
+							    title: '提示',
+							    msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+							}, function(aaa, bbb) {
+								api.closeWin();
+							});
+						}else{
+							api.hideProgress();
+							mendian = ret;
+							showlistshop();
+						}
+					}else{
+						api.hideProgress();
+						api.alert({
+						    title: '提示',
+						    msg: '当前网络环境较差，无法获取对应门店信息。',
+						}, function(aaa, bbb) {
+							api.closeWin();
+						});
+					}
+				});
+			}else{
+				var ret = $api.getStorage('SELECTSHOP');
+				api.hideProgress();
+				if(ret.length == 0){
+					api.alert({
+					    title: '提示',
+					    msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+					}, function(aaa, bbb) {
+						api.closeWin();
+					});
+				}else{
+					mendian = ret;
+					showlistshop();
+			  }
+			}
+		}
+		var selectshopid = 0;
+
+		var startlocation = 0;
+
+
+		function showlistshop(){
+			var el = document.getElementById("shoplist");
+			var stoplocation = mendian.length;
+			if(stoplocation - startlocation > 30){
+				stoplocation = startlocation + 30;
+			}else{
+				isallowload = 1;
+			}
+			if($api.getStorage("roleName") == "BA人员"){
+				for(var a = startlocation; a < stoplocation; a++){
+					var html = '<li onclick="selectthisshop(this);" value="'+mendian[a].id+'">'
+							+		'<span class="name">'+mendian[a].cStoreFullName+'</span>'
+							+		'<span class="code">'+mendian[a].cStoreCode+'</span>'
+							+	'</li>';
+					$api.append(el, html);
+				}
+				startlocation += 30;
+			}else{
+				for(var a = startlocation; a < stoplocation; a++){
+					var html = '<li onclick="selectthisshop(this);" value="'+mendian[a].iStoreId+'">'
+							+		'<span class="name">'+mendian[a].cStoreFullName+'</span>'
+							+		'<span class="code">'+mendian[a].cStoreCode+'</span>'
+							+	'</li>';
+					$api.append(el, html);
+				}
+				startlocation += 30;
+			}
+		}
+
+		function search_widthshangpin(){
+			isallowload = 1;
+			api.showProgress({
+			    modal: true
+			});
+			var el = document.getElementById("shoplist");
+			document.getElementById("shoplist").innerHTML = '';
+			var inputchazhao = document.getElementById('inputchazhao').value;
+
+
+			if($api.getStorage("roleName") == "BA人员"){
+				for(var a = 0; a < mendian.length; a++){
+					if((mendian[a].cStoreFullName.indexOf(inputchazhao) > -1)||(mendian[a].cStoreCode.indexOf(inputchazhao) > -1)){
+		    			var html = '<li onclick="selectthisshop(this);" value="'+mendian[a].id+'" shopname="'+mendian[a].cStoreFullName+'">'
+							+		'<span class="name">'+mendian[a].cStoreFullName+'</span>'
+							+		'<span class="code">'+mendian[a].cStoreCode+'</span>'
+							+	'</li>';
+						$api.append(el, html);
+		    		}
+				}
+			}else{
+				for(var a = 0; a < mendian.length; a++){
+					if((mendian[a].cStoreFullName.indexOf(inputchazhao) > -1)||(mendian[a].cStoreCode.indexOf(inputchazhao) > -1)){
+		    			var html = '<li onclick="selectthisshop(this);" value="'+mendian[a].iStoreId+'" shopname="'+mendian[a].cStoreFullName+'">'
+							+		'<span class="name">'+mendian[a].cStoreFullName+'</span>'
+							+		'<span class="code">'+mendian[a].cStoreCode+'</span>'
+							+	'</li>';
+						$api.append(el, html);
+		    		}
+				}
+			}
+			setTimeout(api.hideProgress(),1000);
+		}
+
+		function init_bottom_menu(){
+			document.getElementById("shoplist").innerHTML = '';
+			document.getElementById('inputchazhao').value = '';
+			startlocation = 0;
+			isallowload = 0;
+			showlistshop();
+		}
+
+
+		function selectthisshop(tag){
+			api.sendEvent({
+			    name: 'selectshopidthis',
+			    extra: {
+			        shopid: $api.attr(tag, 'value'),
+			        shopname: $api.attr(tag, 'shopname')
+			    }
+			});
+		}
+
+	</script>
+</html>

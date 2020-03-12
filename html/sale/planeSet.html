@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>设置拜访计划</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/planeset.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="inputdiv">
+			<input id="inputchazhao" placeholder="计划名称或者门店编号" />
+			<img onclick="search_widthmendian()" src="../../image/search.png" />
+			<span onclick="huanyuanlist()">还原<br>列表</span>
+		</div>
+		<div class="listmenu">
+			<span class="one">选择</span>
+			<span class="two">计划</span>
+			<span class="three">编码</span>
+		</div>
+		<div id="twolist" class="ullist">
+			<ul id="list">
+				<!--<li>
+					<i class="fa fa-circle" aria-hidden="true"></i>
+					<span class="worktype">上班</span>
+					<span class="daihao"></span>
+				</li>
+				<li>
+					<i class="fa fa-circle-o" aria-hidden="true"></i>
+					<span class="worktype">天津小白楼店</span>
+					<span class="daihao">WT0123902183</span>
+				</li>-->
+			</ul>
+		</div>
+		<div onclick="tijiao()" class="tijiao">
+			提交
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/sale_caozuo.js"></script>
+	<script type="text/javascript" src="../../script/zidian.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			FastClick.attach(document.body);
+
+			var list = document.getElementById("list");
+			var height = api.frameHeight - 141;
+			$api.css(list,'height: '+height+'px;');
+
+			var inputchazhaoel = document.getElementById("inputchazhao");
+			var inputwidth = api.frameWidth - 130;
+			$api.css(inputchazhaoel,'width:'+inputwidth+'px');
+			api.showProgress({
+			    title: '请稍等',
+			    text: '数据准备中',
+			    modal: false
+			});
+			show_all_worklist();
+		};
+
+		function search_widthmendian(){
+			var inputchazhaotext = document.getElementById("inputchazhao").value;
+			if(inputchazhaotext.trim().length == 0){
+				var el = document.getElementById("list");
+				var ellist = $api.domAll(el, "li");
+				for(var a = 0; a < ellist.length; a++){
+					$api.css(ellist[a],"display: block;");
+				}
+			}else{
+				search_yonghumendian(inputchazhaotext);
+			}
+		}
+
+		function huanyuanlist(){
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "li");
+			for(var a = 0; a < ellist.length; a++){
+				$api.css(ellist[a],"display: block;");
+			}
+		}
+
+
+
+		function search_yonghumendian(msg){
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, ".worktype");
+			for(var a = 0; a < ellist.length; a++){
+				var workname = $api.html(ellist[a]);
+				var workcodemendian = $api.attr(ellist[a], 'codemendian');
+				var liid = $api.attr(ellist[a], "id");
+				var lihtml = document.getElementById("li"+liid);
+//				if(workname.indexOf(msg) > -1){
+//					$api.css(lihtml,"display: block;");
+//				}else{
+//					$api.css(lihtml,"display: none;");
+//				}
+				$api.css(lihtml,"display: block;");
+				if(workname.indexOf(msg) <= -1){
+					$api.css(lihtml,"display: none;");
+					if(workcodemendian.indexOf(msg) > -1){
+						$api.css(lihtml,"display: block;");
+					}
+				}
+				if(workcodemendian.indexOf(msg) <= -1){
+					$api.css(lihtml,"display: none;");
+					if(workname.indexOf(msg) > -1){
+						$api.css(lihtml,"display: block;");
+					}
+				}
+			}
+		}
+
+
+		function changestatues(tag){
+			var canshunum = $api.attr(tag, 'value');
+			var faid = 'fa'+canshunum;
+			var fael = document.getElementById(faid);
+			if($api.hasCls(fael, "fa-circle-o")){
+				$api.removeCls(fael, "fa-circle-o");
+				$api.addCls(fael, "fa-circle");
+			}else{
+				$api.addCls(fael, "fa-circle-o");
+				$api.removeCls(fael, "fa-circle");
+			}
+		}
+
+		function tijiao(){
+			var body = [];
+
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "li");
+			for(var a = 0; a < ellist.length; a++){
+
+				var canshunum = $api.attr(ellist[a], 'value');
+				var faid = 'fa'+canshunum;
+				var fael = document.getElementById(faid);
+				if(!$api.hasCls(fael, "fa-circle-o")){
+					var jsonboject = new Object();
+					jsonboject.iStoreId = $api.attr(ellist[a], "iStoreId");
+					jsonboject.iUserId = $api.getStorage("id");
+					jsonboject.dtPlantTime = api.pageParam.page.dtPlantTime;
+					jsonboject.iReportType = $api.attr(ellist[a], "iReportType");
+					jsonboject.cUserName = $api.getStorage("username");
+					jsonboject.iStatue = "0";
+					jsonboject.cRemark = "";
+					jsonboject.iWorkType = "0";
+					body.push(jsonboject);
+				}
+			}
+			jiazai();
+			$kunchi.kunchipost("ActionApi/T_WorkReport/PostT_WorkReport", body, function(ret,err){
+				tingzhi();
+				if(ret){
+					api.sendEvent({
+	                    name:'upload_addeventlist'
+                    });
+					api.alert({
+					    title: '提示',
+					    msg: '提交成功',
+					}, function(ret, err) {
+						api.closeWin({
+                        });
+					});
+				}else{
+					api.alert({
+					    title: '提示',
+					    msg: '当前网络错误,请确认网络通畅重试.',
+					}, function(ret, err) {
+					});
+				}
+			});
+		}
+
+
+	</script>
+</html>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>登录页面</title>
+		<link rel="stylesheet" type="text/css" href="./css/api.css" />
+		<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css" />
+		<link rel="stylesheet" type="text/css" href="./css/index.css" />
+		<style type="text/css">
+			html, body {
+				height: 100%;
+			}
+			i{ font-style: normal;}
+		</style>
+	</head>
+	<body id="body">
+		<div id="wrap">
+			<div id="header"></div>
+			<div id="main">
+				<div class="sumb">
+					<div class="item">
+						<i class="fa fa-user" aria-hidden="true"></i>
+						<input type="text" id="username" placeholder="测试账号" />
+					</div>
+					<div class="item">
+						<i class="fa fa-unlock-alt" aria-hidden="true"></i>
+						<input type="password" id="password" placeholder="初始密码888888" />
+					</div>
+				</div>
+				<div tapmode="liActive" onclick="loginin()" class="login">
+					测试登录
+				</div>
+				<span class="textspan">客服电话：13021379906
+					<br/>
+					上海鲲驰贸易发展有限公司
+					<br/>
+					版本号<i id="banbenhao"></i></span>
+			</div>
+			<div id="footer"></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="./script/api.js"></script>
+	<script type="text/javascript" src="./script/apiclear.js"></script>
+	<script type="text/javascript" src="./script/gps.js"></script>
+	<script type="text/javascript" src="./script/kunchiba.js"></script>
+	<script type="text/javascript" src="./script/kunchisale.js"></script>
+	<script type="text/javascript" src="./script/log.js"></script>
+	<script type="text/javascript" src="./script/houtaiupload.js"></script>
+	<script type="text/javascript" src="./script/yunxiufu.js"></script>
+	<script type="text/javascript" src="./script/fastclick.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			var header = $api.byId('header');
+			$api.fixStatusBar(header);
+			$api.fixTabBar($api.byId('footer'))
+			//动态计算header的高度，因iOS7+和Android4.4+上支持沉浸式效果，
+			//因此header的实际高度可能为css样式中声明的44px加上设备状态栏高度
+			//其中，IOS状态栏高度为20px，Android为25px
+			FastClick.attach(document.body);
+			
+			
+			getversion_diyyun();
+			
+			/**
+			 *显示版本号 
+			 */
+			document.getElementById("banbenhao").innerHTML = $api.app_usevison;
+		};
+		function loginin() {
+			var username = document.getElementById("username").value;
+			var password = document.getElementById("password").value;
+			if (username.trim().length == 0) {
+				alert("请输入登录账号");
+				return;
+			}
+			if (password.trim().length == 0) {
+				alert("请输入登录密码");
+				return;
+			}
+			jiazai();
+			api.ajax({
+				url : 'http://test.api.ba.ikunchi.cn/token',
+				method : 'post',
+				headers : {
+					'Content-Type' : 'application/json'
+				},
+				data : {
+					values : {
+						'username' : username,
+						'password' : password,
+						'grant_type' : 'password'
+					}
+				}
+			}, function(ret, err) {
+				if (ret) {
+					$api.setStorage('token', ret.access_token);
+					$api.setStorage('id', ret.userID);
+					$api.setStorage('expirestest', changedatetomillon(ret['.expires']));
+					$api.setStorage("roleName", ret.roleName);
+					$api.setStorage("roleId", ret.roleId);
+					$api.setStorage("realName", ret.realName);
+					$api.setStorage("password", password);
+					$api.setStorage("usernametest", username);
+					document.getElementById("password").value = "";
+					
+					tingzhi();
+					login();
+					
+				} else {
+					tingzhi();
+					post_login_errorinfo(username, password, JSON.stringify(err));
+					if (err.statusCode == 400) {
+						alert(err.body.error_description);
+					} else {
+						api.alert({
+							msg : "登录失败"
+						});
+					}
+				}
+			});
+		}
+
+		function login() {
+			api.openWin({
+				name : 'home',
+				url : 'fs://kunchiba/kunchiba/html/home.html',
+				slidBackEnabled : false
+			});
+		}
+
+		function GMTToStr(time) {
+			var date = new Date(time)
+			var Str = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
+			return Str
+		}
+
+
+		//记录登录错误的日志
+		function post_login_errorinfo(cUserName, pass, cContent) {
+			var client = new Resource("A6067912196305", "4A7848BB-E883-5D9A-60DC-FACE78793515");
+			var Logininfo = client.Factory("testlogininfo");
+			Logininfo.save({
+				"username" : cUserName,
+				"message" : cContent,
+				"pass" : pass
+			}, function(ret, err) {
+			});
+		}
+		
+		
+	</script>
+</html>
