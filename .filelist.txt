@@ -34,6 +34,7 @@
 /A606ipt/mui.picker.js
 /A6067912196305/css/less/main.less
 /A6067912196305/image/SKU.png
+/A6067912196305/image/newhome/shoujianxiang.png
 /A6067912196305/html/sale/kucun/shenhe_detail.html
 /A6067912196305/css/sign.css
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_HGLS_Show.html
@@ -85,6 +86,7 @@
 /A6067912196305/html/BA/huodan/goodlist/ZPgood.html
 /A6067912196305/html/tools/message.html
 /A6067912196305/image/newSign/newsignrefush.png
+/A6067912196305/image/newhome/baifangjihua.png
 /A6067912196305/css/message.css
 /A6067912196305/css/sku.css
 /A6067912196305/script/upload_report.js
@@ -113,6 +115,7 @@
 /A60679121963merType.html
 /A6067912196305/image/pandiansao.png
 /A6067912196305/html/newSign/plan/item4/newplan_shiyong_report_select_frame.html
+/ui.picker.css
 /A6067912196305/image/BA_index/logod.png
 /A6067912196305/image/huodan/9.png
 /A6067912196305/image/BA_index_sign/location.png
@@ -160,6 +163,7 @@
 /A6067912196305/image/BA_history/jiantou999.png
 /A6067912196305/image/newSign/newsignsao.png
 /A6067912196305/html/BA/sale_daily_detail_frame_right.html
+/A6067912196305/image/newhome/yejizhibiao.png
 /A6067912196305/html/panDian/history/panDian_historydetail.html
 /A6067912196305/css/less/panDian_erroreason.css
 /A6067912196305/html/sale/signshop_report_2.html
@@ -167,10 +171,12 @@
 /A6067912196305/image/kissme.png
 /A6067912196305/image/zhibiao.png
 /A6067912196305/html/newSign/plan/item3/newplan_quehuo_report_frame.html
+/A6067912196305/image/newhome/xiaoshouribao.png
 /A6067912196305/icon/load/14.png
 /A6067912196305/html/setting/setCar/A6067912196305/html/BA/skushoplist/select_shop_win.html
 /A6067912196305/css/signshop_report_302.css
 /A6067912196305/html/sale/carmer/opencarmer.html
+/A6067912196305/image/newhome/huodan.png
 /A6067912196305/image/BA_index/yejizhibiao.png
 /A6067912196305/css/less/panDian_historylist.less
 /A6067912196305/script/newSign/newApi.js
@@ -239,6 +245,7 @@ esome.min.css
 /A6067912196305/html/zmcu/zg_zplan.html
 /A6067912196305/html/newSign/roul/newplan_roulname_win.html
 /A6067912196305/html/sale/signshop_report_302.html
+/A6067912196305/css/less/homeba.css
 /A6067912196305/script/nowtime.js
 /A6067912196305/image/saoyisao.png
 /A6067912196305/html/zmcu/zg_splan.html
@@ -247,8 +254,10 @@ esome.min.css
 /A6067912196305/html/panDian/error/panDian_errordetail.html
 /A6067912196305/image/huodan/6.png
 /A6067912196305/html/setting/setCarmerType.html
+/A6067912196305/image/homeqian.png
 /A6067912196305/image/5A8FFFjt.png
 /A6067912196305/css/skunew.css
+/A6067912196305/script/vue.min.js
 /A6067912196305/image/zmcright.png
 /A6067912196305/html/BA/huodan/huodan_yishenhelist.html
 /A6067912196305/css/huodan/shenhe_detail.css
@@ -290,6 +299,7 @@ esome.min.css
 /A6067912196305/script/gonggao.js
 /A6067912196305/script/es6/pandian/pandian-history-detail.js
 /A6067912196305/image/hassign.png
+ui.picker.css
 /A6067912196305/css/less/pandian_history_detail.less
 /A6067912196305/html/tools/failuploadpic.html
 /A6067912196305/script/es6/eBA_index-compiled.js
@@ -298,6 +308,7 @@ esome.min.css
 /A6067912196305/html/localPic/localPic_frame.html
 /A6067912196305/image/panDian/pandian-tanhao.png
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_WL_Show.html
+/A6067912196305/image/newhome/pandiankucun.png
 /A6067912196305/css/signnew.css
 /A6067912196305/image/wancheng.png
 /A6067912196305/image/jiantouxia.png
@@ -343,8 +354,8 @@ esome.min.css
 /A6067912196305/script/db.js
 /A6067912196305/css/huodan/shenhe_list.css
 /A6067912196305/html/BA/SKUNEW.html
-/A6067912196305/image/shanopen.png
 /A6067912196305/css/mui.picker.css
+/A6067912196305/image/shanopen.png
 /A6067912196305/image/jiaselectno.png
 /A6067912196305/script/mui.picker.js
 /A6067912196305/image/sangedian.png
@@ -356,6 +367,7 @@ esome.min.css
 /A6067912196305/html/zmcu/zg_create_selectShop.html
 /A6067912196305/script/es6/BA_Attendance.js
 /A6067912196305/image/right6.png
+/A6067912196305/css/less/homeba.less
 /A6067912196305/script/newSign/newSignCarmerReportChen.js
 /A6067912196305/html/BA/huodan/huodan_NewCreatShow.html
 /A6067912196305/script/es6/pandian/pandian-goodlist-compiled-compiled.js
@@ -380,8 +392,8 @@ esome.min.css
 /A6067912196305/css/less/today_plane.scss
 /A6067912196305/script/laydate/theme/default/font/iconfont.woff
 05/image/signin.png
-/A6067912196305/css/BA_Attendance.css
 /A6067912196305/image/xunikucun.png
+/A6067912196305/css/BA_Attendance.css
 /A6067912196305/image/BA_daijiao/noercode.png
 /A6067912196305/script/zidian.js
 /A6067912196305/html/report/BA_Attendance_win.html
@@ -397,6 +409,7 @@ esome.min.css
 /A6067912196305/script/es6/BA_index-compiled.js
 /A6067912196305/image/fanku/fankudan.png
 /A6067912196305/html/zmcu/sale_daily_detail_win.html
+/A6067912196305/image/newhome/huodansale.png
 /A6067912196305/html/BA/sale_daily_detail_win.html
 /A6067912196305/image/newSign/newsignok.png
 /A6067912196305/html/panDian/error/panDian_errorlist _show.html
@@ -409,6 +422,7 @@ esome.min.css
 /A6067912196305/image/help.png
 /A6067912196305/html/report/BA_wei.html
 /A6067912196305/script/es6/pandian/pandian_errordetail.js
+/A6067912196305/script/vant.min.js
 /A6067912196305/html/newSign/plan/item2/newplan_chen_frame.html
 /A6067912196305/html/BA/SKU.html
 /A6067912196305/image/huodan/8.png
@@ -417,6 +431,7 @@ esome.min.css
 /A6067912196305/image/backtest.png
 /A6067912196305/icon/load/5.png
 /A6067912196305/script/es6/pandian/pandian-shoplist.js
+/A6067912196305/css/m/A6067912196305/html/sale/kucun/shenhe_list.html
 /A6067912196305/fonts/fontawesome-webfont.svg
 /A6067912196305/script/log.js
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_XS_Show.html
@@ -440,6 +455,8 @@ esome.min.css
 /A6067912196305/html/zmcu/dq_search_zhuguan.html
 /A6067912196305/script/es6/pandian/pandian_erroreason.js
 /A6067912196305/fonts/fontawesome-webfont.eot
+/A6067912196305/image/headimgnone.png
+/A6067912196305/image/newhome/zhoumocu.png
 /A6067912196305/html/kucun/xunidan_win.html
 /A6067912196305/icon/load/11.png
 /A6067912196305/image/newSign/newsignout.png
@@ -458,6 +475,7 @@ esome.min.css
 /A6067912196305/html/tools/newSelectGood.html
 /A6067912196305/css/BA_cu.css
 /A6067912196305/html/guize/kaiyixiu.html
+/A6067912196305/image/newhome/gengduocaozuo.png
 /A6067912196305/html/zmcu/zg_plan_detail_edit.html
 /A6067912196305/script/PD.js
 /A6067912196305/script/newSign/getUserAddress.js
@@ -487,7 +505,9 @@ esome.min.css
 /A6067912196305/html/guize/kissme.html
 /A6067912196305/html/sale/planeList.html
 /A6067912196305/image/xiangpuli.png
+/A6067912196305/image/newhome/chanpinbaojia.png
 /A6067912196305/script/TalkingData.js
+/A6067912196305/html/panDian/error/panDian_eA6067912196305/script/newSign/newApi.js
 /A6067912196305/html/panDian/shenhe/panDian_shenhelist.html
 /A6067912196305/script/newSign/newdaijiaodb.js
 /A6067912196305/script/newSign/localarray.js
@@ -502,6 +522,7 @@ esome.min.css
 /A6067912196305/script/newSign/newGps.js
 /A6067912196305/html/tools/keyboard.html
 /A6067912196305/css/BA_index_sign.css
+/A6067912196305/image/newhome/panbanjihua.png
 /A6067912196305/image/shixia.png
 /A6067912196305/html/panDian/error/panDian_errorlist_frame_show.html
 /A6067912196305/image/huolike.png
@@ -523,6 +544,7 @@ esome.min.css
 /A6067912196305/script/es6/BA_Attendance-compiled.js
 /A6067912196305/html/BA/huodan/goodlist/DHgood.html
 /A6067912196305/html/newSign/plan/item4/newplan_shiyong_report_selectok_frame.html
+/A6067912196305/image/newhome/kucunpandian.png
 /A6067912196305/icon/load/12.png
 /A6067912196305/script/es6/eBA_index.js
 /A6067912196305/html/panDian/error/panDian_erroreason_frame.html
@@ -576,6 +598,7 @@ esome.min.css
 /A6067912196305/image/niweiya1.png
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_DB_Show.html
 /A6067912196305/image/kaiyixiu2.png
+/A6067912196305/image/newhome/daijiapingfen.png
 /A6067912196305/script/mui.indexedlist.js
 /A6067912196305/script/radialIndicator.js
 /A6067912196305//A6067912196305/html/BA/skushoplist/select_shop_win.html
@@ -623,6 +646,7 @@ esome.min.css
 /A6067912196305/res/NewPList.db
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_XS.html
 /A6067912196305/html/sale/today_plane_win.html
+/A6067912196305/css/mrroreason_frame.html
 /A6067912196305/script/gaodemap.js
 /A6067912196305/html/sale/saleform/signshop_list.html
 /A6067912196305/image/huodan/13.png
@@ -653,6 +677,7 @@ esome.min.css
 /A6067912196305/css/font-awesome.min.css
 /A6067912196305/html/BA/huodan/menu/huodan_Creat_TH_Show.html
 /A6067912196305/script/newSign/newDistance.js
+/A6067912196305/image/newhome/kucun.png
 /A6067912196305/html/sale/signshop_list.html
 /A6067912196305/html/BA/signCarmerShow.html
 /A6067912196305/html/zmcu/zg_kaohe_guize.html

@@ -65,8 +65,8 @@
 	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
 	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
 	<script type="text/javascript" src="../../../script/es6/pandian/pandian-shenhe-compiled.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vant@2.4/lib/vant.min.js"></script>
+	<script type="text/javascript" src="../../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../../script/vant.min.js"></script>
 	<script>
 		var appvue;
 		apiready = function() {
@@ -129,6 +129,7 @@
 					},
 					
 					openhistorydetail(creportskucode, chulimsg){
+						console.log(creportskucode);
 						api.openWin({
 						    name: 'panDian_shenhedetail_win',
 						    url: 'widget://html/panDian/shenhe/panDian_shenhedetail.html',

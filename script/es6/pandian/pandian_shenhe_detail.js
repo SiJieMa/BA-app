@@ -3,12 +3,18 @@ function initlist(tag) {
 	api.showProgress();
 	tag.creportskucode = api.pageParam.creportskucode;
 	obj.creportskucode = api.pageParam.creportskucode;
+	obj.iuserid = $api.getStorage("id");
+	console.log(JSON.stringify(obj));
 	let posturl = 'ActionApi/T_Inventory/GetInventoryCheckDetailByAuthorize';
 	$kunchi.kunchipost(posturl, obj, function(ret, err) {
 		//[{"id":12,"iProuductId":1,"iKucunOpening":null,"iDeliveryMonth":null,"iSaleMonth":null,"iCurrentInventory":0,"iSalesCount":0,"iSalesAmount":0,"iReceiptNumber":5,"cReportType":"SKU日销报告","iTaskId":null,"dtReportTime":"2018-01-26T00:00:00","dtCreateTime":"2018-01-26T17:33:47.523","iStoreId":"00000000-0000-0000-0000-000000000000","iUserId":"9b7c6dc5-39e4-4e51-8484-e9e030d52ef9","iInventoryId":null,"T_Task":null}]----""
 		console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
 		api.hideProgress();
 		if (ret) {
+			let AuthorListlength = ret[0].AuthorList.length - 1;
+			console.log(JSON.stringify(ret[0].AuthorList[AuthorListlength]));
+			tag.progressname = ret[0].AuthorList[AuthorListlength].cAuthorNode;
+			console.log(ret[0].AuthorList[AuthorListlength].cAuthorNode);
 			tag.list = ret.map((value, index) => {
 
 				if (index == 0) {
@@ -21,14 +27,20 @@ function initlist(tag) {
 						let dtCreateTimeMonthnew = dtCreateTimeMonth.split(".")[0];
 						spvalue.dtCreateTime = dtCreateTimeYear+" "+dtCreateTimeMonthnew;
 						
+						let iStatue = spvalue.iStatue;
+						let cAuthorName = spvalue.cAuthorName;
+						spvalue.shenheren = typeof cAuthorName == "undefined" ? "" : cAuthorName;
+						spvalue.jieguo = iStatue == 1 ? "通过" : "未通过";
 						if(spvalue.cAuthorNode == "待审批"){
 							spvalue.cAuthorNode = "盘点创建";
+							spvalue.jieguo = "";
+						}else{
+							spvalue.cAuthorNode = "";
 						}
-						
 						newsplist.push(spvalue);
-						if(i == (value.AuthorList.length - 1)){
-							tag.jindu = spvalue.cAuthorNode;
-						}
+						// if(i == (value.AuthorList.length - 1)){
+						// 	tag.jindu = spvalue.cAuthorNode;
+						// }
 					}
 					
 					tag.splist = newsplist;
@@ -49,13 +61,27 @@ function initlist(tag) {
 				listobj.cProductFullName = value.cProductFullName;
 				listobj.cReportSkuCode = value.cReportSkuCode;
 				listobj.cReportSkuType = value.cReportSkuType;
+				
+				//判断是否有复盘失败的可能
+				listobj.cReportSkuTypeFU = value.iSalesAmount == "2" ? "复盘失败-" : "";
+				
 				listobj.iReceiptNumber = value.iReceiptNumber;
 				listobj.id = value.id;
 				listobj.RealTimeInventory = value.RealTimeInventory;
+				
+				if((value.cReportSkuType == "其他")||(value.cReportSkuType == "丢件")){
+					listobj.shuomingtype = value.cErrorContent;
+				}else{
+					listobj.shuomingname = "";
+					listobj.shuomingtype = "";
+				}
+				
 				if(value.RealTimeInventory > value.iReceiptNumber){
 					listobj.isyingkui = "盘亏原因："
+					listobj.shuomingname = value.cReportSkuType == "其他"?"缺失说明:":"丢件原因:";
 				}else{
-					listobj.isyingkui = "盘盈原因："
+					listobj.isyingkui = "盘盈原因：";
+					listobj.shuomingname = value.cReportSkuType == "其他"?"盘盈说明:":"丢件原因:";
 				}
 				return listobj;
 			})
@@ -97,6 +123,7 @@ function shenhepandian(tag, statue) {
 			obj.iDirectorId = '';
 			obj.iBrandId = $api.iBrandId;
 		}
+		obj.cAuthorName = $api.getStorage("realName");
 		obj.statue = statue;
 		console.log(JSON.stringify(obj));
 		let posturl = 'ActionApi/T_Inventory/SetAuthorizeInventoryCheck';

@@ -105,7 +105,7 @@ function btnupload(tag){
 		
 		if(value.selectreson2 == "丢件" || value.selectreson2 == "其他"){
 			upobj.cErrorCount = value.inputone;
-			upobj.cErrorContent = value.inputtwo;
+			upobj.cErrorContent = "";
 		}else{
 			upobj.cErrorCount = "";
 			upobj.cErrorContent = "";

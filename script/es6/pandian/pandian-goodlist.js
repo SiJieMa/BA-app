@@ -36,11 +36,12 @@ function initpandian(tag){
 	
 	function initgoodlist(ret){
 		let newret = ret.map((value)=> {
+			let kucun = value.iCurrentInventory == 0 ? "0" : "";
 			let object = {
 				code: value.cProductProductCode,
 				name: value.cProductFullName,
 				show: true,
-				kucun: "",
+				kucun: kucun,
 				iProuductId: value.iProuductId,
 				iInventoryId: value.iInventoryId,
 				iCurrentInventory: value.iCurrentInventory
@@ -138,9 +139,16 @@ function uploadPanDian(tag){
 	
 	
 	var newuploadpandianlist = [];
+	let isturnhistory = 1;//0跳转异常详情  1跳转历史列表
+	let isallowtijiao = 0;//0允许提交  1不允许提交
 	let uploadlist = tag.goodlist.forEach((value)=>{
-		
-		if(value.kucun != ""){
+		console.log(value.kucun.trim().length + "===" + value.kucun);
+		if((value.iCurrentInventory == 0)&&(value.kucun == 0)){
+			
+		}else{
+			if(value.iCurrentInventory != value.kucun){
+				isturnhistory = 0;
+			}
 			let uploadobject = {};
 			uploadobject.iProuductId = value.iProuductId;
 			uploadobject.iKucunOpening = '';
@@ -161,17 +169,28 @@ function uploadPanDian(tag){
 			uploadobject.iDirectorId = authorobj.iDirectorId;
 			uploadobject.iAuthorizeId = authorobj.iAuthorizeId;
 			newuploadpandianlist.push(uploadobject)
+			
+			if(value.kucun.trim().length == 0){
+				isallowtijiao = 1;
+			}
 		}
 	})
 	
 	
-	console.log(JSON.stringify(newuploadpandianlist));
 	if(newuploadpandianlist.length == 0){
 		api.hideProgress();
 		vant.Toast('请至少填写一条盘点信息');
 		return;
 	}
+	console.log("==189"+isallowtijiao);
+	if(isallowtijiao == 1){
+		api.hideProgress();
+		vant.Toast('有商品尚未填写盘点数量,请确认.');
+		return;
+	}
+	
 	let posturl = 'ActionApi/T_Inventory/SaveInventoryPanDian'
+	console.log(JSON.stringify(newuploadpandianlist));
 	$kunchi.kunchipost(posturl, newuploadpandianlist, function(ret,err){
 		//[{"id":12,"iProuductId":1,"iKucunOpening":null,"iDeliveryMonth":null,"iSaleMonth":null,"iCurrentInventory":0,"iSalesCount":0,"iSalesAmount":0,"iReceiptNumber":5,"cReportType":"SKU日销报告","iTaskId":null,"dtReportTime":"2018-01-26T00:00:00","dtCreateTime":"2018-01-26T17:33:47.523","iStoreId":"00000000-0000-0000-0000-000000000000","iUserId":"9b7c6dc5-39e4-4e51-8484-e9e030d52ef9","iInventoryId":null,"T_Task":null}]----""
 		console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
@@ -180,14 +199,25 @@ function uploadPanDian(tag){
 			tag.showtijiaosucess = true;
 			let cReportSkuCode = ret[0].cReportSkuCode;
 			setTimeout(function(){
-				api.openWin({
-				    name: 'panDian_errorlist_win',
-				    url: 'widget://html/panDian/error/panDian_errorlist.html',
-				    pageParam: {
-				        creportskucode: cReportSkuCode,
-						closename: 'panDian_menu_win'
-				    }
-				});
+				
+				if(isturnhistory == 0){
+					api.openWin({
+					    name: 'panDian_errorlist_win',
+					    url: 'widget://html/panDian/error/panDian_errorlist.html',
+					    pageParam: {
+					        creportskucode: cReportSkuCode,
+							closename: 'panDian_menu_win'
+					    }
+					});
+				}else{
+					api.openWin({
+					    name: 'panDian_errorlist_win',
+					    url: 'widget://html/panDian/history/panDian_historylist.html',
+					    pageParam: {
+							closename: 'panDian_menu_win'
+					    }
+					});
+				}
 			}, 3000);
 		}else{
 			vant.Toast.fail('提交失败');

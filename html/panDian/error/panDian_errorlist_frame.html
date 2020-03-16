@@ -18,8 +18,17 @@
 			<div class="list">
 				<ul>
 					<li v-for="value in list">
-						<span :class="[value.isred]" class="left" v-text="value.name"></span>
-						<span :class="[value.isred]" class="right"  v-text="value.count"></span>
+						
+						<div class="li-item" v-if="value.isred == ''">
+							<span class="left" v-text="value.name"></span>
+							<span class="right"  v-text="value.count"></span>
+						</div>
+						
+						<div class="li-item" v-if="value.isred == 'red'">
+							<span class="left red" v-text="value.name"></span>
+							<span class="right red"  v-text="value.count"></span>
+						</div>
+						
 					</li>
 				</ul>
 			</div>
@@ -46,8 +55,8 @@
 	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
 	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
 	<script type="text/javascript" src="../../../script/es6/pandian/pandian-errorlist-compiled.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vant@2.4/lib/vant.min.js"></script>
+	<script type="text/javascript" src="../../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../../script/vant.min.js"></script>
 	<script>
 		var appvue;
 		apiready = function() {
@@ -76,7 +85,10 @@
 					list: [],
 					oldlist: [],
 					showlogoreson: false,
-					isshowbtn: false
+					isshowbtn: false,
+					iStoreId: '',
+					iStoreHouseId: '',
+					ontimekucun: []
 				},
 				created: function() {
 					this.creportskucode = api.pageParam.creportskucode;

@@ -17,9 +17,9 @@
 	//	第三位表示大版本更新 第一位表示当前版本是第几版  55.4.54
 	u.app_usevison = '70.7.70';
 	
-	u.devid = '0a0df203-eff0-40f4-a77d-cdff657c741d';
-	u.qaid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
-	u.httpid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
+	//u.devid = '0a0df203-eff0-40f4-a77d-cdff657c741d';
+	//u.qaid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
+	//u.httpid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
 	u.iBrandId = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
 
 	var isAndroid = (/android/gi).test(navigator.appVersion);

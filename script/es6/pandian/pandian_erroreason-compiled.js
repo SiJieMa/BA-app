@@ -114,10 +114,10 @@ function btnupload(tag) {
 			if (value.selectreson == "未处理单据") {
 				if (iReceiptNumber == iCurrentInventory) {
 					upobj.isSame = 1;
-					upobj.iAuthorizeId = value.iAuthorizeId;
+					upobj.iAuthorizeId = "";
 					upobj.iDirectorId = value.iDirectorId;
 				} else {
-					upobj.iAuthorizeId = "";
+					upobj.iAuthorizeId = value.iAuthorizeId;
 					upobj.iDirectorId = value.iDirectorId;
 					upobj.isSame = 0;
 				}
@@ -129,6 +129,9 @@ function btnupload(tag) {
 				upobj.isSame = 0;
 				upobj.iDirectorStatue = 0;
 				upobj.iAuthorizeStatue = 0;
+				if (value.selectreson == "盘错") {
+					upobj.isSame = 1;
+				}
 			}
 
 			upobj.iProuductId = value.iProuductId;

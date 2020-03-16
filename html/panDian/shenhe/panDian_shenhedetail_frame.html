@@ -15,13 +15,13 @@
 				<div class="title-shen">
 					<span class="shen-dian">·</span>
 					<span class="title-left">审批进度：{{progressname}}</span>
-					<div class="progress" @click="isshowprogress">
+					<div class="progress">
 						<span class="detailbtn">进度详情</span>
-						<img v-if="showprogress == false" class="btnimg" src="../../../image/5A8FFFjt.png" />
-						<img v-if="showprogress == true" class="btnimg" src="../../../image/5A8FFFup.png" />
+						<img id="guanbijiantou" v-on:click.stop="guanbijincheng()" style="display: none;" class="btnimg" src="../../../image/5A8FFFjt.png" />
+						<img id="dakaijiantou" v-on:click.stop="dakaijincheng()" style="display: block;" class="btnimg" src="../../../image/5A8FFFup.png" />
 					</div>
 				</div>
-				<ul v-if="showprogress == true">
+				<ul style="display: none;" id="shenpijincheng">
 					
 					<div class="shen-xian">
 						<!-- 下面有几条 上面就加几条虚线 -->
@@ -37,6 +37,8 @@
 						<span class="dian2 lan">·</span>
 						<span class="time">{{item.dtCreateTime}}</span>
 						<span class="name1">{{item.cAuthorNode}}</span>
+						<span class="name1">{{item.shenheren}}</span>
+						<span class="name1">{{item.jieguo}}</span>
 					</li>
 				</ul>
 			</div>
@@ -49,12 +51,32 @@
 						</div>
 						<div class="item1">
 							<span class="left" v-text="item.isyingkui"></span>
-							<span class="right" v-text="item.cReportSkuType"></span>
+							<span class="right" v-text="item.cReportSkuTypeFU + item.cReportSkuType"></span>
 						</div>
-						<div class="item2">
+						<!-- <div class="item2" v-if="item.cReportSkuType != '未处理单据'">
+							<span class="left">真实库存：</span>
+							<span class="right" v-text="item.RealTimeInventory"></span>
+						</div> -->
+						
+						
+						<div class="item2" v-if="item.cReportSkuType == '盘错'">
 							<span class="left">真实库存：</span>
 							<span class="right" v-text="item.RealTimeInventory"></span>
 						</div>
+						<div class="item1" v-if="item.cReportSkuType == '丢件'">
+							<span class="left">丢件数量：</span>
+							<span class="right" v-text="item.RealTimeInventory - item.iReceiptNumber"></span>
+						</div>
+						<div class="item1" v-if="item.cReportSkuType == '其他'">
+							<span class="left" v-text="item.isyingkui == '盘亏原因：' ? '缺失数量：':'盘盈数量：'"></span>
+							<span class="right" v-if="item.isyingkui == '盘亏原因：'" v-text="item.RealTimeInventory - item.iReceiptNumber"></span>
+							<span class="right" v-else v-text="item.iReceiptNumber - item.RealTimeInventory"></span>
+						</div>
+						<div class="item1" v-if="item.shuomingname != '' && item.cReportSkuType != '未处理单据' && item.shuomingtype != '' && item.cReportSkuType != '盘错'">
+							<span class="left" v-text="item.shuomingname"></span>
+							<span class="right" v-text="item.shuomingtype"></span>
+						</div>
+						
 					</li>
 				</ul>
 			</div>
@@ -71,9 +93,10 @@
 	<script type="text/javascript" src="../../../script/log.js"></script>
 	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
 	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/jquery-1.8.3.min.js"></script>
 	<script type="text/javascript" src="../../../script/es6/pandian/pandian_shenhe_detail-compiled.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/vant@2.4/lib/vant.min.js"></script>
+	<script type="text/javascript" src="../../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../../script/vant.min.js"></script>
 	<script>
 		var appvue;
 		apiready = function() {
@@ -113,6 +136,16 @@
 						}else{
 							that.showprogress = true;
 						}
+					},
+					dakaijincheng: function(){
+						$("#shenpijincheng").css("display", "block");
+						$("#dakaijiantou").css("display", "none");
+						$("#guanbijiantou").css("display", "block");
+					},
+					guanbijincheng: function(){
+						$("#shenpijincheng").css("display", "none");
+						$("#dakaijiantou").css("display", "block");
+						$("#guanbijiantou").css("display", "none");
 					}
 				}
 			});
