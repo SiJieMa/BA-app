@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>提交异常后详情</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/less/panDian_errordetail.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+	</head>
+	<body>
+		<div id="app">
+			<div class="item3">
+				<div class="title-shen">
+					<span class="shen-dian">·</span>
+					<span class="title-left">审批进度：{{jindu}}</span>
+					<div class="progress">
+						<span class="detailbtn">进度详情</span>
+						<img id="guanbijiantou" v-on:click.stop="guanbijincheng()" style="display: none;" class="btnimg" src="../../../image/5A8FFFjt.png" />
+						<img id="dakaijiantou" v-on:click.stop="dakaijincheng()" style="display: block;" class="btnimg" src="../../../image/5A8FFFup.png" />
+						
+					</div>
+				</div>
+				<ul style="display: none;" id="shenpijincheng">
+					
+					<div class="shen-xian">
+						<!-- 下面有几条 上面就加几条虚线 -->
+						<i class="shen-xian-item" v-for="(item, index) in splist" v-if="index != 0"></i>
+					</div>
+					
+					<!-- <li>
+						<span class="dian2">·</span>
+						<span class="time">2020 1/13 14:00</span>
+						<span class="name1">大区经理审批</span>
+					</li> -->
+					<li v-for="item1 in splist">
+						<span class="dian2 lan">·</span>
+						<span class="time">{{item1.dtCreateTime}}</span>
+						<span class="name1">{{item1.cAuthorNode}}</span>
+						<span class="name1">{{item1.shenheren}}</span>
+						<span class="name1">{{item1.jieguo}}</span>
+					</li>
+				</ul>
+			</div>
+			<div class="list">
+				<ul class="listui">
+					<li class="listli" v-for="item in list">
+						<div class="good">
+							<i class="dian">·</i>
+							<span class="name" v-text="item.cProductFullName"></span>
+						</div>
+						<div class="item1">
+							<span class="left" v-text="item.isyingkui"></span>
+							<span class="right" v-text="item.cReportSkuTypeFU + item.cReportSkuType"></span>
+						</div>
+						<div class="item2" v-if="item.cReportSkuType == '盘错'">
+							<span class="left">真实库存：</span>
+							<span class="right" v-text="item.RealTimeInventory"></span>
+						</div>
+						<div class="item1" v-if="item.cReportSkuType == '丢件'">
+							<span class="left">丢件数量：</span>
+							<span class="right" v-text="item.RealTimeInventory - item.iReceiptNumber"></span>
+						</div>
+						<div class="item1" v-if="item.cReportSkuType == '其他'">
+							<span class="left" v-text="item.isyingkui == '盘亏原因：' ? '缺失数量：':'盘盈数量：'"></span>
+							<span class="right" v-if="item.isyingkui == '盘亏原因：'" v-text="item.RealTimeInventory - item.iReceiptNumber"></span>
+							<span class="right" v-else v-text="item.iReceiptNumber - item.RealTimeInventory"></span>
+						</div>
+						<div class="item1" v-if="item.shuomingname != '' && item.cReportSkuType != '未处理单据' && item.shuomingtype != ''">
+							<span class="left" v-text="item.shuomingname"></span>
+							<span class="right" v-text="item.shuomingtype"></span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../../script/es6/pandian/pandian_errordetail-compiled.js"></script>
+	<script type="text/javascript" src="../../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../../script/vant.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					creportskucode: "",
+					list: [],
+					splist: [],
+					jindu: '待审批',
+					showprogress: false,
+				},
+				created: function() {
+					initlist(this);
+				},
+				mounted: function() {},
+				updated: function() {},
+				methods: {
+					isshowprogress: function(){
+						var that = this;
+						if(that.splist.length == 0){
+							return;
+						}
+						if(that.showprogress){
+							that.showprogress = false;
+						}else{
+							that.showprogress = true;
+						}
+					},
+					dakaijincheng: function(){
+						$("#shenpijincheng").css("display", "block");
+						$("#dakaijiantou").css("display", "none");
+						$("#guanbijiantou").css("display", "block");
+					},
+					guanbijincheng: function(){
+						$("#shenpijincheng").css("display", "none");
+						$("#dakaijiantou").css("display", "block");
+						$("#guanbijiantou").css("display", "none");
+					}
+				}
+			});
+		}
+	</script>
+</html>

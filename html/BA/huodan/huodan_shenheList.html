@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>审核列表</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			html,body{ background-color: #f5f5f5;}
+			.list{ width: 100%; height: auto; float: left; margin-bottom: 50px;}
+			.list ul{ width: 100%; height: auto; float: left;}
+			.list ul li{ width: 96%; margin-left: 2%; height: auto; float: left; background-color: #FFFFFF; margin-top: 10px; border-radius: 0 15px 0 15px;  font-size: 15px; border: 1px solid #868487;}
+			/*.list ul li .title{ width: 100%; height: 45px; float: left; border-bottom: 1px solid #f5f5f5; background-color: #DDDDDD; border-radius: 5px 5px 0 0;}
+			.list ul li .title .ordernum{ margin-left: 5px; width: auto; height: 45px; line-height: 45px; float: left;}
+			.list ul li .title .states{ width: auto; margin-right: 5px; height: 45px; line-height: 45px; float: right;}
+			.list ul li .start{  width: 100%; height: auto; float: left; border-bottom: 1px solid #f5f5f5;}
+			.list ul li .start .starttime{ width: 100%; margin-left: 2%; height: auto; line-height: 35px; float: left;}
+
+			.list ul li .start .shentime{ width: 58%; margin-left: 2%; height: 35px; line-height: 35px; float: left;}
+			.list ul li .start .shenperson{ width: 38%; margin-left: 2%; height: 35px; line-height: 35px; float: left;}
+			.list ul li .start .zhuname{ width: 48%; margin-left: 2%; height: 35px; line-height: 35px; float: left;}
+			.list ul li .start .zhustate{ width: 48%; margin-left: 2%; height: 35px; line-height: 35px; float: left;}
+
+			.list ul li .stop{ width: 100%; height: auto; float: left; border-bottom: 1px solid #f5f5f5;}
+			.list ul li .stop .stopname{ width: 48%; margin-left: 2%; float: left; line-height: 35px; height: 35px;}
+			.list ul li .stop .stopshop{ width: 48%; margin-left: 2%; float: left; line-height: 35px; height: 35px;}
+
+			.list ul li .beizhu{ width: 96%; margin-left: 2%; margin-right: 2%; float: left; line-height: 25px; height: auto;}
+
+			.xinjian{ width: 100%; height: 50px; line-height: 50px; text-align: center; position: fixed; left: 0; bottom: 0; background-color: #71C4E4; color: #ffffff; font-size: 16px;}*/
+			.list ul li .title{ color: #4775B5; font-weight: 800; font-size: 17px; width: 96%; padding-left: 2%; padding-right: 2%; height: 45px; line-height: 45px; float: left; border-radius: 0 15px 0 0;}
+			.list ul li .otheritem{ width: 46%; padding-left: 2%; padding-right: 2%; float: left; line-height: 30px; font-size: 15px;}
+			.list ul li .otheritem i{ font-style: normal; color: #4C494D;}
+			.list ul li .otheritem .bule{ color: #46668D;}
+			.list ul li .otheritem .red{ color: #A4232C;}
+		</style>
+	</head>
+	<body>
+		<div class="list">
+			<ul id="list">
+				<!--<li>
+					<div class="title">
+						<span class="ordernum">制单时间:</span>
+						<span class="states">姓名:</span>
+					</div>
+					<div class="start">
+						<span class="starttime">门店名称:</span>
+					</div>
+					<div class="stop">
+						<span class="stopname">SKU: 999</span>
+						<span class="stopshop">总数量:9999</span>
+					</div>
+				</li>-->
+
+				<!--<li>
+					<span class="title">门店调拨单</span>
+					<span class="otheritem">订单号:<i>888888</i></span>
+					<span class="otheritem">制单时间:<i class="bule">888888</i></span>
+					<span class="otheritem">单据状态:<i>888888</i></span>
+					<span class="otheritem">审批状态:<i>888888</i></span>
+					<span class="otheritem">SKU:<i class="red">888888</i></span>
+					<span class="otheritem">总数量:<i class="red">888888</i></span>
+				</li>-->
+
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+		var pageIndex = 0;
+		var isupload = 0;
+		apiready = function() {
+			jiazai();
+			document.getElementById("list").innerHTML = '';
+			getlist();
+			xiala(function(ret){
+				pageIndex = 0;
+				document.getElementById("list").innerHTML = '';
+				getlist();
+			});
+			api.addEventListener({
+			    name:'scrolltobottom',
+			    extra:{
+			        threshold:80
+			    }
+			}, function(ret, err){
+			    if(isupload == 1){
+		    		isupload == 0;
+			    	pageIndex++;
+					getlist();
+			    }
+			});
+			dexlaml_xml();
+			refushshenhelist();
+		};
+
+		function getlist(){
+			var values = new Object();
+			values.userid = $api.getStorage("id");
+			values.size = '10';
+			values.pageIndex = pageIndex;
+			//console.log(JSON.stringify(values));
+			$kunchi.kunchipost("ActionApi/T_Orders/T_OrderListByUserid", values, function(ret,err){
+				//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+				tingzhi();
+				api.refreshHeaderLoadDone();
+				if(ret){
+					if(ret.length != 0){
+						var el = document.getElementById("list");
+						for(var a = 0; a < ret.length; a++){
+
+							var time = ret[a].dtPrepTime.replace("T"," ");
+
+							var otherShop = '';
+							if(ret[a].cDictValue == 'DB'){
+								otherShop = '<span class="otheritem">收货门店:<i>'+ret[a].sideFullName+'</i></span>'
+								+		'<span class="otheritem">收货门店店号:<i>'+ret[a].sideFax+'</i></span>';
+							}
+
+							var shenhecount = ret[a].count;
+							if(ret[a].iModifyCount != null){
+								shenhecount = ret[a].iModifyCount;
+							}
+
+							var li = '<li onclick="opendetail_shenhe(this)" id="'+ret[a].id+'">'
+								+		'<span class="title">订单号:'+ret[a].cOrderCode+'</span>'
+								+		'<span class="title">制单时间:'+time+'</span>'
+								+		'<span class="otheritem">订单类型:<i class="red" style="font-size: 18px;">'+ret[a].cDictName+'</i></span>'
+								+		'<span class="otheritem">制单人:<i>'+ret[a].RealName+'</i></span>'
+								+		'<span class="otheritem">门店名称:<i>'+ret[a].cStoreFullName+'</i></span>'
+								+		'<span class="otheritem">门店编码:<i>'+ret[a].cStoreCode+'</i></span>'
+								+		otherShop
+								+		'<span class="otheritem">SKU:<i class="red">'+ret[a].sku+'</i></span>'
+								+		'<span class="otheritem">总数量:<i class="red">'+shenhecount+'</i></span>'
+								+	'</li>';
+
+							$api.append(el, li);
+						}
+						if(ret.length == 10){
+							isupload=1;
+						}else{
+							isupload = 0;
+						}
+					}else{
+						isupload = 0;
+						var msg = '已经没有更多订单了';
+						if(pageIndex == 0){
+							msg = '您当前没有需要审核的单据';
+						}
+						api.toast({
+	                        msg:msg
+                        });
+					}
+				}else{
+					alert('当前网络错误,请稍后重试.');
+				}
+			});
+		}
+
+		function opendetail_shenhe(tag){
+			openpage("huodan_shenhe_detail_win", "huodan_shenhe_detail_frame", "货单审核", "widget://html/BA/huodan/huodan_shenhe_detail.html", {id: $api.attr(tag, "id")});
+		}
+
+		function dexlaml_xml(){
+			api.addEventListener({
+	            name:'shenhewancheng'
+            },function(ret,err){
+        		var id = ret.value.key1;
+        		delxml(id);
+            });
+		}
+
+
+		function refushshenhelist(){
+			api.addEventListener({
+        name:'shenhewancheng'
+      },function(ret,err){
+				pageIndex = 0;
+				document.getElementById("list").innerHTML = '';
+				getlist();
+      });
+
+		}
+
+
+	</script>
+</html>

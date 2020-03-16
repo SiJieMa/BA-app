@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>新巡店入口</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: '#ffffff'
+			}
+			.list{ width: 100%; height: auto; float: left;}
+			.list ul{ width: 100%; height: auto; float: left;}
+			.list ul li{ width: 100%; height: 50px; float: left; border-bottom: 1px solid #F5F5F5;}
+			.list ul li .logo{ width: 20px; height: 20px; margin: 15px; float: left;}
+			.list ul li .msg{ width: auto; height: 50px; line-height: 50px; float: left; font-size: 18px;}
+			.list ul li .isdone{ width: 20px; height: 20px; margin: 15px; float: right; display: none;}
+		</style>
+	</head>
+	<body>
+	
+		<div class="list">
+			<ul>
+				<li onclick="opensigninhtml()">
+					<img class="logo" src="../../image/newSign/newsignin.png" />
+					<span class="msg">进店打卡</span>
+					<img class="isdone" id="signindown" src="../../image/newSign/isdone.png" />
+				</li>
+				<li onclick="openbaifang()">
+					<img class="logo" src="../../image/newSign/newreport.png" />
+					<span class="msg">店内拜访</span>
+					<img class="isdone" src="../../image/newSign/isdone.png" />
+				</li>
+				<li onclick="opensignouthtml()">
+					<img class="logo" src="../../image/newSign/newsignout.png" />
+					<span class="msg">离店打卡</span>
+					<img class="isdone" id="signoutdown" src="../../image/newSign/isdone.png" />
+				</li>
+			</ul>
+		</div>
+	
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../script/newpicdb/localdb.js"></script>
+	<script type="text/javascript" src="../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript">
+	
+		//获取到的当前计划的进出店信息
+		var InOutMsg = '';
+	
+		apiready = function() {
+		};
+		
+		//获取当前用户的打卡情况
+		function getDK(){
+			api.showProgress({
+			    title: '请稍等',
+			    text: '正在获取打卡信息',
+			});
+			var body = new Object();
+			body.reportid = api.pageParam.page.iRorptId;
+			$newapi.newpost('ActionApi/Patrol/T_WorkStoreByUserIdAndStoreId', body, 20000, function(ret, err){
+				if(ret){
+					InOutMsg = ret;
+					api.hideProgress();
+					if (ret.length != 0) {
+					
+						var cInType = $api.getStorage('zidianjiexicInType');
+						var cOutType = $api.getStorage('zidianjiexicoutType');
+						
+						for(var ccc = 0; ccc < ret.length; ccc++){
+							var cInTypeonline = ret[ccc].cInType;
+							if(cInTypeonline == cInType){
+								$("#signindown").css("display", "block");
+							}
+							if(cInTypeonline == cOutType){
+								$("#signoutdown").css("display", "block");
+							}
+						}
+					}
+				}else{
+					api.confirm({
+					    title: '提示',
+					    msg: '获取打卡信息失败,是否重新获取?',
+					    buttons: ['退出', '重新获取']
+					}, function(ret, err) {
+					    var index = ret.buttonIndex;
+					    if(index == 2){
+					    	getDK();
+					    }else{
+					    	api.closeWin({
+                            });
+					    }
+					});
+					api.hideProgress();
+				}
+			});
+		}
+		
+		function opensigninhtml(){
+			api.openWin({
+			    name: 'newplan_signin_win',
+			    url: 'widget://html/newSign/signin/newplan_signin_win.html',
+			    pageParam: {
+			    	data: api.pageParam.page,
+			    	InOutMsg: InOutMsg
+			    }
+			});
+		}
+		
+		
+		function opensignouthtml(){
+		
+			var oUseTool = new PicCK();
+			var picnum = oUseTool.picAllNum()[0]['count(*)'];
+			if(picnum > 0){
+				api.confirm({
+				    title: '提示',
+				    msg: '本次报告照片是立即上传至网络，还是稍后再传？',
+				    buttons: ['立即上传', '稍后上传']
+				}, function(aaa, bbb) {
+				    var index = aaa.buttonIndex;
+				    if(index == 1){
+				    	api.openWin({
+		                    name: 'planeList_win',
+		                    url: 'widget://html/localPic/localPic_win.html',
+		                    pageParam: {
+						        name: 'signin'
+						    }
+	                    });
+				    }else{
+				    	var state = $("#signindown").css("display");
+						if(state == "block"){
+							api.openWin({
+							    name: 'newplan_signout_win',
+							    url: 'widget://html/newSign/signout/newplan_signout_win.html',
+							    pageParam: {
+							    	data: api.pageParam.page,
+							    	InOutMsg: InOutMsg
+							    }
+							});
+						}else{
+							alert("先打进店卡");
+						}
+				    }
+				});
+			}else{
+				var state = $("#signindown").css("display");
+				if(state == "block"){
+					api.openWin({
+					    name: 'newplan_signout_win',
+					    url: 'widget://html/newSign/signout/newplan_signout_win.html',
+					    pageParam: {
+					    	data: api.pageParam.page,
+					    	InOutMsg: InOutMsg
+					    }
+					});
+				}else{
+					alert("先打进店卡");
+				}
+			}
+		}
+		
+		
+		function openbaifang(){
+			var state = $("#signindown").css("display");
+			if(state == "block"){
+				if(isemptynewbaifang(api.pageParam.page.iStoreId)){
+					api.openWin({
+					    name: 'nostore_win',
+					    url: 'widget://html/newSign/nostore/nostore_win.html',
+					    pageParam: {
+					    	data: api.pageParam.page
+					    }
+					});
+				}else{
+					api.openWin({
+					    name: 'newplan_brand_win',
+					    url: 'widget://html/newSign/plan/newplan_brand_win.html',
+					    pageParam: {
+					    	data: api.pageParam.page
+					    }
+					});
+				}
+			}else{
+				alert("先打进店卡");
+			}
+		}
+		
+		
+		function isemptynewbaifang(str){
+			if((typeof(str) == 'undefined')||(str == null)||(str == "null")||(str == "")||(str == "undefined")){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+		
+	</script>
+</html>

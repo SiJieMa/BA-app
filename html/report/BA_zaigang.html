@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>未带教报告</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/BA_wei.css" />
+	</head>
+
+	<body>
+		<div class="index-dialog-back">
+			<div class="index-dialog">
+				<div class="headmsg">
+					<img src="../../image/BA_daijiao/header.jpg" />
+					<span>张三</span>
+				</div>
+				<div class="erweima">
+					<img src="../../image/BA_daijiao/noercode.png" />
+					<span>请使用手机截屏保存到本地</span>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="index-main" id="app">
+			<div class="ba-list">
+				<ul v-if="balist.length > 0">
+					<li v-for="item in balist">
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">门店名称</span>
+							<span class="ba-list-item-rightmsg" v-text="item.cStoreFullName"></span>
+						</div>
+						<div class="ba-list-item ba-list-item-brand">
+							<span class="ba-list-item-leftmsg">负责品牌</span>
+							<span class="ba-list-item-rightmsg" style="height: auto; line-height: 40px;" v-text="item.brandlist"></span>
+						</div>
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">门店负责人</span>
+							<span class="ba-list-item-rightmsg" v-text="item.RealName"></span>
+						</div>
+						<div class="ba-list-item">
+							<span class="ba-list-item-leftmsg">联系方式</span>
+							<span v-on:click="phonenum(item.UserName)" class="ba-list-item-rightmsg" v-text="item.UserName"></span>
+						</div>
+						<!-- <img src="../../image/BA_daijiao/erweima.png" /> -->
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/es6/BA_zaigang-compiled.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function(){
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					balist: [],
+					posttime: ''
+				},
+				created() {
+					this.posttime = this.getfirsttime();
+				},
+				mounted() {
+					//initlist();
+					var fuctime = this.posttime;
+					initlist(fuctime);
+				},
+				methods:{
+					getfirsttime: function(){
+						var date = new Date();
+						date.setDate(1);
+						var month = parseInt(date.getMonth()+1);
+						var day = date.getDate();
+						if (month < 10) {
+							month = '0' + month
+						}
+						if (day < 10) {
+							day = '0' + day
+						}
+						return date.getFullYear() + '-' + month + '-' + day;
+					},
+					phonenum: function(tel){
+						api.call({
+						    type: 'tel_prompt',
+						    number: tel
+						});
+					}
+				}
+			});
+		}
+		
+	</script>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>盘点详情错误</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../../css/less/panDian_errorlist.css"/>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+		<style>
+			.list{
+				margin: 51px 10px 10px 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="title">
+				<span class="left">商品名称</span>
+				<span class="right">盘点库存</span>
+			</div>
+			<div class="list">
+				<ul>
+					<li v-for="value in list">
+						<span :class="[value.isred]" class="left" v-text="value.name"></span>
+						<span :class="[value.isred]" class="right"  v-text="value.count"></span>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/es6/pandian/pandian-errorlist-compiled.js"></script>
+	<script type="text/javascript" src="../../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../../script/vant.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			setTimeout(function(){
+				//更新
+				api.sendEvent({
+				    name: 'closegoodlist'
+				});
+				api.sendEvent({
+				    name: 'closeshoplist'
+				});
+			}, 1000);
+			
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					listheight: api.frameHeight - 70,
+					creportskucode: '',
+					list: [],
+					oldlist: [],
+					showlogoreson: false
+				},
+				created: function() {
+					this.creportskucode = api.pageParam.creportskucode;
+				},
+				mounted: function() {
+					initlist(this);
+					console.log("======");
+				},
+				updated: function() {},
+				methods: {
+					openerrrolist: function(){
+						this.showlogoreson = true;
+					},
+					continueedit: function(){
+						turnpage(this);
+					}
+				}
+			});
+		}
+	</script>
+</html>

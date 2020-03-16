@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>BA带教报告拍照</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../css/font-awesome.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../../css/signshop_report_302.css"/>
+	</head>
+	<body id="body">
+		<div class="photoba">
+			<div class="item">
+				<span class="title">本次辅导内容</span>
+				<div class="divinput">
+					<input id="nowfudao" />
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">下次跟进内容</span>
+				<div class="divinput">
+					<input id="nextfudao" />
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">BA人员拍照</span>
+				<div id="baphoto" num="0" class="divphoto">
+					<i id="baphotoadd" onclick="opencarmer(this)" pictypename="BA人员拍照" montherid="baphoto" class="fa fa-camera" aria-hidden="true"></i>
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">评估表拍照</span>
+				<div id="pingguphoto" num="0" class="divphoto">
+					<i id="pingguphotoadd" onclick="opencarmer(this)" pictypename="评估表拍照" montherid="pingguphoto" class="fa fa-camera" aria-hidden="true"></i>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../../../script/newpicdb/localdb.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/base64report.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newdaijiaodb.js"></script>
+	<script type="text/javascript" src="../../../../script/synthesis.js"></script>
+	<script type="text/javascript">
+		var oUseTool;
+		var djdbhand;
+		
+		var historydb = "";
+		apiready = function() {
+			oUseTool = new PicCK();
+			djdbhand = new djdbinit();
+			//{"contacts":[{"employee_id":"a3b30ab2-51bf-4d31-9ab6-56956a7f4cad","name":"BA2","remark":"BA2","selected":true}]} 
+			FastClick.attach(document.body);
+			initpic();
+			//首先要获取当前报告的其他BA  如果有则组合到一起进行提交 如果没有 则存一份然后再提交
+			djdbhand.selectjd(api.pageParam.page.iRorptId, $api.getStorage("id"), function(ret){
+				historydb = "";
+				//console.log("64=="+JSON.stringify(ret));
+				if(ret != false){
+					historydb = ret;
+				}
+			});
+		};
+		
+		
+		
+		
+		
+		function showdaijiaoonlinecontext(){
+			var daijiaoonline = $api.getStorage("daijiaoonline");
+			if(daijiaoonline.length > 0){
+				document.getElementById("nowfudao").value = daijiaoonline[0].cTrainContent;
+				document.getElementById("nextfudao").value = daijiaoonline[0].cTrainFollow;
+				if(daijiaoonline[0].T_ReportPics.length > 0){
+					var piclistonline = new Array();
+					for(var a = 0; a < daijiaoonline[0].T_ReportPics.length; a++){
+						piclistonline.push(daijiaoonline[0].T_ReportPics[a].cPicPath);
+					}
+					oUseTool.getdaijiaopic(piclistonline, function(ret){
+						if(ret != ""){
+							if(ret.data.length > 0){
+								//先要确认本地有没有 如果没有的话使用网络进行显示
+								for(var b = 0; b < daijiaoonline[0].T_ReportPics.length; b++){
+									var cPicPathline = daijiaoonline[0].T_ReportPics[b].cPicPath;
+									var cPicClassline = daijiaoonline[0].T_ReportPics[b].cPicClass;
+									var ishas = 0;//0没有 1有
+									
+									for(var a = 0; a < ret.data.length; a++){
+										var cPicClass = ret.data[a].cPicClass;
+										var cPicPath = ret.data[a].cPicPath;
+										//console.log(cPicPathline +"==="+ cPicPath);
+										if(cPicPathline == cPicPath){
+											ishas = 1;
+											DiyCarmerFinishChu_name = ret.data[a].cPicPath;
+											DiyCarmerFinishChu_url = ret.data[a].base64str;
+										}
+									}
+									if(cPicClassline == "BA人员拍照"){
+										opentag = document.getElementById("baphotoadd");
+										var montherid = $api.attr(opentag, 'montherid');
+										pictypename = $api.attr(opentag, 'pictypename');
+										monthertag = document.getElementById(montherid);
+									}
+									if(cPicClassline == "评估表拍照"){
+										opentag = document.getElementById("pingguphotoadd");
+										var montherid = $api.attr(opentag, 'montherid');
+										pictypename = $api.attr(opentag, 'pictypename');
+										monthertag = document.getElementById(montherid);
+									}
+									if(ishas == 1){
+										var picnamelength = daijiaoonline[0].T_ReportPics[b].cPicPath.split("/").length;
+										DiyCarmerFinishChu_name = daijiaoonline[0].T_ReportPics[b].cPicPath.split("/")[picnamelength-1];
+										upload_toonline_diycarmer();
+									}else{
+										var picnamelength = daijiaoonline[0].T_ReportPics[b].cPicPath.split("/").length;
+										DiyCarmerFinishChu_name = daijiaoonline[0].T_ReportPics[b].cPicPath.split("/")[picnamelength-1];
+										var myDate = new Date();
+										var img = '<img savetime="'+myDate.getTime()+'" class="photoshoppic" motherid="'+$api.attr(opentag, "montherid")+'" id="'+$api.attr(opentag, "montherid")+""+1+'" onclick="javascript:openpicdetial(this);" value="'
+										+DiyCarmerFinishChu_name+'" src="'+($api.posturllujie + 'Content/UploadFiles/mobile/' + daijiaoonline[0].T_ReportPics[b].cPicPath)+'" />';
+										$api.prepend(monthertag, img);
+										$api.css(opentag,"display: none;");
+									}
+								}
+							}else{
+								zhiyouonline(daijiaoonline);
+							}
+						}else{
+							zhiyouonline(daijiaoonline);
+						}
+					});
+				}else{
+					zhiyouonline(daijiaoonline);
+				}
+			}
+		}
+		
+		function zhiyouonline(daijiaoonline){
+			for(var a = 0; a < daijiaoonline[0].T_ReportPics.length; a++){
+				var cPicClass = daijiaoonline[0].T_ReportPics[a].cPicClass;
+				if(cPicClass == "BA人员拍照"){
+					opentag = document.getElementById("baphotoadd");
+					var montherid = $api.attr(opentag, 'montherid');
+					pictypename = $api.attr(opentag, 'pictypename');
+					monthertag = document.getElementById(montherid);
+				}
+				if(cPicClass == "评估表拍照"){
+					opentag = document.getElementById("pingguphotoadd");
+					var montherid = $api.attr(opentag, 'montherid');
+					pictypename = $api.attr(opentag, 'pictypename');
+					monthertag = document.getElementById(montherid);
+				}
+				var picnamelength = daijiaoonline[0].T_ReportPics[a].cPicPath.split("/").length;
+				
+				DiyCarmerFinishChu_name = daijiaoonline[0].T_ReportPics[a].cPicPath.split("/")[picnamelength-1];
+				var myDate = new Date();
+				var img = '<img savetime="'+myDate.getTime()+'" class="photoshoppic" motherid="'+$api.attr(opentag, "montherid")+'" id="'+$api.attr(opentag, "montherid")+""+1+'" onclick="javascript:openpicdetial(this);" value="'
+				+DiyCarmerFinishChu_name+'" src="'+($api.posturllujie + 'Content/UploadFiles/mobile/' + daijiaoonline[0].T_ReportPics[a].cPicPath)+'" />';
+				$api.prepend(monthertag, img);
+				$api.css(opentag,"display: none;");
+			}
+		}
+
+		var opentag, monthertag, pictypename;
+		function opencarmer(tag){
+			opentag = tag;
+			var montherid = $api.attr(tag, 'montherid');
+			pictypename = $api.attr(tag, 'pictypename');
+			monthertag = document.getElementById(montherid);
+
+
+			api.addEventListener({
+			    name: 'PaiPicFinish'
+			}, function(ret, err) {
+			    var PaiPicFinish = ret.value.PaiPicFinish;
+			    if(PaiPicFinish == 'ok'){
+			    	api.closeWin({
+					    name: 'DIYCarmerWin'
+					});
+					api.closeWin({
+					    name: 'showCarmerPicSale'
+					});
+			    	upload_toonline_diycarmer();
+			    }
+			});
+			var quyu = $api.attr(opentag, 'pictype');
+			openDiyCarmerPaiZhao(api.pageParam.page.cStoreFullName, pictypename, "BA带教报告");
+		}
+
+		function upload_toonline_diycarmer(){
+		
+			var picparent = opentag.parentNode;
+			var myDate = new Date();
+			var img = '<img savetime="'+myDate.getTime()+'" class="photoshoppic" motherid="'+$api.attr(opentag, "montherid")+'" id="'+$api.attr(opentag, "montherid")+""+1+'" onclick="javascript:openpicdetial(this);" value="'
+			+DiyCarmerFinishChu_name+'" src="data:image/jpg;base64,'+DiyCarmerFinishChu_url+'" />';
+			$api.prepend(monthertag, img);
+			$api.css(opentag,"display: none;");
+		}
+		
+		function upload_toonline_diycarmer_localdb(localguidid, guidid){
+			var myDate = new Date();
+			var img = '<img savetime="'+myDate.getTime()+'" localguidid="'+localguidid+'" guidid="'+guidid+'" class="photoshoppic" motherid="'+$api.attr(opentag, "montherid")+'" id="'+$api.attr(opentag, "montherid")+""+1+'" onclick="javascript:openpicdetiallocaldb(this);" value="'
+			+DiyCarmerFinishChu_name+'" src="data:image/jpg;base64,'+DiyCarmerFinishChu_url+'" />';
+			$api.prepend(monthertag, img);
+			$api.css(opentag,"display: none;");
+		}
+
+
+		function openpicdetial(pictag){
+			var motherid_pic = $api.attr(pictag, 'motherid');
+			opentag = document.getElementById(motherid_pic+"add");
+			monthertag = document.getElementById(motherid_pic);
+
+			api.openFrame({
+					name: 'showpic',
+					url: 'widget://html/sale/showpic.html',
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)',
+					pageParam: {
+							url: $api.attr(pictag, 'src'),
+							id: $api.attr(pictag, 'id'),
+							divid: $api.attr(pictag, 'motherid')
+					}
+			});
+
+			api.addEventListener({
+				name: 'delthis'
+			}, function(ret, err) {
+				var numid = ret.value.key1;
+				delxml(numid);
+				$api.css(opentag,"display: block;");
+				api.removeEventListener({
+					name: 'delthis'
+				});
+			});
+		}
+		function openpicdetiallocaldb(pictag){
+			var motherid_pic = $api.attr(pictag, 'motherid');
+			opentag = document.getElementById(motherid_pic+"add");
+			monthertag = document.getElementById(motherid_pic);
+			
+			var localguidid = $api.attr(pictag, "localguidid");
+			var guidid = $api.attr(pictag, "guidid");
+
+			api.openFrame({
+					name: 'showpic',
+					url: 'widget://html/sale/showpic.html',
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)',
+					pageParam: {
+							url: $api.attr(pictag, 'src'),
+							id: $api.attr(pictag, 'id'),
+							divid: $api.attr(pictag, 'motherid')
+					}
+			});
+
+			api.addEventListener({
+					name: 'delthis'
+			}, function(ret, err) {
+					//清除数据库元素
+				oUseTool.DELonepic(localguidid, guidid, function(states){
+					var numid = ret.value.key1;
+					delxml(numid);
+					$api.css(opentag,"display: block;");
+					api.removeEventListener({
+						name: 'delthis'
+					});
+				});
+			});
+		}
+
+		/**
+		 *userid, thisfudao, nextfudao, bapiclist, pinggupiclist, iRorptId, iRorptListTime, iStoreId, cStoreCode,
+		 * zidianname, zidianid, zidiantype, pinpainame, pinpaiid, bei1, bei2, bei3, bei4, bei5, bei6, bei7, bei8
+		 */
+		function save_ba_peixunlist(){
+			/**var object = new Object();
+			object.bauserid = api.pageParam.bauserid;
+			object.userid = $api.getStorage('id');
+			object.thisfudao = document.getElementById("nowfudao").value;
+			object.nextfudao = document.getElementById("nextfudao").value;
+			object.bapiclist = getpiclist("baphoto");
+			object.pinggupiclist = getpiclist("pingguphoto");
+			object.iRorptId = api.pageParam.iReportId;
+			object.iRorptListTime = api.pageParam.iRorptListTime;
+			object.iStoreId = api.pageParam.iStoreId;
+			object.cStoreCode = api.pageParam.cStoreCode;
+			object.zidianname = api.pageParam.name;
+			object.zidianid = api.pageParam.tagid;
+			object.pinpaiid = api.pageParam.BrandID;
+			object.pinpainame = api.pageParam.BrandName;
+			object.zidiantype = api.pageParam.zidiantype;
+			console.log(JSON.stringify(object));**/
+			
+			
+			var object = new Object();
+			object.cBrandName = api.pageParam.brandname;
+			object.iBrandId = api.pageParam.brandid;
+			object.cCategory = "";
+			object.cLeftProduct = "";
+			object.cReportDetailName = "BA带教报告";
+			object.cReportType = "269";
+			object.cRightProduct = "";
+			object.cSalesProduct = "";
+			object.cTrainContent = document.getElementById("nowfudao").value;
+			object.cTrainFollow = document.getElementById("nextfudao").value;
+			object.iReportId = api.pageParam.page.iRorptId;
+			object.iUserId = $api.getStorage('id');
+			object.dtDateTime = $kunchi.todaydate();
+			object.dtReportTime = $kunchi.todaydate();
+			object.iBAUserID = api.pageParam.selectgoodlist.contact.employee_id;
+			//console.log(JSON.stringify(object));
+			
+			
+			//开始循环加入图片
+			var piclistupload = new Array();
+			var picid = document.getElementById('baphoto');
+			var piclist = $api.domAll(picid, "img");
+			var picarray = new Array();
+			for(var a = 0; a < piclist.length; a++){
+				var objectpic = new Object();
+				var picname = $api.attr(piclist[a], 'value');
+				objectpic.cPicClass = 'BA人员拍照';
+				
+				objectpic.cPicPath = $kunchi.gettodaydate() + '/' + picname;
+				
+				objectpic.cPicType = 'PhotoType';
+				objectpic.cRoleName = $api.getStorage("realName");
+				objectpic.cUserName = $api.getStorage("username");
+				objectpic.iBrandName = api.pageParam.brandname;
+				objectpic.iStoreId = api.pageParam.page.iStoreId;
+				objectpic.iReportId = api.pageParam.page.iRorptId;
+				objectpic.iTrainId = '';
+				objectpic.iSize = 0;
+				objectpic.iUserId = $api.getStorage('id');
+				objectpic.dtUploadTime = $kunchi.todaytime();
+				picarray.push(objectpic);
+			}
+			
+			
+			
+			var picidping = document.getElementById('pingguphoto');
+			var piclistping = $api.domAll(picidping, "img");
+			for(var a = 0; a < piclistping.length; a++){
+				var objectpic = new Object();
+				var picname = $api.attr(piclistping[a], 'value');
+				objectpic.cPicClass = '评估表拍照';
+				objectpic.cPicPath = $kunchi.gettodaydate() + '/' + picname;
+				objectpic.cPicType = 'PhotoType';
+				objectpic.cRoleName = $api.getStorage("realName");
+				objectpic.cUserName = $api.getStorage("username");
+				objectpic.iBrandName = api.pageParam.brandname;
+				objectpic.iStoreId = api.pageParam.page.iStoreId;
+				objectpic.iReportId = api.pageParam.page.iRorptId;
+				objectpic.iTrainId = '';
+				objectpic.iSize = 0;
+				objectpic.iUserId = $api.getStorage('id');
+				objectpic.dtUploadTime = $kunchi.todaytime();
+				picarray.push(objectpic);
+			}
+			
+			//console.log(JSON.stringify(picarray));
+			
+			var daijiaopingfennew = $api.getStorage("daijiaopingfennew");
+			
+			var uploadArray = new Array();
+			var uploadObject = new Object();
+			
+			
+			var _grade = daijiaopingfennew;
+			var _pic = picarray;
+			var _grade_pic = new Object();
+			_grade_pic._grade = _grade;
+			_grade_pic._pic = _pic;
+			var _Grades = new Array();
+			_Grades[0] = _grade_pic;
+			object._Grades = _Grades;
+			//console.log(JSON.stringify(object));
+			var allobject = new Array();
+			allobject[0] = object;
+			
+			//开始整理其他人员报告
+			if(historydb != ""){
+				if(historydb.zlist.length > 0){
+				
+					var yicunzaiID = new Array();
+				
+					for(var c = 0; c < historydb.zlist.length; c++){
+						var dbiBAUserID = historydb.zlist[c].liBAUserID;
+						if(dbiBAUserID == api.pageParam.selectgoodlist.contact.employee_id){
+							continue;
+						}
+						var isallowinsert = 0;
+						for(var d = 0; d < yicunzaiID.length; d++){
+							if(dbiBAUserID == yicunzaiID[d]){
+								isallowinsert = 1;
+							}						
+						}
+						if(isallowinsert == 0){
+							yicunzaiID.push(dbiBAUserID);
+						}
+					}
+					for(var e = 0; e < yicunzaiID.length; e++){
+						var djdbObject = new Object();
+						var djdbObject_grade = new Array();
+						var djdbObject_pic = new Array();
+						for(var f = 0; f < historydb.zlist.length; f++){
+						
+							if(yicunzaiID[e] == historydb.zlist[f].liBAUserID){
+							
+								djdbObject.cBrandName = historydb.zlist[f].lcBrandName;
+								djdbObject.iBrandId = historydb.zlist[f].liBrandId;
+								djdbObject.cCategory = historydb.zlist[f].lcCategory;
+								djdbObject.cLeftProduct = historydb.zlist[f].lcLeftProduct;
+								djdbObject.cReportDetailName = historydb.zlist[f].lcReportDetailName;
+								djdbObject.cReportType = historydb.zlist[f].lcReportType;
+								djdbObject.cRightProduct = historydb.zlist[f].lcRightProduct;
+								djdbObject.cSalesProduct = historydb.zlist[f].lcSalesProduct;
+								djdbObject.cTrainContent = historydb.zlist[f].lcTrainContent;
+								djdbObject.cTrainFollow = historydb.zlist[f].lcTrainFollow;
+								djdbObject.iReportId = historydb.zlist[f].liReportId;
+								djdbObject.iUserId = historydb.zlist[f].liUserId;
+								djdbObject.dtDateTime = historydb.zlist[f].ldtDateTime;
+								djdbObject.dtReportTime = historydb.zlist[f].ldtReportTime;
+								djdbObject.iBAUserID = historydb.zlist[f].liBAUserID;
+							
+								for(var g = 0; g < historydb.npic.length; g++){
+									if(historydb.zlist[f].lguidid == historydb.npic[g].ndjguid){
+										var djdbObject_picitem = new Object();
+										djdbObject_picitem.cPicClass = historydb.npic[g].ncPicClass;
+										djdbObject_picitem.cPicPath = historydb.npic[g].ncPicPath;
+										djdbObject_picitem.cPicType = historydb.npic[g].ncPicType;
+										djdbObject_picitem.cRoleName = historydb.npic[g].ncRoleName;
+										djdbObject_picitem.cUserName = historydb.npic[g].ncUserName;
+										djdbObject_picitem.iBrandName = historydb.npic[g].niBrandName;
+										djdbObject_picitem.iStoreId = historydb.npic[g].niStoreId;
+										djdbObject_picitem.iReportId = historydb.npic[g].niReportId;
+										djdbObject_picitem.iTrainId = historydb.npic[g].niTrainId;
+										djdbObject_picitem.iSize = historydb.npic[g].niSize;
+										djdbObject_picitem.iUserId = historydb.npic[g].niUserId;
+										djdbObject_picitem.dtUploadTime = historydb.npic[g].ndtUploadTime;
+										djdbObject_pic.push(djdbObject_picitem);
+									}
+								}
+								
+								
+								for(var h = 0; h < historydb.ffen.length; h++){
+									if(historydb.zlist[f].lguidid == historydb.ffen[h].fdjguid){
+										var djdbObject_gradeitem = new Object();
+										djdbObject_gradeitem.cDictName = historydb.ffen[h].fcDictName;
+										djdbObject_gradeitem.iGradeNumber = historydb.ffen[h].fiGradeNumber;
+										djdbObject_gradeitem.iReportId = historydb.ffen[h].fiReportId;
+										djdbObject_gradeitem.iTotalNumber = historydb.ffen[h].fiTotalNumber;
+										djdbObject_gradeitem.iTrainiId = historydb.ffen[h].fiTrainiId;
+										djdbObject_grade.push(djdbObject_gradeitem);
+									}
+								}
+							}
+						}
+						var _Grades_array = new Array();
+						var _Grades_array_object = new Object();
+						_Grades_array_object._grade = djdbObject_grade;
+						_Grades_array_object._pic = djdbObject_pic;
+						_Grades_array.push(_Grades_array_object);
+						djdbObject._Grades = _Grades_array;
+						
+						allobject.push(djdbObject);
+					}
+				}
+			}
+			
+			
+			
+			api.showProgress({
+            });
+			//console.log(JSON.stringify(allobject));
+			//插入数据 需要先检测一下有没有 如果有的话 更新数据
+			djdbhand.insertdj(api.pageParam.page.iRorptId, $api.getStorage("id"), api.pageParam.selectgoodlist.contact.employee_id, api.pageParam.brandname, allobject, function(states){
+				//console.log(states);
+			});
+			$kunchi.kunchipost('ActionApi/T_ReportTrain/T_ReportTrainAddGrades', allobject, function(ret, err) {
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				api.hideProgress();
+				if (ret) {
+					openAlert('Alert','widget://html/newSign/dialog/Alert.html');
+				} else {
+					if(err.statusCode == '406'){
+						alert(err.msg);
+					}else{
+						alert("提交报告失败,请检查网络是否可用.");
+					}
+				}
+			});
+		}
+		
+		
+		function openAlert(name, html){
+			var framename = name;
+			api.openFrame({
+					name: name,
+					url: html,
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)'
+			});
+			setTimeout(function(){
+				if(framename == "Alert"){
+					api.closeToWin({
+	                    name: 'newplan_zidian_win'
+                    });
+				}else{
+					api.closeFrame({
+						name: framename
+                    });
+				}
+			}, 1500);
+		}
+
+
+	</script>
+</html>

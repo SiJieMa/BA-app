@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>创建进货单</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/huodan/huodan_new.css"/>
+	</head>
+	<body>
+		<div id="shuruwuliudanhao" class="dingdanhao">
+			<span class="danhao">物流单号:</span>
+			<input id="wuliudanhao" type="tel" class="inputdanhao" placeholder="请输入快递单号" />
+			<img class="saodanhao" onclick="opensaoyisao()" src="../../../image/saoyisao.png" />
+		</div>
+		<div id="mendiandiaobotwo" class="mendianinfoshow">
+			<div id="mendiandiaoboone" class="mendianinfo">
+				<div class="shopid">
+					<input id="mendianbianhao" placeholder="请输入对方门店号" />
+				</div>
+				<img onclick="searchmendianhao()" class="search" src="../../../image/search.png" />
+			</div>
+			<span id="mendianname" class="mendianname">门店名称:</span>
+			<div onclick="showlistmenu()" class="selecttype">
+				<span id="duifangleixing">点击选择对方类型</span>
+				<img src="../../../image/right6.png" />
+			</div>
+		</div>
+		<div id="addressinfo" class="info">
+			<ul>
+				<li>
+					<span class="title">创建时间:</span>
+					<span class="msg" id="time"></span>
+				</li>
+				<li>
+					<span class="title">收货人:</span>
+					<div class="inputdiv">
+						<input id="cSignName" placeholder="请填写收货人" />
+					</div>
+				</li>
+				<li>
+					<span class="title">联系电话:</span>
+					<div class="inputdiv">
+						<input id="cSignTele" type="tel" placeholder="收件人联系电话" />
+					</div>
+				</li>
+				<li>
+					<span class="title">收货地址:</span>
+					<div class="inputdiv">
+						<input id="cSignAddress" placeholder="请填写收货地址" />
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div class="goodtitle">
+			<span class="titleup">所选门店的商品列表</span>
+			<!--<img src="../../../image/addgood.png" />-->
+		</div>
+		<div class="goodlist">
+			<ul id="list">
+				<!--<li>
+					<span class="goodtitlecenter">商品名称</span>
+					<span class="goodbeizhu">商品编号</span>
+				</li>
+				<li>
+					<span class="shangpinmingzi">商品名称商品名称商品名称商品名称商品名称</span>
+					<span class="beizhu">6948237050044</span>
+					<div class="shuliang">
+						<input placeholder="商品数量" />
+					</div>
+					<div class="shuliang">
+						<input placeholder="商品单价" />
+					</div>
+				</li>-->
+			</ul>
+		</div>
+
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+
+		/**
+		 *判断是否获取到了正确的门店信息
+		 */
+		var ishasstore = 0;
+
+		apiready = function() {
+			api.showProgress({
+			    title: '提示',
+			    text: '正在准备所需数据',
+			    modal: true
+			});
+			document.getElementById("time").innerHTML = $kunchi.todaydate();
+			if(get_huodan_type()){
+				var addressinfo = document.getElementById("addressinfo");
+				$api.css(addressinfo,'display: none');
+			}
+
+			/**
+			 *判断是否是门店调拨单
+			 */
+			var mendiandiaobooneel = document.getElementById("mendiandiaoboone");
+			var mendiandiaobotwoel = document.getElementById("mendiandiaobotwo");
+			if(api.pageParam.listid == $api.getStorage('mendiandiaobodan')){
+				$api.css(mendiandiaobooneel,"display: block;");
+				$api.css(mendiandiaobotwoel,"display: block;");
+			}
+
+			if((api.pageParam.listid == $api.getStorage('fankudan'))||(api.pageParam.listid == $api.getStorage('mendiandiaobodan'))){
+				var wuliudanhaoel = document.getElementById("shuruwuliudanhao");
+				$api.css(wuliudanhaoel,"display: block;");
+			}
+
+			get_shopinfo();
+		};
+
+		var mendianid = new  Array();
+		var mendianname = new  Array();
+
+
+		function get_shopinfo(){
+			mendianid = new  Array();
+			mendianname = new  Array();
+			if($api.getStorage("roleName") == "BA人员"){
+				var body = new Object();
+				body.iuserid = $api.getStorage("id");
+				$kunchi.kunchipost("ActionApi/T_Store/T_StoreByUserId", body, function(ret,err){
+//					console.log(JSON.stringify(ret));
+					if(ret){
+						if(ret.length == 0){
+							api.hideProgress();
+							api.alert({
+							    title: '提示',
+							    msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+							}, function(aaa, bbb) {
+								api.closeWin({});
+							});
+						}else{
+							api.hideProgress();
+							for(var a = 0; a < ret.length; a++){
+								mendianid.push(ret[a].id);
+								mendianname.push(ret[a].cStoreFullName);
+							}
+							showmendianlist();
+						}
+					}else{
+						api.hideProgress();
+						api.alert({
+						    title: '提示',
+						    msg: '当前网络环境较差，无法获取对应门店信息。',
+						}, function(aaa, bbb) {
+							api.closeWin({
+	                        });
+						});
+					}
+				});
+			}else{
+				api.hideProgress();
+				var ret = $api.getStorage('SELECTSHOP');
+				if(ret.length == 0){
+					api.alert({
+							title: '提示',
+							msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+					}, function(aaa, bbb) {
+						api.closeWin();
+					});
+				}else{
+					for(var a = 0; a < ret.length; a++){
+						mendianid.push(ret[a].iStoreId);
+						mendianname.push(ret[a].cStoreFullName);
+					}
+					showmendianlist();
+				}
+			}
+		}
+		var selectshopid = 0;
+		function showmendianlist(){
+			api.actionSheet({
+			    title: '选择门店',
+			    cancelTitle: '取消',
+			    buttons: mendianname
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= mendianname.length){
+			    		selectshopid = mendianid[index - 1];
+			    		showcangku(selectshopid);
+			    }else{
+			    		api.closeWin();
+			    }
+			});
+		}
+
+		var iStoreHouseId;
+		function showcangku(selectshopid){
+
+			if((api.pageParam.listid == $api.getStorage('wuliaoshiyongdan'))||(api.pageParam.listid == $api.getStorage('shangpinzhuanwuliao'))){
+				iStoreHouseId = 3;
+				getskulist(selectshopid, 3);
+				return;
+			}
+
+
+			var zidian = $api.getStorage("zidianvalue");
+			var namelist = new Array();
+			var nameidlist = new Array();
+
+			var isshow = 0;
+			if($api.getStorage("roleName") == "BA人员"){
+				isshow = 1;
+			}
+
+			for(var a = 0; a < zidian.length; a++){
+				if((zidian[a].cDictClass == "StoreHouse")&&(zidian[a].iParentDict != 0)){
+					if(zidian[a].cDictValue != 3){
+						namelist.push(zidian[a].cDictName);
+						nameidlist.push(zidian[a].cDictValue);
+					}
+				}
+			}
+			api.actionSheet({
+			    title: '选择仓库',
+			    cancelTitle: '取消',
+			    buttons: namelist
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= namelist.length){
+					iStoreHouseId = nameidlist[index - 1];
+					getskulist(selectshopid, nameidlist[index - 1]);
+			    }else{
+			    	api.closeWin();
+			    }
+			});
+		}
+
+
+		function getskulist(selectshopid, nameidlist){
+			jiazai();
+			var body = new Object();
+			body.istoreid = selectshopid;
+			body.istorehouseid = nameidlist;
+			body.dtTime = $kunchi.todaydate();
+			$kunchi.kunchipost("ActionApi/T_Report_Sku/T_Report_SkusInventoryByHouse", body, function(ret,err){
+//				console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					if(ret.length == 0){
+						api.alert({
+						    title: '提示',
+						    msg: '您所选择的门店暂无库存商品记录.',
+						}, function(aaa, bbb) {
+							api.closeWin();
+						});
+					}else{
+						dealxml(ret);
+					}
+				}else{
+					tingzhi();
+					api.alert({
+					    title: '提示',
+					    msg: '当前网络环境较差，无法获取对应库存信息。',
+					}, function(aaa, bbb) {
+						api.closeWin({
+                        });
+					});
+				}
+			});
+		}
+
+		function dealxml(ret){
+			var el = document.getElementById("list");
+			document.getElementById("list").innerHTML = '<li id="0"><span class="goodtitlecenter">商品名称</span><span class="goodbeizhu">当期库存</span></li>';
+			for(var a = 0; a < ret.length; a++){
+
+				var iCurrentInventory = ret[a].iCurrentInventory;
+				if(isempty(iCurrentInventory)){
+					iCurrentInventory = 0;
+				}
+				var cssshuxing = 'readonly="readonly"';
+				if(iCurrentInventory > 0){
+					cssshuxing = '';
+				}
+				var li = '<li id="'+ret[a].iProuductId+'" name="'+ret[a].cProductFullName+'">'
+						+		'<span class="shangpinmingzi">'+ret[a].cProductFullName+'('+ret[a].cProductProductCode+')</span>'
+						+		'<span style="font-size: 16px;" class="beizhu">'+iCurrentInventory+'</span>'
+						+		'<div class="shuliang">'
+						+			'<input '+cssshuxing+' id="num'+ret[a].iProuductId+'" oninput="changejinhuonum(this)" kucun="'+iCurrentInventory+'" type="tel" placeholder="商品数量" />'
+						+		'</div>'
+						+		'<div class="shuliang">'
+						+			'<input '+cssshuxing+' id="price'+ret[a].iProuductId+'" oninput="changenum(this)" type="tel" placeholder="商品单价" />'
+						+		'</div>'
+						+	'</li>';
+				$api.append(el, li);
+			}
+		}
+
+
+		function changenum(tag){
+			$(tag).val($(tag).val().replace(/[^0-9.]/g,''));
+			$api.css(tag,'background-color: #f2f2f2;');
+		}
+		function changejinhuonum(tag){
+			$(tag).val($(tag).val().replace(/[^0-9.]/g,''));
+
+			if(api.pageParam.listid != $api.getStorage('xiaoshoutuihuodan')){
+				var inputnum = $api.val(tag);
+				var kucun = $api.attr(tag, "kucun");
+				if(parseInt(inputnum) > parseInt(kucun)){
+					alert('您输入的调拨数量大于当前的库存,请重新输入.');
+					$api.val(tag, "")
+					$api.css(tag,'background-color: #FF0000;');
+				}else{
+					$api.css(tag,'background-color: #f2f2f2;');
+				}
+			}
+		}
+
+
+		function upload_baogao(aaa, bbb){
+			if(aaa){
+				var json = new Object();
+				/**
+				 *用来存储下个页面展示用的数据
+				 */
+				var showjson = new Object();
+				if(!get_huodan_type()){
+					showjson.shouperson = document.getElementById("cSignName").value;
+					showjson.shoutel= document.getElementById("cSignTele").value;
+					showjson.shouaddress= document.getElementById("cSignAddress").value;
+				}
+				var showarray = new Array();
+
+
+				json.cOrderCode = null;
+				json.iOrderType = api.pageParam.listid;
+				json.iPreparedId = $api.getStorage("id");
+				json.dtPrepTime = $kunchi.todaytime();
+				/**
+				 *用来判断是否还可以继续
+				 */
+				var iscontune = 0;
+				if(!get_huodan_type()){
+					if(aaa.length == 2){
+						for(var a = 0; a < aaa.length; a++){
+							if(aaa[a].RoleName == '业务主管'){
+								json.iDirectorId = aaa[a].UserID;
+							}else{
+								json.iAuthorizeId = aaa[a].UserID;
+							}
+						}
+						iscontune = 0;
+					}
+					if(aaa.length == 1){
+						json.iDirectorId = aaa[0].UserID;
+						json.iAuthorizeId = aaa[0].UserID;
+						iscontune = 0;
+					}
+					if(aaa.length == 0){
+						iscontune = 1;
+						json.iDirectorId = null;
+						json.iAuthorizeId = null;
+					}
+				}
+
+				/**
+				 *判断是否是门店调拨单
+				 */
+
+				if((api.pageParam.listid == $api.getStorage('fankudan'))||(api.pageParam.listid == $api.getStorage('mendiandiaobodan'))){
+					var wuliudanhao = document.getElementById("wuliudanhao").value;
+					if(isempty(wuliudanhao)){
+						alert("物流单号没有填写.");
+						iscontune = 1;
+						return;
+					}else{
+						json.cLogisticsNo = wuliudanhao;
+					}
+				}
+
+				if(api.pageParam.listid == $api.getStorage('mendiandiaobodan'))	{
+
+					var mendianbianhao = document.getElementById("mendianbianhao").value;
+					var duifangleixing = document.getElementById("duifangleixing").innerHTML;
+					if(ishasstore == 0){
+						alert("请输入正确的门店号");
+						iscontune = 1;
+						return;
+					}
+					if(duifangleixing.trim() == "点击选择对方类型"){
+						alert("尚未选择对方类型");
+						iscontune = 1;
+						return;
+					}
+					json.cSideId = $api.attr(document.getElementById("mendianbianhao"), "sideid");
+					json.cSideType = duifangleixing;
+				}
+				if(iscontune == 0){
+
+					json.iAuthoState = $api.getStorage('baiAuthoState');
+					json.iOrderState = $api.getStorage('baiOrderState');
+
+					json.iStoreId = selectshopid;
+					json.iStoreHouseId = iStoreHouseId;
+					json.cRemark = '';//备注
+					if(!get_huodan_type()){
+						var cSignName = document.getElementById("cSignName").value;
+						var cSignTele = document.getElementById("cSignTele").value;
+						var cSignAddress = document.getElementById("cSignAddress").value;
+						json.cSignName = cSignName;
+						json.cSignTele = cSignTele;
+						json.cSignAddress = cSignAddress;
+						if(isempty(cSignName)||isempty(cSignTele)||isempty(cSignAddress)){
+							alert("收货信息没有填写完整");
+							iscontune = 1;
+							return;
+						}
+					}
+
+					var orderdetaillist = [];
+					var indexlist = 0;
+
+					var el = document.getElementById("list");
+					for(var cc = 0; cc < $api.domAll(el, 'li').length; cc++){
+
+						var iproductid = $api.attr($api.domAll(el, 'li')[cc], 'id');
+						if(iproductid == "0"){
+							continue;
+						}
+
+						var iproductidnum = 'num'+iproductid;
+						var iproductidprice = 'price'+iproductid;
+						/**
+						 *存下来用来展示用的
+						 */
+						var showroderjson = new Object();
+						showroderjson.id = $api.attr($api.domAll(el, 'li')[cc], 'id');
+						showroderjson.name = $api.attr($api.domAll(el, 'li')[cc], 'name');
+						showroderjson.price = document.getElementById(iproductidprice).value;
+						showroderjson.num = document.getElementById(iproductidnum).value;
+
+
+
+						var orderdetailjson = new Object();
+
+						var eliproductidnum = document.getElementById(iproductidnum).value;
+						var eliproductidprice = document.getElementById(iproductidprice).value;
+
+
+						/**
+						 *判断是否有填写错误的情况
+						 */
+						if(((isempty(eliproductidnum))&&(!isempty(eliproductidprice)))||((!isempty(eliproductidnum))&&(isempty(eliproductidprice)))){
+							iscontune = 1;
+							if(isempty(eliproductidnum)){
+								$api.css(document.getElementById(iproductidnum),'background-color: #FF0000;');
+							}
+							if(isempty(eliproductidprice)){
+								$api.css(document.getElementById(iproductidprice),'background-color: #FF0000;');
+							}
+							break;
+						}
+
+						orderdetailjson.iProId = iproductid;
+						orderdetailjson.iCount = eliproductidnum;
+						if((api.pageParam.listid == $api.getStorage('xiaoshoutuihuodan'))||(api.pageParam.listid == $api.getStorage('shangpinzhuanwuliao'))){
+							orderdetailjson.iSignCount = eliproductidnum;
+						}
+
+						orderdetailjson.iPrice = eliproductidprice;
+						orderdetailjson.iMoney = parseInt(eliproductidnum) * parseFloat(eliproductidprice);
+
+						//第二版接口修改
+						if(api.pageParam.listid == $api.getStorage("shangpinzhuanwuliao")){
+							orderdetailjson.iStoreHouseId = 3;
+						}else{
+							orderdetailjson.iStoreHouseId = iStoreHouseId;
+						}
+
+						if((eliproductidnum != "")&&(eliproductidprice != "")){
+							orderdetaillist[indexlist] = orderdetailjson;
+							showarray[indexlist] = showroderjson;
+							indexlist++;
+						}
+					}
+					json.T_OrderDetail = orderdetaillist;
+					showjson.list = showarray;
+					if(iscontune == 0){
+						if(orderdetaillist == 0){
+							alert("您没有填写任何商品信息.");
+							return;
+						}
+						$api.setStorage("tijiaohuodan",json);
+						$api.setStorage("tijiaohuodan_show",showjson);
+						openpage('show_huodan_new_win', 'show_huodan_new_frame', '确认订单', "widget://html/BA/huodan/show_huodan_new.html", {listid: api.pageParam.listid});
+					}else{
+						alert("您填写的报表有问题,请修改后提交.");
+					}
+				}
+			}else{
+				alert(bbb.msg);
+			}
+
+		}
+
+		 function get_shenpi(){
+		 	if(!get_huodan_type()){
+			 	jiazai();
+				var body = new Object();
+				body.userid = $api.getStorage('id');
+				body.ordertype = api.pageParam.listid;
+				$kunchi.kunchipost("ActionApi/T_Orders/GetUserAuthor", body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+					tingzhi();
+					if(ret){
+						if(ret.length == 0){
+							upload_baogao(true, false);
+						}else{
+							upload_baogao(ret, err);
+						}
+					}else{
+						api.alert({
+						    title: '提示',
+						    msg: err.msg,
+						}, function(abcd, efgh) {
+						});
+					}
+				});
+		 	}else{
+		 		upload_baogao(true, false);
+		 	}
+		}
+
+		function get_huodan_type(){
+			if((api.pageParam.listid == $api.getStorage('xiaoshoudan'))||(api.pageParam.listid == $api.getStorage('xiaoshoutuihuodan'))||(api.pageParam.listid == $api.getStorage('wuliaoshiyongdan'))||(api.pageParam.listid == $api.getStorage('shangpinzhuanwuliao'))){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+
+		function showlistmenu(){
+			var listbutton = ['仓库', '门店', '客户'];
+			api.actionSheet({
+			    title: '选择对方类型',
+			    cancelTitle: '取消',
+			    buttons: listbutton
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= 3){
+			    	document.getElementById("duifangleixing").innerHTML = listbutton[index - 1];
+			    }
+			});
+		}
+
+		function searchmendianhao(){
+			jiazai();
+			var mendianbianhao = document.getElementById("mendianbianhao").value;
+			var body = new Object();
+			body.storeno = mendianbianhao;
+			$kunchi.kunchipost("ActionApi/T_Store/T_StoreByStoreNo", body, function(ret,err){
+				tingzhi();
+//				console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+				var mendianname_el = document.getElementById("mendianname");
+				if(ret){
+					if(ret.length != 0){
+						$api.attr(document.getElementById("mendianbianhao"),"sideid",ret[0].id);
+						document.getElementById("mendianname").innerHTML = '门店名称:'+ret[0].cStoreFullName + "(编号:"+ret[0].cStoreCode+")";
+						$api.css(mendianname_el,'color: #666666;');
+						ishasstore = 1;
+					}else{
+						document.getElementById("mendianname").innerHTML = "查无此门店,请确认门店号是否正确.";
+						$api.css(mendianname_el,'color: #ff0000;');
+						ishasstore = 0;
+					}
+				}else{
+					document.getElementById("mendianname").innerHTML = "当前网络错误.";
+					$api.css(mendianname_el,'color: #ff0000;');
+					ishasstore = 0;
+				}
+			});
+		}
+
+
+		function opensaoyisao(){
+			var FNScanner = api.require('FNScanner');
+			FNScanner.open({
+				sound: 'widget://res/di.wav',
+			    autorotation: false
+			}, function(ret, err) {
+			    if (ret) {
+			        if(ret.eventType == "success"){
+			        	var content = ret.content;
+						var kuaididanhaoel = document.getElementById("wuliudanhao");
+						$api.val(kuaididanhaoel, content);
+			        }
+			    }
+			});
+		}
+
+	</script>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>显示并上传失败图片</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<style>
+		.piclist {
+			width: 100%;
+			height: auto;
+			float: left;
+		}
+
+		.piclist ul {
+			width: 100%;
+			height: 100%;
+			float: left;
+		}
+
+		.piclist ul li {
+			width: 50%;
+			height: 100%;
+			float: left;
+		}
+
+		.piclist ul li img {
+			width: 96%;
+			margin-left: 2%;
+			margin-right: 2%;
+			height: auto;
+			float: left;
+		}
+
+		.shuoming {
+			width: 94%;
+			padding-left: 3%;
+			padding-right: 3%;
+			height: auto;
+			line-height: 30px;
+			font-size: 17px;
+			color: #999;
+			font-weight: 800;
+			background-color: #efefef;
+		}
+
+		.shuoming i {
+			font-style: normal;
+			color: #ff0000;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="shuoming"><i>操作说明:</i>点击图片则自动上传图片，尽量每天保证没有失败图片。</div>
+	<div class="piclist">
+		<ul id="list">
+			<!-- <li>
+					<img alt="..." />
+				</li> -->
+		</ul>
+	</div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/apiclear.js"></script>
+<script type="text/javascript" src="../../script/kunchiba.js"></script>
+<script type="text/javascript" src="../../script/db.js"></script>
+<script type="text/javascript" src="../../script/kunchisale.js"></script>
+<script type="text/javascript" src="../../script/base64.js"></script>
+<script type="text/javascript" src="../../script/log.js"></script>
+<script type="text/javascript">
+	var page = 10;
+	var index = 0;
+	var endpage;
+	//是否允许加载图片
+	var isallow = 0;
+
+	var liitemid = 0;
+	apiready = function() {
+		api.showProgress({
+			title: '请稍等',
+			text: '正在加载图片',
+			modal: true
+		});
+		endpage = parseInt(index) + parseInt(page);
+		api.addEventListener({
+			name: 'scrolltobottom',
+			extra: {
+				threshold: 50 //设置距离底部多少距离时触发，默认值为0，数字类型
+			}
+		}, function(ret, err) {
+			if (isallow == 0) {
+				index = parseInt(index) + parseInt(page);
+				endpage = parseInt(index) + parseInt(page);
+				showfailupload();
+			}
+		});
+		showfailupload();
+	};
+
+	function showfailupload() {
+		isallow = 1;
+		if (index == 0) {
+			document.getElementById("list").innerHTML = "";
+		}
+		var sql = 'SELECT * FROM piclist where isupload = "0" or  isupload = "2" limit ' + index + ',' + endpage + ';';
+		// var sql = 'SELECT * FROM piclist';
+		exexutesqlother(sql, function(aaa) {
+			//exexutesqlother('SELECT * FROM piclist where isupload = "0" ORDER BY picname limit '+index+','+endpage+';', function(aaa){
+			// console.log(JSON.stringify(aaa));
+			// return;
+			if (aaa != "no") {
+				var el = document.getElementById("list");
+				for (var a = 0; a < aaa.data.length; a++) {
+					var html = '<li id="a' + liitemid + '" filename="' + aaa.data[a].picname + '" base64str="' + aaa.data[a].picurl + '" filepath="' + aaa.data[a].filepath + '" onclick="uploadthispic(this)"><img alt="..." src="data:image/jpg;base64,' + aaa.data[
+						a].picurl + '" /></li>';
+					$api.append(el, html);
+					liitemid++;
+				}
+			} else {
+				isallow = 1;
+				api.toast({
+					msg: '没有更多图片了.'
+				});
+			}
+			api.hideProgress();
+		});
+	}
+
+	function uploadthispic(tag) {
+		var filename = $api.attr(tag, 'filename');
+		var base64str = $api.attr(tag, 'base64str');
+		var filepath = $api.attr(tag, 'filepath');
+		var id = $api.attr(tag, 'id');
+		uploadnewpic(filename, base64str, filepath, id);
+	}
+
+	function uploadnewpic(filename, base64str, filepath, id) {
+		api.showProgress({
+			title: '请稍等',
+			text: '上传成功',
+			modal: true
+		});
+		var piclist = [];
+		if ((typeof(filepath) == 'undefined') || (filepath == null) || (filepath == "null") || (filepath == "") || (filepath == "undefined")) {
+			filepath = 'oldPicList';
+		}
+		var piclistitem = {
+			"filename": filename,
+			"base64str": base64str,
+			"filepath": filepath
+		};
+		piclist.push(piclistitem);
+		//console.log(JSON.stringify(piclist));
+		$kunchi.kunchiuploadpic('api/Upload', JSON.stringify(piclist), function(ret, err) {
+			//console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+			api.hideProgress();
+			if (ret) {
+				api.toast({
+					msg: '上传成功'
+				});
+				delxml(id);
+				deldblistitem(filename);
+			} else {
+				api.toast({
+					msg: '上传失败'
+				});
+			}
+		});
+	}
+
+	function deldblistitem(filename) {
+		var db = api.require('db');
+		//首先要清除已经上传成功的图片  WHERE isupload = 1 ORDER BY isupload limit 200;
+		db.executeSql({
+			name: 'kunchidb',
+			sql: 'DELETE FROM piclist WHERE picname = "' + filename + '";'
+		}, function(ret, err) {
+			//console.log(JSON.stringify(ret) + "===" + JSON.stringify(err));
+		});
+	}
+</script>
+
+</html>

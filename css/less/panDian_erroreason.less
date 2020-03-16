@@ -1,0 +1,159 @@
+@import 'main.less';
+
+#app{
+	#main.displaycss();
+	height: 100vh;
+	flex-direction: column;
+}
+.errorlist{
+	#main.displaycss();
+	background-color: #FAFAFA;
+	width: 100%;
+	flex-direction: column;
+	flex: 1;
+	ul{
+		width: 100%;
+		height: 100%;
+		overflow: scroll;
+		li{
+			width: 100%;
+			height: auto;
+			background-color: #FFFFFF;
+			border-bottom: 5px solid #FAFAFA;
+			#main.displaycss();
+			flex-direction: column;
+			.one{
+				width: 100%;
+				height: 40px;
+				border-bottom: 1px solid #FAFAFA;
+				#main.displaycss();
+				flex-direction: row;
+				.dian{
+					width: 8px;
+					height: 8px;
+					margin: 16px 10px;
+					background-color: #666666;
+					border-radius: 8px;
+				}
+				.name{
+					flex: 1;
+					height: 40px;
+					line-height: 40px;
+					color: #666666;
+					font-size: 0.9375rem;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+			.two{
+				width: 100%;
+				height: auto;
+				#main.displaycss();
+				flex-direction: row;
+				border-bottom: 1px solid #FAFAFA;
+				.left{
+					width: 80px;
+					height: 40px;
+					line-height: 40px;
+					color: #333333;
+					font-size: 0.875rem;
+					margin-left: 28px;
+				}
+				.middle{
+					flex: 1;
+					height: 40px;
+					line-height: 40px;
+					color: #999999;
+					font-size: 0.875rem;
+					margin-left: 5px;
+				}
+				.right{
+					width: 20px;
+					height: 20px;
+					margin: 10px 10px 10px 0;
+				}
+			}
+			.three{
+				width: 100%;
+				height: auto;
+				#main.displaycss();
+				flex-direction: row;
+				border-bottom: 1px solid #FAFAFA;
+				.left{
+					width: 80px;
+					height: 40px;
+					line-height: 40px;
+					color: #333333;
+					font-size: 0.875rem;
+					margin-left: 28px;
+				}
+				.van-cell{
+					padding: 8px 5px;
+				}
+			}
+		}
+	}
+}
+
+.tijiao{
+	width: 60%;
+	height: 50px;
+	margin: 5px 20%;
+	.van-button--large{
+		height: 40px;
+		line-height: 38px;
+	}
+}
+
+.selectmain{
+	#main.displaycss();
+	#main.calc10();
+	margin: 0 5px;
+	flex-direction: column;
+	.title{
+		width: 100%;
+		height: 50px;
+		#main.displaycss();
+		flex-direction: row;
+		
+		.dian1{
+			width: 8px;
+			height: 8px;
+			margin: 22px 10px;
+			background-color: #666666;
+			border-radius: 8px;
+			font-size: 0.9375rem;
+		}
+		.cancle{
+			width: 60px;
+			height: 50px;
+			line-height: 50px;
+			color: #666666;
+			text-align: right;
+			font-size: 0.9375rem;
+			margin-right: 10px;
+		}
+		.text{
+			flex: 1;
+			height: 50px;
+			line-height: 50px;
+			color: #666666;
+			font-size: 0.9375rem;
+		}
+	}
+	.menu{
+		width: 100%;
+		height: auto;
+		#main.displaycss();
+		flex-direction: column;
+		button{
+			width: 100%;
+			height: 50px;
+			line-height: 50px;
+			color: #333333;
+			font-size: 0.875rem;
+			border-bottom: 1px solid #EEEEEE;
+		}
+	}
+}

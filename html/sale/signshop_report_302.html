@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>BA带教报告拍照</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/signshop_report_302.css"/>
+	</head>
+	<body id="body">
+		<div class="photoba">
+			<div class="item">
+				<span class="title">本次辅导内容</span>
+				<div class="divinput">
+					<input id="nowfudao" />
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">下次跟进内容</span>
+				<div class="divinput">
+					<input id="nextfudao" />
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">BA人员拍照</span>
+				<div id="baphoto" num="0" class="divphoto">
+					<i id="baphotoadd" onclick="opencarmer(this)" pictypename="BA人员拍照" montherid="baphoto" class="fa fa-camera" aria-hidden="true"></i>
+				</div>
+			</div>
+			<div class="item">
+				<span class="title">评估表拍照</span>
+				<div id="pingguphoto" num="0" class="divphoto">
+					<i id="pingguphotoadd" onclick="opencarmer(this)" pictypename="评估表拍照" montherid="pingguphoto" class="fa fa-camera" aria-hidden="true"></i>
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/sale_db.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/base64Update.js"></script>
+	<script type="text/javascript" src="../../script/synthesis.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			FastClick.attach(document.body);
+			initpic();
+			init_dblocallist();
+			api.addEventListener({
+					name: 'batijiao2'
+			}, function(ret, err) {
+				save_ba_peixunlist();
+			});
+		};
+
+		function init_dblocallist() {
+		  var db = api.require('db');
+		  db.selectSql({
+		      name: 'kunchidb',
+		      sql: 'SELECT * FROM daijiaopiclist WHERE iRorptId="' + api.pageParam.iReportId + '" AND userid="'+$api.getStorage("id")
+		      +'" AND pinpaiid="' + api.pageParam.BrandID + '" AND bauserid="' + api.pageParam.bauserid + '"'
+		  }, function(ret, err) {
+		      if (ret.status) {
+		          if (ret.data.length != 0) {
+						document.getElementById("nowfudao").value = ret.data[0].thisfudao;
+						document.getElementById("nextfudao").value = ret.data[0].nextfudao;
+						// change_String_Piclist(temppic)
+						showpiclist(ret.data[0].bapiclist, 'baphoto');
+						showpiclist(ret.data[0].pinggupiclist, 'pingguphoto');
+		          }
+		      }
+		  });
+		}
+
+		function showpiclist(arraystring, id){
+			var picarray = change_String_Piclist(arraystring);
+			if(picarray.length != 0){
+				if(picarray[0] != 0){
+					var el = document.getElementById(id);
+					$api.attr(el, 'num', picarray.length);
+					for(var a = 0; a < picarray.length; a++){
+						var db = api.require('db');
+						var ret = db.selectSqlSync({
+								name: 'kunchidb',
+								sql: 'SELECT * FROM piclist where picname = "'+picarray[a]+'";'
+						});
+						var img_xml = '';
+						var myDate = new Date();
+						if(ret.status){
+							if(ret.data.length == 0){
+								img_xml = $api.posturllujie+'Content/UploadFiles/mobile/'+picarray[a];
+							}else{
+								img_xml = "data:image/jpg;base64,"+ret.data[0].picurl;
+							}
+						}else{
+							img_xml = $api.posturllujie+'Content/UploadFiles/mobile/'+picarray[a];
+						}
+						var html = '<img savetime="'+myDate.getTime()+'" class="photoshoppic" motherid="'+id+'" id="'+id+""+a+'" onclick="javascript:openpicdetial(this);" value="'+picarray[a]+'" src="'+img_xml+'" />';
+						$api.prepend(el, html);
+					}
+
+					var addid = id + 'add';
+					var addidhtml = document.getElementById(addid);
+					if(picarray.length == 5){
+						$api.css(addidhtml,'display: none;');
+					}
+
+				}
+			}
+		}
+
+
+
+		var opentag, monthertag, pictypename;
+		function opencarmer(tag){
+			opentag = tag;
+			var montherid = $api.attr(tag, 'montherid');
+			pictypename = $api.attr(tag, 'pictypename');
+			monthertag = document.getElementById(montherid);
+
+
+			api.addEventListener({
+			    name: 'PaiPicFinish'
+			}, function(ret, err) {
+			    var PaiPicFinish = ret.value.PaiPicFinish;
+			    if(PaiPicFinish == 'ok'){
+			    	api.closeWin({
+					    name: 'DIYCarmerWin'
+					});
+					api.closeWin({
+					    name: 'showCarmerPicSale'
+					});
+			    	upload_toonline_diycarmer();
+			    }
+			});
+			var quyu = $api.attr(opentag, 'pictype');
+			openDiyCarmerPaiZhao(api.pageParam.cStoreFullName, pictypename, "BA带教报告");
+		}
+
+		function upload_toonline_diycarmer(){
+			addnum(function(valuenum){
+				if(valuenum != 6){
+					var myDate = new Date();
+					var img = '<img savetime="'+myDate.getTime()+'" class="photoshoppic" motherid="'+$api.attr(opentag, "montherid")+'" id="'+$api.attr(opentag, "montherid")+""+valuenum+'" onclick="javascript:openpicdetial(this);" value="'
+					+DiyCarmerFinishChu_name+'" src="data:image/jpg;base64,'+DiyCarmerFinishChu_url+'" />';
+					$api.prepend(monthertag, img);
+					if(valuenum == 5){
+						$api.css(opentag,"display: none;");
+					}
+				}
+			});
+		}
+
+
+		function addnum(callBack){
+			var value = $api.attr(monthertag, 'num');
+			value = parseInt(value);
+			if(value < 5){
+				value = value + 1;
+				$api.attr(monthertag, 'num', value);
+			}else{
+				value = 6;
+			}
+			callBack(value);
+		}
+
+		function jiannum(callBack){
+			var value = $api.attr(monthertag, 'num');
+			value = parseInt(value);
+			if(value > 0){
+				value = value - 1;
+				$api.attr(monthertag, 'num', value);
+			}else{
+				value = 6;
+			}
+			callBack(value);
+		}
+
+		function openpicdetial(pictag){
+			var motherid_pic = $api.attr(pictag, 'motherid');
+			opentag = document.getElementById(motherid_pic+"add");
+			monthertag = document.getElementById(motherid_pic);
+
+			api.openFrame({
+					name: 'showpic',
+					url: 'widget://html/sale/showpic.html',
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)',
+					pageParam: {
+							url: $api.attr(pictag, 'src'),
+							id: $api.attr(pictag, 'id'),
+							divid: $api.attr(pictag, 'motherid')
+					}
+			});
+
+			api.addEventListener({
+					name: 'delthis'
+			}, function(ret, err) {
+				jiannum(function(num){
+					var numid = ret.value.key1;
+					delxml(numid);
+					if(num < 5){
+						$api.css(opentag,"display: block;");
+					}
+					api.removeEventListener({
+						name: 'delthis'
+					});
+				});
+			});
+		}
+
+		/**
+		 *userid, thisfudao, nextfudao, bapiclist, pinggupiclist, iRorptId, iRorptListTime, iStoreId, cStoreCode,
+		 * zidianname, zidianid, zidiantype, pinpainame, pinpaiid, bei1, bei2, bei3, bei4, bei5, bei6, bei7, bei8
+		 */
+		function save_ba_peixunlist(){
+			var object = new Object();
+			object.bauserid = api.pageParam.bauserid;
+			object.userid = $api.getStorage('id');
+			object.thisfudao = document.getElementById("nowfudao").value;
+			object.nextfudao = document.getElementById("nextfudao").value;
+			object.bapiclist = getpiclist("baphoto");
+			object.pinggupiclist = getpiclist("pingguphoto");
+			object.iRorptId = api.pageParam.iReportId;
+			object.iRorptListTime = api.pageParam.iRorptListTime;
+			object.iStoreId = api.pageParam.iStoreId;
+			object.cStoreCode = api.pageParam.cStoreCode;
+			object.zidianname = api.pageParam.name;
+			object.zidianid = api.pageParam.tagid;
+			object.pinpaiid = api.pageParam.BrandID;
+			object.pinpainame = api.pageParam.BrandName;
+			object.zidiantype = api.pageParam.zidiantype;
+			object.bei1 = "";
+			object.bei2 = "";
+			object.bei3 = "";
+			object.bei4 = "";
+			object.bei5 = "";
+			object.bei6 = "";
+			object.bei7 = "";
+			object.bei8 = "";
+			new_BA_paizhaopic(object);
+			$api.setStorage('isdaijiao','1');
+		}
+
+
+		function getpiclist(id){
+			var picid = document.getElementById(id);
+			var piclist = $api.domAll(picid, "img");
+			var picarray = new Array();
+			for(var a = 0; a < piclist.length; a++){
+				var picname = $api.attr(piclist[a], 'value');
+				picarray.push(picname);
+			}
+			return change_Piclist_String(picarray);
+		}
+
+	</script>
+</html>

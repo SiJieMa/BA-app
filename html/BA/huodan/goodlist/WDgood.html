@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>商品列表</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			.dingdanhao{ background-color: #FFFFFF; border-bottom: 1px solid #71C4E4; width: 100%; margin-bottom: 5px; margin-top: 8px; height: auto; float: left;}
+			.dingdanhao .danhao{ margin-left: 10px; width: 5px; height: 15px; margin-top: 12.5px; margin-right: 10px; float: left; background-color: #71C4E4;}
+			.dingdanhao .inputdanhao{ width: 150px; height: 20px; line-height: 20px; margin-top: 10px; float: left; outline: none; font-size: 15px;}
+			.dingdanhao .saodanhao{ width: 20px; height: 20px; float: right; padding: 10px;}
+			
+		</style>
+	</head>
+	<body>
+		<div class="dingdanhao">
+			<span class="danhao"></span>
+			<input id="shangpinnamecode" class="inputdanhao" placeholder="请输入商品名称或编码" />
+			<img class="saodanhao" onclick="refushlist()" src="../../../../image/refush.png" />
+			<img class="saodanhao" onclick="searchlist()" src="../../../../image/search.png" />
+			<img class="saodanhao" onclick="saoyisaoNCcode()" src="../../../../image/saoyisao.png" />
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+	
+	
+		/**
+		 *获取到的订单的数量 保存下来 
+		 */
+		var getSHOPlistArray;
+		var frameheight;
+		apiready = function() {
+			api.showProgress({
+			    modal: true
+			});
+			getSHOPlistArray = $api.getStorage('GoodlistRet');
+			frameheight = api.frameHeight;
+			//申请试用装商品列表
+			dealxml();
+		};
+		
+		
+		
+		function dealxml(){
+		
+			if((getSHOPlistArray.length == 0)||(getSHOPlistArray == 'undefined')){
+				api.toast({
+	                msg:'没有可选商品'
+                });
+                api.hideProgress();
+                return;
+			}
+			var listARRay = new Array();
+			for(var a = 0; a < getSHOPlistArray.length; a++){
+				var title = getSHOPlistArray[a].cProductFullName;
+//				if(title.length > 10){
+//					title = title.substring(0,10) + '...';
+//				}
+				var jsonboject = {
+							        title: title,
+							        subTitle: getSHOPlistArray[a].cProductFullName,
+							        remark: getSHOPlistArray[a].cProductProductCode,
+							        uid: a
+							    };
+				listARRay.push(jsonboject);
+			}
+			var UIListView = api.require('UIListView');
+			UIListView.open({
+			    rect: {
+			        x: 0,
+			        y: 54,
+			        w: api.winWidth,
+			        h: frameheight - 55
+			    },
+			    data: listARRay,
+			    styles: {
+			        borderColor: '#f5f5f5',
+			        item: {
+			            bgColor: '#ffffff',
+			            activeBgColor: '#F5F5F5',
+			            height: 65.0,
+			            imgWidth: 40,
+			            imgHeight: 40,
+			            imgCorner: 4,
+			            placeholderImg: '',
+			            titleSize: 15.0,
+			            titleColor: '#000',
+			            subTitleSize: 12.0,
+			            subTitleColor: '#000',
+			            remarkColor: '#000',
+			            remarkSize: 15,
+			            remarkIconWidth: 30
+			        }
+			    },
+			    fixedOn: api.frameName
+			}, function(ret, err) {
+			    if (ret) {
+			        if((ret.eventType == "clickContent")||(ret.eventType == "clickRemark")){
+			        	var index = ret.index;
+			        	SelectThisGood(index);
+			        }
+			    }
+			});
+			api.hideProgress();
+		}
+		/**
+		 * 
+		 */
+		function SelectThisGood(index){
+		
+			var UIListView = api.require('UIListView');
+			UIListView.getDataByIndex({
+			    index: index
+			}, function(aaa, bbb) {
+				//console.log(JSON.stringify(aaa));
+			    if (aaa) {
+			        var uid = aaa.data.uid;
+			        var iRequestable = getSHOPlistArray[uid].iCurrentInventory;
+					var listid = api.pageParam.page.listid;
+					
+					if(listid == $api.getStorage("wuliaodan")){
+						iRequestable = getSHOPlistArray[uid].iRequestable;
+					}
+					api.sendEvent({
+					    name: 'GetEventGoodInfo',
+					    extra: {
+					        iProuductId: getSHOPlistArray[uid].id,
+					        cProductFullName: getSHOPlistArray[uid].cProductFullName,
+					        cProductProductCode: getSHOPlistArray[uid].cProductProductCode,
+					        iAmount: getSHOPlistArray[uid].iAmount,
+					        ApplyNum: getSHOPlistArray[uid].ApplyNum,
+					        cProductCodeNc: getSHOPlistArray[uid].cProductCodeNc
+					    }
+					});
+			    }
+			});
+			
+		}
+		
+		
+		/**
+		 *扫一扫获取条形码 
+		 */
+		function saoyisaoNCcode(){
+			var FNScanner = api.require('FNScanner');
+			FNScanner.open({
+				sound: 'widget://res/di.wav',
+			    autorotation: false
+			}, function(ret, err) {
+			    if (ret) {
+			        if(ret.eventType == "success"){
+			        	var content = ret.content;
+						var shangpinnamecodeel = document.getElementById("shangpinnamecode");
+						$api.val(shangpinnamecodeel, content);
+						searchlist();
+			        }
+			    }
+			});
+		}
+		
+		/**
+		 *搜索列表中的数据 
+		 */
+		function searchlist(){
+			var shangpinnamecodeel = document.getElementById("shangpinnamecode");
+			var context = $api.val(shangpinnamecodeel);
+			
+			var list = new Array();
+			
+			if(context.trim().length == 0){
+				for(var a = 0; a < getSHOPlistArray.length; a++){
+					var title = getSHOPlistArray[a].cProductFullName;
+					if(title.length > 10){
+						title = title.substring(0,10) + '...';
+					}
+					var jsonboject = {
+								        title: title,
+								        subTitle: getSHOPlistArray[a].cProductFullName,
+								        remark: getSHOPlistArray[a].cProductProductCode,
+								        uid: a
+								    };
+					list.push(jsonboject);
+				}
+			}else{
+				for(var a = 0; a < getSHOPlistArray.length; a++){
+					if(typeof(getSHOPlistArray[a].cProductFullName) == 'undefined'){
+						continue;
+					}
+					if(typeof(getSHOPlistArray[a].cProductProductCode) == 'undefined'){
+						continue;
+					}
+					var isallowinsert = 0;
+					if(getSHOPlistArray[a].cProductFullName.indexOf(context) > -1){
+						isallowinsert = 1;
+					}
+					if(getSHOPlistArray[a].cProductProductCode.indexOf(context) > -1){
+						isallowinsert = 1;
+					}
+					if(isallowinsert == 1){
+						var title = getSHOPlistArray[a].cProductFullName;
+						if(title.length > 10){
+							title = title.substring(0,10) + '...';
+						}
+						var jsonboject = {
+									        title: title,
+									        subTitle: getSHOPlistArray[a].cProductFullName,
+									        remark: getSHOPlistArray[a].cProductProductCode,
+									        uid: a
+									    };
+						list.push(jsonboject);
+					}
+				}
+			}
+			var UIListView = api.require('UIListView');
+			UIListView.reloadData({
+			    data: list
+			}, function(ret) {
+			});
+		}
+		
+		/**
+		 *还原列表 
+		 */
+		function refushlist(){
+			var UIListView = api.require('UIListView');
+			UIListView.close();
+			dealxml();
+			document.getElementById("shangpinnamecode").value = '';
+		}
+	</script>
+</html>

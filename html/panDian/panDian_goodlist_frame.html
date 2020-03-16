@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>盘点菜单栏</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/less/panDian_goodlist.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+		<style>
+			.van-field__control{
+				color: #5A8FFF
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="search">
+				<div v-on:click="openscanner" class="search-down">
+					<img class="search-down-logo" src="../../image/pandiansao.png" />
+				</div>
+				<div class="search-input">
+					<form action="/">
+						<van-search @search="onSearch" @input="onInput" @clear="onClear" v-model="valuesearch" placeholder="请输入搜索关键词" />
+					</form>
+				</div>
+			</div>
+			<div class="shoptitle">
+				<h5 class="left">商品名称</h5>
+				<h5 class="right">盘点库存</h5>
+			</div>
+			<div class="shoplist">
+				<div v-for="(item, index) in goodlist" v-if="item.show" class="itemshoplist">
+					<div class="left" v-if="item.show">
+						<span class="up" v-text="item.name"></span>
+						<span class="down" v-text="item.code"></span>
+					</div>
+					<div class="right" v-if="item.show">
+						<!-- <span v-text="item.kucun" v-on:click.stop="showkeybord(index)" class="rightspan"></span> -->
+						<input oninput="numchangeinput(this)" v-model="item.kucun" class="inputkucun" type="tel" v-if="item.show" />
+					</div>
+				</div>
+			</div>
+			<!-- <van-number-keyboard close-button-text="关闭" v-model="valuekey" :show="showkey" :maxlength="6" @blur="showkey = false" /> -->
+
+			<van-overlay :show="loading">
+				<div class="wrapper">
+					<van-loading type="spinner" color="#71C4E4" />
+				</div>
+			</van-overlay>
+			<div class="nextupload">
+				<button v-on:click="uploadmessage">提交</button>
+			</div>
+			
+			<van-overlay :show="showtijiaosucess">
+				<div class="wrapper" @click.stop>
+					<div class="block">
+						<span class="successpandiantext">提交成功!</span>
+						<img class="successpandian" src="../../image/panDian/pandianuptrue.png" />
+					</div>
+				</div>
+			</van-overlay>
+
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../script/es6/pandian/pandian-goodlist-compiled.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../script/vant.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					showtijiaosucess: false,
+					vueloading: false,
+					finished: false,
+					value: '',
+					valuesearch: '',
+					valueinput: '',
+					valuekey: '',
+					showkey: false,
+					showinput: true,
+					ulheight: api.frameHeight - 100,
+					istoreid: '',
+					houseid: '',
+					loading: false,
+					goodlist: [],
+					inputindex: -1, //当前正在输入的商品框
+					pandiannum: 0, //盘点输入的值
+					isallowbtn: 0, //0不可以点击  1可以点击
+					authorlist: [],//审核人列表
+					authorresult: false
+				},
+				created: function() {
+					console.log(this.ulheight);
+					this.istoreid = api.pageParam.page.istoreid;
+					this.houseid = api.pageParam.page.houseid;
+				},
+				mounted: function() {
+					this.onLoad();
+				},
+				updated: function() {},
+				methods: {
+					onLoad() {
+						var appvue = this;
+						vant.Toast.loading({
+							message: '加载中...',
+							forbidClick: true,
+							loadingType: 'spinner'
+						});
+						initpandian(appvue);
+					},
+					onSearch(val) {
+						searchevent(this, val, '0')
+					},
+					onInput(val) {
+						searchevent(this, val, '1')
+					},
+					onClear() {
+						searchevent(this, "", '2')
+					},
+					openscanner() {
+						var that = this;
+						var FNScanner = api.require('FNScanner');
+						FNScanner.open({
+							autorotation: false
+						}, function(ret, err) {
+							if (ret.eventType == 'success') {
+								var text = ret.content;
+								searchevent(that, text, '0')
+							}
+						});
+					},
+					uploadmessage() {
+						var that = this;
+						if (that.isallowbtn == 1) {
+							uploadPanDian(that);
+						}
+					}
+				}
+			});
+		}
+
+		function frameReloadList() {
+			searchevent(appvue, '', '2');
+			appvue.valuesearch = '';
+		}
+
+		function numchangeinput(tag) {
+			$(tag).val($(tag).val().replace(/[^0-9]/g, ''));
+		}
+	</script>
+</html>

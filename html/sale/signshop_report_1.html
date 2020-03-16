@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+	<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+	<title>陈列检查报告</title>
+	<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css" />
+	<link rel="stylesheet" type="text/css" href="../../css/signshop_report_1.css" />
+</head>
+
+<body id="body">
+	<div class="listclass">
+	</div>
+	<div class="contextlist">
+		<ul id="inputlist">
+		</ul>
+	</div>
+	<span onclick="savetodblocal()" class="save">保存</span>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/apiclear.js"></script>
+<script type="text/javascript" src="../../script/kunchiba.js"></script>
+<script type="text/javascript" src="../../script/log.js"></script>
+<script type="text/javascript" src="../../script/kunchisale.js"></script>
+<script type="text/javascript" src="../../script/db.js"></script>
+<script type="text/javascript" src="../../script/sale_db.js"></script>
+<script type="text/javascript" src="../../script/fastclick.js"></script>
+<script type="text/javascript" src="../../script/base64Update.js"></script>
+<script type="text/javascript" src="../../script/synthesis.js"></script>
+<script type="text/javascript">
+	apiready = function() {
+
+		api.showProgress({
+		    title: '请稍等',
+		    text: '正在准备',
+		    modal: false
+		});
+
+		FastClick.attach(document.body);
+		initpic();
+		init_dblist();
+	};
+
+	//将本地保存的数据保存下来 方便显示
+	var local_db_quehuolist = new Array();
+
+	function init_dblist(){
+		local_db_list = new Array();
+		var db = api.require('db');
+		db.selectSql({
+				name: 'kunchidb',
+				sql: 'SELECT * FROM chenlielist WHERE iRorptId="' + api.pageParam.page.iReportId + '" AND userid="'+$api.getStorage("id")+'" AND pinpaiid="' + api.pageParam.page.BrandID + '"'
+		}, function(ret, err) {
+//			console.log(JSON.stringify(ret));
+				if (ret.status) {
+						if (ret.data.length != 0) {
+							local_db_quehuolist = ret.data;
+						}
+				}
+				open_topmenu();
+		});
+	}
+
+
+	var items;
+	function open_topmenu() {
+
+		items = $api.getStorage('chenlielist');
+		var NVNavigationBar = api.require('NVNavigationBar');
+		NVNavigationBar.open({
+			rect: {
+				x: 0,
+				y: 0,
+				w: api.frameWidth,
+				h: 45
+			},
+			styles: {
+				orientation: 'horizontal',
+				bg: '#f2f2f2',
+				bgAlpha: 1,
+				font: {
+					size: 15,
+					sizeSelected: 15,
+					color: '#333333',
+					colorSelected: '#ffffff',
+					alpha: 1
+				},
+				itemSize: {
+					w: api.frameWidth / 4,
+					h: 45
+				}
+			},
+			items: items,
+			selectedIndex: 0,
+			fixedOn: api.frameName,
+			id: 'first'
+		}, function(ret, err) {
+			if(ret.eventType == "show"){
+				document.getElementById("inputlist").innerHTML = '';
+				var liisshowid = 'li0';
+				var elliisshowid = document.getElementById(liisshowid);
+				if(isempty(elliisshowid)){
+					init_Xml(items, 0);
+				}else{
+					var elul = document.getElementById("inputlist");
+					var elullist = $api.domAll(elul, 'li');
+					$api.css(elullist[0], 'display: block;');
+				}
+			}else if(ret.eventType == "click"){
+				var elul = document.getElementById("inputlist");
+				var elullist = $api.domAll(elul, 'li');
+				for(var a = 0; a < elullist.length; a++){
+					$api.css(elullist[a], 'display: none;');
+				}
+				var liisshowid = 'li'+ret.index;
+				var elliisshowid = document.getElementById(liisshowid);
+				if(isempty(elliisshowid)){
+					init_Xml(items, ret.index);
+				}else{
+					//$api.css($api.domAll(elul, 'li')[ret.index], 'display: block;');
+					$api.css(elliisshowid, 'display: block;');
+				}
+			}
+		});
+	}
+	/**
+	*
+	*/
+	function get_imgHtml(imgstring, monthid, liid, picytpe_toadd){
+		var imglist = change_String_Piclist(imgstring);
+		var imglist_xml = '';
+		for(var a = 0; a < imglist.length; a++){
+			var db = api.require('db');
+			var ret = db.selectSqlSync({
+			    name: 'kunchidb',
+			    sql: 'SELECT * FROM piclist where picname = "'+imglist[a]+'";'
+			});
+			var img_xml = '';
+			var myDate = new Date();
+			if(ret.status){
+				if(ret.data.length == 0){
+					img_xml = '<img id="'+myDate.getMilliseconds()+""+monthid+'" liid="'+liid+'" rightbtntype="'+picytpe_toadd+'" class="photoshoppic" monthid="'+monthid+'" onclick="javascript:openpicdetial(this);" value="'+imglist[a]+'" src="'+$api.posturllujie+'Content/UploadFiles/mobile/'+imglist[a]+'" />';
+				}else{
+					img_xml = '<img id="'+myDate.getMilliseconds()+""+monthid+'" liid="'+liid+'" rightbtntype="'+picytpe_toadd+'" class="photoshoppic" monthid="'+monthid+'" onclick="javascript:openpicdetial(this);" value="'+imglist[a]+'" src="data:image/jpg;base64,'+ret.data[0].picurl+'" />';
+				}
+			}else{
+				//还没有创建表
+				img_xml = '<img id="'+myDate.getMilliseconds()+""+monthid+'" liid="'+liid+'" rightbtntype="'+picytpe_toadd+'" class="photoshoppic" monthid="'+monthid+'" onclick="javascript:openpicdetial(this);" value="'+imglist[a]+'" src="'+$api.posturllujie+'Content/UploadFiles/mobile/'+imglist[a]+'" />';
+			}
+			imglist_xml = imglist_xml + img_xml;
+		}
+		return imglist_xml;
+	}
+
+	/**
+	* 判断是否还能添加图片
+	*/
+	function getis_display(arraylist){
+		if(change_String_Piclist(arraylist).length == 5){
+			return 'display: none;';
+		}else{
+			return 'display: block;';
+		}
+	}
+
+
+	function init_Xml(items, num){
+		var el = document.getElementById("inputlist");
+
+		//isupload, leftgood, rightgood, hascuxiao, chenlie, cuxiao, jingpin, fenlei1, fenlei2, fenlei3, pinpai1, pinpai2, pinpai3, iRorptId
+		var leftinput = '';
+		var rightinput = '';
+		var iscuxiao = '有促销';
+		var chenlie_piclist = '';
+		var cuxiao_piclist = '';
+		var jingpin_piclist = '';
+		for(var b = 0; b < local_db_quehuolist.length; b++){
+			if((local_db_quehuolist[b].fenleiname == items[num].title)&&(local_db_quehuolist[b].fenleiid == items[num].id)){
+				leftinput = local_db_quehuolist[b].leftgood;
+				rightinput = local_db_quehuolist[b].rightgood;
+				iscuxiao = local_db_quehuolist[b].hascuxiao;
+				chenlie_piclist = local_db_quehuolist[b].chenlie;
+				cuxiao_piclist = local_db_quehuolist[b].cuxiao;
+				jingpin_piclist = local_db_quehuolist[b].jingpin;
+			}
+		}
+
+		var html = '<li id="li'+num+'" num="'+num+'">'
+					+				'<div class="listitem listinput">'
+					+					'<span class="title">左边竞品</span>'
+					+					'<input value="'+leftinput+'" id="left'+num+'" />'
+					+				'</div>'
+					+				'<div class="listitem listinput">'
+					+					'<span class="title">右边竞品</span>'
+					+					'<input value="'+rightinput+'" id="right'+num+'" />'
+					+				'</div>'
+					+				'<div class="listitem">'
+					+					'<span class="title">有无促销</span>'
+					+					'<span id="chuxiaohas'+num+'" onclick="changechuxiao(this)" value="'+iscuxiao+'" class="youwucu">'+iscuxiao+'(点击切换)</span>'
+					+				'</div>'
+					+				'<div class="listitem">'
+					+					'<span class="title">陈列拍照</span>'
+					+					'<div num="'+change_String_Piclist(chenlie_piclist).length+'" id="chenlie'+num+'" class="piclist">'
+					+						get_imgHtml(chenlie_piclist, ("chenlie"+num), num, "陈列拍照")
+					+						'<i style="'+getis_display(chenlie_piclist)+'" onclick="opencarmer_tosave(this)" linum="'+num+'" picytpe_toadd="chenliebtn" id="chenliebtn'+num+'" pictype="陈列拍照" liid="'+num+'" monthid="chenlie'+num+'" class="fa fa-camera" aria-hidden="true"></i>'
+					+					'</div>'
+					+				'</div>'
+					+				'<div class="listitem">'
+					+					'<span class="title">促销拍照</span>'
+					+					'<div num="'+change_String_Piclist(cuxiao_piclist).length+'" id="cuxiao'+num+'" class="piclist">'
+					+						get_imgHtml(cuxiao_piclist, ("cuxiao"+num), num, "促销拍照")
+					+						'<i style="'+getis_display(cuxiao_piclist)+'" onclick="opencarmer_tosave(this)" linum="'+num+'" picytpe_toadd="cuxiaobtn" id="cuxiaobtn'+num+'" pictype="促销拍照" liid="'+num+'" monthid="cuxiao'+num+'" class="fa fa-camera" aria-hidden="true"></i>'
+					+					'</div>'
+					+				'</div>'
+					+				'<div class="listitem">'
+					+					'<span class="title">竞品拍照</span>'
+					+					'<div num="'+change_String_Piclist(jingpin_piclist).length+'" id="jingpin'+num+'" class="piclist">'
+					+						get_imgHtml(jingpin_piclist, ("jingpin"+num), num, "竞品拍照")
+					+						'<i style="'+getis_display(jingpin_piclist)+'" onclick="opencarmer_tosave(this)" linum="'+num+'" picytpe_toadd="jingpinbtn" id="jingpinbtn'+num+'" pictype="竞品拍照" liid="'+num+'" monthid="jingpin'+num+'" class="fa fa-camera" aria-hidden="true"></i>'
+					+					'</div>'
+					+				'</div>'
+					+			'</li>';
+		$api.append(el, html);
+		$api.css(document.getElementById("li"+num), 'display: block;');
+		api.hideProgress();
+	}
+
+	/**
+	*切换促销功能
+	*/
+	function changechuxiao(tag){
+		api.actionSheet({
+		    title: '选择有无促销',
+		    cancelTitle: '取消',
+		    buttons: ['有促销', '无促销']
+		}, function(ret, err) {
+		    var index = ret.buttonIndex;
+				if(index == 1){
+					$api.html(tag, '有促销(点击切换)');
+					$api.attr(tag, 'value', '有促销');
+
+				}else if(index == 2){
+					$api.html(tag, '无促销(点击切换)');
+					$api.attr(tag, 'value', '无促销');
+				}
+		});
+	}
+	/******************************************华丽的分割线***********************************************************/
+	/**
+	* 首先点击的对象提取出来 方便其他方法调用
+	*/
+	var carmertag;
+	function opencarmer_tosave(tag){
+		carmertag = tag;
+		api.addEventListener({
+		    name: 'PaiPicFinish'
+		}, function(ret, err) {
+		    var PaiPicFinish = ret.value.PaiPicFinish;
+		    if(PaiPicFinish == 'ok'){
+		    	api.closeWin({
+				    name: 'DIYCarmerWin'
+				});
+				api.closeWin({
+				    name: 'showCarmerPicSale'
+				});
+		    	upload_toonline_diycarmer();
+		    }
+		});
+		var quyu = $api.attr(carmertag, 'pictype');
+		openDiyCarmerPaiZhao(api.pageParam.page.cStoreFullName, quyu, api.pageParam.page.name);
+	}
+
+	function upload_toonline_diycarmer(){
+		addnum(function(valuenum){
+			var elwhichulid = document.getElementById($api.attr(carmertag, "monthid"));
+			if(valuenum != 6){
+				var myDate = new Date();
+
+				var img = '<img id="'+myDate.getMilliseconds()+""+$api.attr(carmertag, "monthid")+'" liid="'+$api.attr(carmertag, "liid")+'" rightbtntype="'+$api.attr(carmertag, "picytpe_toadd")+'" class="photoshoppic" monthid="'+$api.attr(carmertag, "monthid")+'" onclick="javascript:openpicdetial(this);" value="'
+				+DiyCarmerFinishChu_name+'" src="data:image/jpg;base64,'+DiyCarmerFinishChu_url+'" />';
+				$api.prepend(elwhichulid, img);
+				if(valuenum == 5){
+					$api.css(carmertag,"display: none;");
+				}
+			}
+		});
+	}
+
+
+	function addnum(callBack){
+		var elwhichulid = document.getElementById($api.attr(carmertag, 'monthid'));
+		var value = $api.attr(elwhichulid, 'num');
+		value = parseInt(value);
+		if(value < 5){
+			value = value + 1;
+			$api.attr(elwhichulid, 'num', value);
+		}else{
+			value = 6;
+		}
+		callBack(value);
+	}
+
+	function jiannum(callBack){
+		var elwhichulid = document.getElementById($api.attr(carmertag, 'monthid'));
+		var value = $api.attr(elwhichulid, 'num');
+		value = parseInt(value);
+		if(value > 0){
+			value = value - 1;
+			$api.attr(elwhichulid, 'num', value);
+		}else{
+			value = 6;
+		}
+		callBack(value);
+	}
+
+	function openpicdetial(tag){
+
+		var motherid_pic = $api.attr(tag, 'monthid');
+
+		var add_carmertag = $api.domAll(document.getElementById(motherid_pic), "i");
+
+		carmertag = add_carmertag[0];
+
+		api.openFrame({
+				name: 'showpic_sale',
+				url: 'widget://html/sale/showpic.html',
+				rect: {
+						x: 0,
+						y: 0,
+						w: 'auto',
+						h: 'auto'
+				},
+				bounces: false,
+				bgColor: 'rgba(0,0,0,0.3)',
+				pageParam: {
+						url: $api.attr(tag, 'src'),
+						id: $api.attr(tag, 'id'),
+						divid: $api.attr(tag, 'liid')
+				}
+		});
+
+		api.addEventListener({
+				name: 'delthis'
+		}, function(ret, err) {
+			var id456 = ret.value.key1;
+			jiannum(function(num){
+				if(num < 5){
+					$api.css(carmertag,"display: block;");
+				}
+				delxml(id456);
+				api.removeEventListener({
+						name: 'delthis'
+				});
+			});
+		});
+	}
+
+
+/**
+* 将数据保存到本地
+* chenlielist
+* userid, leftgood, rightgood, hascuxiao, chenlie, cuxiao, jingpin, zidianname, zidianid, pinpainame, pinpaiid, fenleiname, fenleiid, iRorptId, iRorptListTime, chenliecreattime, iStoreId, bei1, bei2, bei3, bei4, bei5, bei6, bei7, bei8, cStoreCode
+*/
+var chenlie_List = new Array();
+function savetodblocal(){
+	var elul = document.getElementById("inputlist");
+	var elullist = $api.domAll(elul, 'li');
+	for(var b = 0; b < elullist.length; b++){
+		var a = $api.attr(elullist[b], 'num');
+		var object = new Object();
+		var leftid = 'left' + a;
+		var lefthtml = document.getElementById(leftid);
+		var rightid = 'right' + a;
+		var righthtml = document.getElementById(rightid);
+		var chuxiaohasid = 'chuxiaohas' + a;
+		var chuxiaohashtml = document.getElementById(chuxiaohasid);
+
+
+		object.userid = $api.getStorage('id');
+		object.leftgood = $api.val(lefthtml);
+		object.rightgood = $api.val(righthtml);
+		object.hascuxiao = $api.attr(chuxiaohashtml, 'value');
+		object.chenlie = get_piclist("chenlie", a);
+		object.cuxiao = get_piclist("cuxiao", a);
+		object.jingpin = get_piclist("jingpin", a);
+
+
+
+		object.fenleiname = items[a].title;
+		object.fenleiid = items[a].id;
+
+		object.zidianname = api.pageParam.page.name;
+		object.zidianid = api.pageParam.page.tagid;
+		object.zidiantype = api.pageParam.page.zidiantype;
+		object.pinpaiid = api.pageParam.page.BrandID;
+		object.pinpainame = api.pageParam.page.BrandName;
+		object.iStoreId = api.pageParam.page.iStoreId;
+		object.iRorptId = api.pageParam.page.iReportId;
+		object.iRorptListTime = api.pageParam.page.iRorptListTime;
+		object.cStoreCode = api.pageParam.page.cStoreCode;
+		object.chenliecreattime = $kunchi.todaytime();
+
+
+		object.bei1 = "";
+		object.bei2 = "";
+		object.bei3 = "";
+		object.bei4 = "";
+		object.bei5 = "";
+		object.bei6 = "";
+		object.bei7 = "";
+		object.bei8 = "";
+		chenlie_List.push(object);
+
+	}
+	newchenlie_list();
+}
+
+
+function get_piclist(name, num){
+	var chenlieid = name + num;
+	var chenliehtml = document.getElementById(chenlieid);
+	var chenlieidimglist = $api.domAll(chenliehtml, 'img');
+	var imgname_array = new Array();
+	if(chenlieidimglist.length == 0){
+		return "";
+	}
+	for(var b = 0 ; b < chenlieidimglist.length; b++){
+		var value_imgname = $api.attr(chenlieidimglist[b],'value');
+		imgname_array.push(value_imgname);
+	}
+	return change_Piclist_String(imgname_array);
+}
+
+</script>
+
+</html>

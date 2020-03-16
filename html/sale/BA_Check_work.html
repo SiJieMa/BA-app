@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>BA排班</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/Check_worksale.css"/>
+	</head>
+	<body>
+		<span onclick="showtishi()" class="jiantouright">▼</span>
+		<div class="title" id="titlemenu">
+		</div>
+
+		<div class="mui-content" style=" margin-bottom: 50px;">
+			<ul id="paiban" class="mui-table-view">
+				<!--<li class="mui-table-view-cell">
+					<div class="mui-slider-right mui-disabled">
+						<a class="mui-btn mui-btn-red">删除</a>
+					</div>
+					<div class="mui-slider-handle worklist">
+						<div class="item">
+							<span class="itemone">员工姓名：</span>
+							<span class="itemtwo"> </span>
+						</div>
+						<div class="item">
+							<span class="itemone">工作类型：</span>
+							<span class="itemtwo"> </span>
+						</div>
+						<div class="item">
+							<span class="itemone">上班门店：</span>
+							<span class="itemtwo"></span>
+						</div>
+						<div class="item">
+							<span class="itemone">工作时间：</span>
+							<span class="itemtwo"></span>
+						</div>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+
+		<!--<div class="worklist">
+			<ul id="paiban">
+				<li>
+					<div class="item">
+						<span class="itemone">员工姓名：</span>
+						<span class="itemtwo"> </span>
+					</div>
+					<div class="item">
+						<span class="itemone">工作类型：</span>
+						<span class="itemtwo"> </span>
+					</div>
+					<div class="item">
+						<span class="itemone">上班门店：</span>
+						<span class="itemtwo"></span>
+					</div>
+					<div class="item">
+						<span class="itemone">工作时间：</span>
+						<span class="itemtwo"></span>
+					</div>
+				</li>
+			</ul>
+		</div>-->
+		<div onclick="openbaset()" class="setbawork">
+			<span id="setonepaiban" class="one">设置BA排班</span>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/mui.min.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+
+		/**
+		 *用于在给BA设置排班的时候 显示在题目上方的
+		 */
+		var title_time = '';
+
+		apiready = function() {
+			FastClick.attach(document.body);
+			get_twoweeklist();
+			api.addEventListener({
+			    name: 'baworklist_upload'
+			}, function(ret, err) {
+			    houtai_upload(ret.value.key1, ret.value.key2);
+			});
+			showmenu();
+		};
+
+		function showtishi(){
+
+			var item = new Array();
+			for (var a = 0; a < datelist.length; a++) {
+				var getweek = new Date(datelist[a]).getDay();
+				if(getweek == 0){
+					getweek = 7;
+				}
+				var xingqiji = '';
+				switch(getweek){
+					case 1:
+						xingqiji = '(一)'
+						break;
+					case 2:
+						xingqiji = '(二)'
+						break;
+					case 3:
+						xingqiji = '(三)'
+						break;
+					case 4:
+						xingqiji = '(四)'
+						break;
+					case 5:
+						xingqiji = '(五)'
+						break;
+					case 6:
+						xingqiji = '(六)'
+						break;
+					case 7:
+						xingqiji = '(日)'
+						break;
+				}
+				var title = datelist[a].split("-")[1] + '-' + datelist[a].split("-")[2] + xingqiji;
+				item.push(title);
+			}
+
+			api.actionSheet({
+			    title: '选择查看日期',
+			    cancelTitle: '取消',
+			    buttons: item
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index <= item.length){
+			    	var NVNavigationBar = api.require('NVNavigationBar');
+					NVNavigationBar.setSelected({
+					    id: 'bacheckwork',
+					    index: (index - 1),
+					    selected: true
+					}, function(cdcdcd) {
+						select_thisday = datelist[(index - 1)];
+
+						title_time = item[(index - 1)];
+						var select_thisday_other = item[(index - 1)];
+						var select_thisday_jietu = select_thisday_other.split("(")[0];
+						//reloadpaiban_selecttime(select_thisday_jietu);
+						reloadpaiban_selecttime(datelist[index - 1]);
+					});
+			    }
+			});
+		}
+
+		function openbaset(){
+			//用来判断当前时间是否允许排班按钮显示
+			if((changedatetomillon(select_thisday)*1000) < get_today_millisecond()){
+				return;
+			}
+			openpage("Set_BA_Check_workwin", "Set_BA_Check_workframe", "设置排班  "+title_time, "widget://html/sale/Set_BA_Check_work.html", {date: select_thisday});
+		}
+
+
+		var todayindex = 0;
+		/**
+		 *所选择的日期
+		 */
+		var select_thisday = '';
+		/**
+		 *返回本周和下周所有的日期
+		 */
+		var datelist = new Array();
+		function get_twoweeklist() {
+			datelist = new Array();
+			var todaymillon = get_today_millisecond();
+			var myDate = new Date();
+			var weekday = myDate.getDay();
+			if (weekday == 0) {
+				weekday = 7;
+			}
+			todayindex = weekday - 1;
+
+			if (weekday == 1) {
+				datelist.push(today());
+				for (var a = 0; a < 14; a++) {
+					todaymillon += 86400000;
+					datelist.splice(datelist.length, 0, formatDateTime(todaymillon));
+				}
+			} else {
+				datelist.push(today());
+				for (var a = 0; a < (35 - weekday); a++) {
+					todaymillon += 86400000;
+					datelist.splice(datelist.length, 0, formatDateTime(todaymillon));
+				}
+				var todaymillon_jian = get_today_millisecond();
+				for (var a = (weekday - 1); a > 0; a--) {
+					todaymillon_jian = todaymillon_jian - 86400000;
+					datelist.splice(0, 0, formatDateTime(todaymillon_jian))
+				}
+			}
+			openmenulist();
+		}
+
+		function formatDateTime(inputTime) {
+			var date = new Date(inputTime);
+			var y = date.getFullYear();
+			var m = date.getMonth() + 1;
+			m = m < 10 ? ('0' + m) : m;
+			var d = date.getDate();
+			d = d < 10 ? ('0' + d) : d;
+			//		    var h = date.getHours();
+			//		    h = h < 10 ? ('0' + h) : h;
+			//		    var minute = date.getMinutes();
+			//		    var second = date.getSeconds();
+			//		    minute = minute < 10 ? ('0' + minute) : minute;
+			//		    second = second < 10 ? ('0' + second) : second;
+			//		    return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+			return y + '-' + m + '-' + d;
+		}
+
+		function openmenulist() {
+			var item = new Array();
+			for (var a = 0; a < datelist.length; a++) {
+				var object = new Object();
+				var getweek = new Date(datelist[a]).getDay();
+				if(getweek == 0){
+					getweek = 7;
+				}
+				var xingqiji = '';
+				switch(getweek){
+					case 1:
+						xingqiji = '(一)'
+						break;
+					case 2:
+						xingqiji = '(二)'
+						break;
+					case 3:
+						xingqiji = '(三)'
+						break;
+					case 4:
+						xingqiji = '(四)'
+						break;
+					case 5:
+						xingqiji = '(五)'
+						break;
+					case 6:
+						xingqiji = '(六)'
+						break;
+					case 7:
+						xingqiji = '(日)'
+						break;
+				}
+				object.title = datelist[a].split("-")[1] + '-' + datelist[a].split("-")[2] + xingqiji;
+				object.bg = '#f2f2f2';
+				object.bgSelected = '#b2e8fd';
+				item.push(object);
+			}
+			var NVNavigationBar = api.require('NVNavigationBar');
+			NVNavigationBar.open({
+				rect : {
+					x : 0,
+					y : 0,
+					w : api.frameWidth - 45,
+					h : 45
+				},
+				styles : {
+					orientation : 'horizontal',
+					bg : '#f2f2f2',
+					bgAlpha : 1,
+					font : {
+						size : 14,
+						sizeSelected : 15,
+						color : '#333333',
+						colorSelected : '#ffffff',
+						alpha : 1
+					},
+					itemSize : {
+						w : (api.frameWidth - 45) / 4,
+						h : 45
+					}
+				},
+				items : item,
+				selectedIndex : todayindex,
+				fixedOn : api.frameName,
+				id : 'bacheckwork'
+			}, function(ret, err) {
+				if (ret.eventType == "show") {
+					select_thisday = today();
+
+
+					var mafan = new Date(today()).getDay();
+					var jintianxingqiji = '';
+					switch(mafan){
+						case 1:
+							jintianxingqiji = '(一)'
+							break;
+						case 2:
+							jintianxingqiji = '(二)'
+							break;
+						case 3:
+							jintianxingqiji = '(三)'
+							break;
+						case 4:
+							jintianxingqiji = '(四)'
+							break;
+						case 5:
+							jintianxingqiji = '(五)'
+							break;
+						case 6:
+							jintianxingqiji = '(六)'
+							break;
+						case 7:
+							jintianxingqiji = '(日)'
+							break;
+					}
+
+
+
+					title_time = today_noyear() + jintianxingqiji;
+					reloadpaiban_selecttime(today());
+				} else if (ret.eventType == "click") {
+
+					select_thisday = datelist[ret.index];
+
+					title_time = item[ret.index].title;
+					var select_thisday_other = item[ret.index].title;
+					var select_thisday_jietu = select_thisday_other.split("(")[0];
+					reloadpaiban_selecttime(datelist[ret.index]);
+				}
+
+				//用来判断当前时间是否允许排班按钮显示
+				var elsetonepaiban = document.getElementById("setonepaiban");
+				if((changedatetomillon(select_thisday)*1000) < get_today_millisecond()){
+					$api.css(elsetonepaiban,'background-color: #999999;');
+				}else{
+					$api.css(elsetonepaiban,'background-color: #71C4E4;');
+				}
+
+			});
+		}
+
+		function reloadpaiban_selecttime(time) {
+			//console.log(time);
+			jiazai();
+			var body = new Object();
+			body.iuserid = $api.getStorage("id");
+			body.taskTime = time;
+			$kunchi.kunchipost("ActionApi/T_Task/T_TaskByCreateUserid", body, function(ret, err) {
+			//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					if(ret.length == 0){
+						document.getElementById("paiban").innerHTML = '';
+						api.toast({
+						    msg: '当日暂无任何排班计划',
+						    duration: 2000,
+						    location: 'middle'
+						});
+					}else{
+						var el = document.getElementById("paiban");
+						document.getElementById("paiban").innerHTML = '';
+						for(var a = 0; a < ret.length; a++){
+							var html = '<li id="'+ret[a].id+'" iCreateUser="'+ret[a].iCreateUser+'" class="mui-table-view-cell">'
+								+			'<div class="mui-slider-right mui-disabled">'
+								+				'<a class="mui-btn mui-btn-red">删除</a>'
+								+			'</div>'
+								+			'<div class="mui-slider-handle worklist">'
+								+				'<div class="item">'
+								+					'<span class="itemone">员工姓名：</span>'
+								+					'<span class="itemtwo">'+ret[a].realname+'</span>'
+								+				'</div>'
+								+				'<div class="item">'
+								+					'<span class="itemone">工作类型：</span>'
+								+					'<span class="itemtwo">'+ret[a].ctasktype+'</span>'
+								+				'</div>'
+								+				'<div class="item">'
+								+					'<span class="itemone">上班门店：</span>'
+								+					'<span class="itemtwo">'+ret[a].starttime+'</span>'
+								+				'</div>'
+								+				'<div class="item">'
+								+					'<span class="itemone">工作时间：</span>'
+								+					'<span class="itemtwo">'+ret[a].endtime+'</span>'
+								+				'</div>'
+								+			'</div>'
+								+		'</li>';
+							$api.append(el, html);
+						}
+					}
+				}else{
+					api.alert({
+						title : '提示',
+						msg : '网络错误,请检查网络后重试.',
+					}, function(ret, err) {
+						api.closeWin({
+						});
+					});
+				}
+			});
+		}
+
+		function houtai_upload(ret, name){
+			var el = document.getElementById("paiban");
+
+			var html = '<li id="'+ret.id+'"  iCreateUser="'+$api.getStorage("id")+'" class="mui-table-view-cell">'
+				+			'<div class="mui-slider-right mui-disabled">'
+				+				'<a class="mui-btn mui-btn-red">删除</a>'
+				+			'</div>'
+				+			'<div class="mui-slider-handle worklist">'
+				+				'<div class="item">'
+				+					'<span class="itemone">员工姓名：</span>'
+				+					'<span class="itemtwo">'+name+'</span>'
+				+				'</div>'
+				+				'<div class="item">'
+				+					'<span class="itemone">工作类型：</span>'
+				+					'<span class="itemtwo">'+ret.cTaskType+'</span>'
+				+				'</div>'
+				+				'<div class="item">'
+				+					'<span class="itemone">上班门店：</span>'
+				+					'<span class="itemtwo">'+ret.dtStartTime+'</span>'
+				+				'</div>'
+				+				'<div class="item">'
+				+					'<span class="itemone">工作时间：</span>'
+				+					'<span class="itemtwo">'+ret.dtEndTime+'</span>'
+				+				'</div>'
+				+			'</div>'
+				+		'</li>';
+			$api.append(el, html);
+		}
+
+		function showmenu(){
+
+			mui.init();
+			mui('#paiban').on('tap', '.mui-btn', function(event) {
+				var elem = this;
+				var li = elem.parentNode.parentNode;
+
+				var iCreateUser = $api.attr(li, "iCreateUser");
+				//console.log(iCreateUser + "---" + $api.getStorage('id'));
+				if(iCreateUser == $api.getStorage('id')){
+					mui.confirm('确认删除该条排班计划？', '提示', btnArray, function(e) {
+						if (e.index == 0) {
+							del_reportitem($api.attr(li, "id"), li);
+						} else {
+							setTimeout(function() {
+								mui.swipeoutClose(li);
+							}, 0);
+						}
+					});
+				}else{
+					alert("该条排班不属于您，您不能删除，请联系直属领导调整上下级关系。");
+					post_no_delsuccess($api.getStorage('id'), iCreateUser);
+				}
+			});
+			var btnArray = ['确认', '取消'];
+		}
+
+		function del_reportitem(id, li){
+			jiazai();
+			var url = 'ActionApi/T_Task/DeleteT_Task';
+			var values = {id: id, userid:$api.getStorage('id')};
+			$kunchi.kunchipost(url, values, function(ret,err){
+				//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					if(ret.errorCode == '10000'){
+						api.alert({
+						    title: '提示',
+						    msg: ret.errorMsg,
+						}, function(shanchuret, shanchuerr) {
+							mui.swipeoutClose(li);
+						});
+						return;
+					}
+					li.parentNode.removeChild(li);
+				}else{
+					setTimeout(function() {
+						mui.swipeoutClose(li);
+					}, 0);
+					if(err.statusCode == '406'){
+						alert(err.msg);
+					}else{
+						alert("当前网络不稳定,请确认网络通畅并重试.");
+					}
+				}
+			});
+		}
+
+
+
+		Date.prototype.format = function(format) {
+			var date = {
+				"M+" : this.getMonth() + 1,
+				"d+" : this.getDate(),
+				"h+" : this.getHours(),
+				"m+" : this.getMinutes(),
+				"s+" : this.getSeconds(),
+				"q+" : Math.floor((this.getMonth() + 3) / 3),
+				"S+" : this.getMilliseconds()
+			};
+			if (/(y+)/i.test(format)) {
+				format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+			}
+			for (var k in date) {
+				if (new RegExp("(" + k + ")").test(format)) {
+					format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+				}
+			}
+			return format;
+		}
+
+	</script>
+</html>

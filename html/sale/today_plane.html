@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>当日拜访</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/app.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/less/today_plane.css"/>
+	</head>
+	<body>
+
+		<!--<div class="planlist">
+			<ul id="list">
+				<li>
+					<span class="name"><i>(计划外)</i>天津小宝楼门店</span>
+					<span class="stautes">未拜访</span>
+				</li>
+			</ul>
+		</div>-->
+
+
+		<div class="mui-content">
+			<div class="title">
+				<span class="one">计划或门店名称</span>
+				<span class="two">状态进度</span>
+			</div>
+			<ul id="list" class="mui-table-view">
+				<!--<li class="mui-table-view-cell">
+					<div class="mui-slider-right mui-disabled">
+						<a class="mui-btn mui-btn-red">删除</a>
+					</div>
+					<div class="mui-slider-handle">
+						<span class="namelist"><i class="typejihua">(计划外)</i>天津小宝楼门店<br/>门店编码<i class="mendiancode"></i></span>
+						<span class="stauteslist">未拜访</span>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/mui.min.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/sale_caozuo.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/sale_db.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			jiazai();
+			get_today_salelist(today());
+			upload_salelist();
+			xiala(function(num){
+				get_today_salelist(today());
+			});
+			showmenu();
+			
+			api.addEventListener({
+			    name: 'reloadsignstate'
+			}, function(ret, err) {
+			    get_today_salelist(today());
+			});
+			
+			$api.Losteplog("当日拜访", "当日拜访");
+		};
+
+
+		function showmenu(){
+			mui.init();
+			mui('#list').on('tap', '.mui-btn', function(event) {
+				var elem = this;
+				var li = elem.parentNode.parentNode;
+				mui.confirm('确认删除该条计划？', '提示', btnArray, function(e) {
+					if (e.index == 0) {
+						del_reportitem($api.attr(li, "id"), li);
+					} else {
+						setTimeout(function() {
+							mui.swipeoutClose(li);
+						}, 0);
+					}
+				});
+			});
+			var btnArray = ['确认', '取消'];
+		}
+
+		function del_reportitem(id, li){
+			jiazai();
+			var url = 'ActionApi/T_WorkReport/DeleteT_WorkReport/'+id;
+			$kunchi.kunchidel(url, "", function(ret,err){
+				tingzhi();
+				if(ret){
+					li.parentNode.removeChild(li);
+				}else{
+					setTimeout(function() {
+						mui.swipeoutClose(li);
+					}, 0);
+					if(err.statusCode == '406'){
+						alert(err.msg);
+					}else{
+						alert("当前网络不稳定,请确认网络通畅并重试.");
+					}
+				}
+			});
+		}
+
+		/**
+		 *[{"iRorptId":17314,"iStoreId":"b1ab5d98-4c08-4537-9b19-9c8a148a7601","cStoreFullName":"苏州时代广场","cStoreCode":"WTS000481","cLon":"120.753530","cLat":"31.320540",
+		 * "iUserId":"30981d57-8442-4926-bf21-500b32b3c6b4","dtPlantTime":"2018-01-13T00:00:00","iWorkType":1,"iStatue":1}]
+		 */
+
+
+
+		function opendetial(tag) {
+
+			var kdpiclist;
+			var iRorptId = $api.attr(tag, "iRorptId");
+			for(var a = 0; a < rettodayplan.length; a++){
+				if(iRorptId == rettodayplan[a].iRorptId){
+					kdpiclist = rettodayplan[a].T_PicList;
+				}
+			}
+			$api.setStorage('xundianpiclist', kdpiclist);
+			if(api.pageParam.name == '原当日拜访'){
+				openpage("signinwin", "signinframe", "签到拍照", "widget://html/sale/signin.html", {
+					cStoreFullName : $api.attr(tag, "cStoreFullName"),
+					iRorptId: iRorptId,
+					cLon: $api.attr(tag, "cLon"),
+					cLat: $api.attr(tag, "cLat"),
+					iStoreId: $api.attr(tag, "iStoreId"),
+					iRorptListTime: $api.attr(tag, "iRorptListTime"),
+					cStoreCode: $api.attr(tag, "cStoreCode"),
+					hasFlag: $api.attr(tag, 'hasFlag'),
+					iPlantFlag: $api.attr(tag, 'iPlantFlag')
+				});
+			}else{
+				api.openWin({
+				    name: "newplan_win",
+				    url: 'widget://html/newSign/newplan_win.html',
+				    slidBackEnabled: false,
+				    pageParam: {
+				        data: {
+				        	title: $api.attr(tag, "cStoreFullName"),
+				        	cCustomerFullName: $api.attr(tag, "cCustomerFullName"),
+				        	cStoreFullName : $api.attr(tag, "cStoreFullName"),
+							iRorptId: iRorptId,
+							cLon: $api.attr(tag, "cLon"),
+							cLat: $api.attr(tag, "cLat"),
+							iStoreId: $api.attr(tag, "iStoreId"),
+							iRorptListTime: $api.attr(tag, "iRorptListTime"),
+							cStoreCode: $api.attr(tag, "cStoreCode"),
+							hasFlag: $api.attr(tag, 'hasFlag'),
+							iPlantFlag: $api.attr(tag, 'iPlantFlag')
+				        }
+				    }
+				});
+			}
+		}
+
+		/**
+		 *监听是否更新次列表
+		 */
+		function upload_salelist(){
+			api.addEventListener({
+			    name: 'upload_salelist'
+			}, function(ret, err) {
+			    get_today_salelist(today());
+			});
+		}
+
+	</script>
+</html>

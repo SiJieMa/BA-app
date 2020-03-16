@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<meta http-equiv="x-rim-auto-match" content="none"> 
+		<title>物流信息</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css"/>
+		<style>
+			.title{ width: 100%; height: auto; float: left; background-color: #BF1B20; margin-bottom: 20px;}
+			.title .state{ width: 100%; height: auto; text-align: center; float: left; line-height: 80px; color: #FFFFFF; font-size: 25px;}
+			.wuliu{ width: 94%; height: auto; float: left; padding-left: 3%; padding-right: 3%;}
+			.wuliu ul{ width: 100%; height: auto; float: left;}
+			.wuliu ul li{ width: 100%; height: auto; float: left;}
+			.wuliu ul li .leftmsg{ width: 80px; height: 50px; float: left; color: #666; padding: 5px 0;}
+			.wuliu ul li .leftmsg .time{ width: 80px; height: 20px; float: left; text-align: center; line-height: 20px; font-size: 16px;}
+			.wuliu ul li .leftmsg .date{ width: 80px; height: 20px; float: left; text-align: center; line-height: 20px; font-size: 14px;}
+			.wuliu ul li .leftxian{ width: 40px; height: 60px; float: left; position: relative;}
+			.wuliu ul li .leftxian .line{ width: 2px; height: 80px; float: left; margin-left: 19px; background-color: #dddddd;}
+			.wuliu ul li .leftxian .fa-circle{color: #8a8a8a; font-size: 10px; width: 20px; height: 20px; line-height: 20px; text-align: center; position: absolute; top: 0; left: 0; margin-top: 15px; margin-left: 10px;}
+			.wuliu ul li .leftxian .fa-truck{color: #fff; background-color: #BF1B20; border-radius: 50%; font-size: 15px; width: 30px; height: 30px; line-height: 30px; text-align: center; position: absolute; top: 0; left: 0; margin-top: 5px; margin-left: 5px;}
+			.wuliu ul li .first .line{ height: 100px; margin-top: 30px;}
+			.wuliu ul li .stop .line{ height: 30px;}
+			.wuliu ul li .msg{ width: auto; height: auto; line-height: 25px; margin-top: 5px; float: left; font-size: 17px; font-weight: 650; color: #8a8a8a;}
+			.wuliu ul .active .msg{ color: #666;}
+			.wuliu ul .end .leftxian .endlogo{color: #fff; font-style: normal; background-color: #999; border-radius: 50%; font-size: 15px; width: 30px; height: 30px; line-height: 30px; text-align: center; position: absolute; top: 0; left: 0; margin-top: 5px; margin-left: 5px;}
+			.wuliu ul .red .leftmsg{ color: #FF5C01;}
+			.wuliu ul .red .msg{ color: #FF5C01;}
+		</style>
+	</head>
+	<body>
+		<div class="title">
+			<span class="state" id="wuliustate"></span>
+		</div>
+		<div class="wuliu">
+			<ul id="wuliulist">
+				<!--<li class="end">
+					<div class="leftmsg">
+						<span class="time">10:27</span>
+						<span class="date">12-27</span>
+					</div>
+					<div class="leftxian first">
+						<i class="line"></i>
+						<i class="endlogo">收</i>
+					</div>
+					<span class="msg">预派送,派送人</span>
+				</li>
+				<li>
+					<div class="leftmsg">
+						<span class="time">10:27</span>
+						<span class="date">12-27</span>
+					</div>
+					<div class="leftxian first">
+						<i class="line"></i>
+						<i class="fa fa-circle"></i>
+					</div>
+					<span class="msg">预派送,派送人</span>
+				</li>
+				<li class="active">
+					<div class="leftmsg">
+						<span class="time">10:27</span>
+						<span class="date">12-27</span>
+					</div>
+					<div class="leftxian">
+						<i class="line"></i>
+						<i class="fa fa-truck"></i>
+					</div>
+					<span class="msg">预派送,派送人</span>
+				</li>
+				<li class="active">
+					<div class="leftmsg">
+						<span class="time">10:27</span>
+						<span class="date">12-27</span>
+					</div>
+					<div class="leftxian stop">
+						<i class="line"></i>
+						<i class="fa fa-circle"></i>
+					</div>
+					<span class="msg">预派送,派送人</span>
+				</li>-->
+			</ul>
+		</div>
+		
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../script/db.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript">
+		var msgwidth;
+		apiready = function() {
+			var winwidth = api.winWidth;
+			msgwidth = (winwidth * 96 / 100) - 140;
+			jiazai();
+			getwuliu();
+			xiala(function(num){
+				getwuliu();
+			});
+		};
+		
+		function getwuliu(){
+			var json = new Object();
+			json.logisticsno = api.pageParam.page.cLogisticsNo;
+			//console.log(JSON.stringify(json));
+			$kunchi.kunchipost("ActionApi/kuaidi100/Get_Kuaidi100Infor", json, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				var jsonwuliu = ret.Result;
+				tingzhi();
+				api.refreshHeaderLoadDone();
+				if(ret.Code == '200'){
+					var wuliumsg = ret.Result;
+					var wuliumsgjson = $api.strToJson(wuliumsg);
+					if(wuliumsgjson.result == false){
+						document.getElementById("wuliustate").innerHTML = wuliumsgjson.message;
+						return;
+					}
+					
+					var state = wuliumsgjson.state;
+					var statemsg = '';
+					switch(state){
+						case '0':
+							statemsg = '在途中';
+							break;
+						case '1':
+							statemsg = '已揽收';
+							break;
+						case '2':
+							statemsg = '疑难';
+							break;
+						case '3':
+							statemsg = '已签收';
+							break;
+						case '4':
+							statemsg = '退签';
+							break;
+						case '5':
+							statemsg = '同城派送中';
+							break;
+						case '6':
+							statemsg = '退回';
+							break;
+						case '7':
+							statemsg = '转单';
+							break;
+					}
+					
+					document.getElementById("wuliustate").innerHTML = statemsg;
+					
+					var wuliulist = document.getElementById("wuliulist");
+					document.getElementById("wuliulist").innerHTML = '';
+					
+					var listmsg = wuliumsgjson.data;
+					var isover = 0;
+					if((state == 0)||(state == 1)||(state == 2)||(state == 5)){
+						isover = 1;
+					}
+					for(var a = 0; a < listmsg.length; a++){
+						var html = '';
+						
+						var iclass = 'fa-circle';
+						var lineclass = '';
+						var contentcolor = '';
+						if(a == 0){
+							if(isover == 1){
+								iclass = 'fa-truck';
+							}
+							lineclass = 'first';
+							contentcolor = 'red';
+						}
+						if(a == (listmsg.length - 1)){
+							lineclass = 'stop';
+						}
+						
+						var data = listmsg[a].ftime.split(" ")[0];
+						var time = listmsg[a].ftime.split(" ")[1];
+						var showtime = time.split(":")[0] + ':' + time.split(":")[1];
+						var showdata = data.split("-")[1] + '-' + data.split("-")[2];
+						html = 		'<li class="'+contentcolor+'">'
+								+		'<div class="leftmsg">'
+								+			'<span class="time">'+showtime+'</span>'
+								+			'<span class="date">'+showdata+'</span>'
+								+		'</div>'
+								+		'<div class="leftxian '+lineclass+'">'
+								+			'<i class="line"></i>'
+								+			'<i class="fa '+iclass+'"></i>'
+								+		'</div>'
+								+		'<span style="width: '+msgwidth+'px;" class="msg">'+listmsg[a].context+'</span>'
+								+	'</li>';
+						$api.append(wuliulist, html);
+					}
+					
+					
+				}else{
+				}
+			});
+		}
+	</script>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no">
+		<title>进店签到页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/signin.css"/>
+	</head>
+	<body id="body">
+		<div onclick="opencarmerqiandao()" class="signin">
+			<img id="carmerid" value="进店打卡" src="../../image/signcarmer.png" />
+		</div>
+		<div class="item">
+			<span class="title">进店时间：</span>
+			<span id="jsonintime" class="context"></span>
+		</div>
+		<div class="item">
+			<span class="title">您当前位于：</span>
+			<span class="context" id="addressuser"></span>
+		</div>
+		<div class="item">
+			<span class="title">当前偏移量为：</span>
+			<span class="context" id="pianyiliang"></span>
+		</div>
+		<div class="item">
+			<span class="title">GPS位置：</span>
+			<span tabmode="locationmap" class="location" onclick="reloadlocation()">点击重新定位</span>
+			<span class="context"></span>
+		</div>
+		<div class="item" style="margin-bottom: 50px;">
+			<span class="title">查看我的位置：</span>
+			<span tabmode="locationmap" class="location" onclick="openuserlocation()">点击查看</span>
+			<span class="context"></span>
+		</div>
+		<div onclick="upload_signin()" tapmode="newt" class="next">
+			下一步
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/sale_caozuo.js"></script>
+	<script type="text/javascript" src="../../script/base64Update.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/gps.js"></script>
+	<script type="text/javascript" src="../../script/synthesis.js"></script>
+	<script type="text/javascript" src="../../script/gaodemap.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/PD.js"></script>
+	<script type="text/javascript" src="../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript">
+		/**
+		 *拍照之后回去的参数信息
+		 * http://web.ba.ikunchi.cn/gaodeuser.html?userlon=116.397428&userlat=39.90923
+		 */
+		var arraylist = [];
+		var map;
+		/**
+		 *将需要保存到数据库的数据保存到对象里面
+		 */
+		var signinob = new Object();
+		/**
+		 *判断是否还可以签到  0可以签到 1保存到本地 2保存到网络
+		 */
+		var issignin = 0;
+		//需要上传的图片信息
+		var uploadpicname = '';
+		var uploadpicurl = '';
+		var userlon = 0;
+		var userlat = 0;
+		/**
+		 * 判断用户是否已经拍照
+		 */
+		var isallowupload = 0;
+		/**
+		 *判断用户是否已经签到并保存到网络
+		 * 0为可以 1为不可以
+		 */
+		var isallow_reloadlocation = 0;
+		var PDline = new PDline();
+		apiready = function() {
+			api.showProgress({
+				title : '请稍等',
+				text : '正在获取签到数据',
+				modal : true
+			});
+			initpic();
+			select_thisreport_online();
+		};
+
+
+		/**
+		 *点击打开用户所在的地理位置
+		 */
+		function openuserlocation(){
+			if(userlon == ''){
+				alert("尚未获取到您的位置,请重新尝试.");
+				return;
+			}
+			var userurl = 'http://web.ba.ikunchi.cn/gaodeuser.html?userlon=' + userlon + '&userlat=' + userlat;
+			openpage("userloactionywin", "userloactionframe", "用户位置", userurl, "");
+		}
+
+		/**
+		 *如果本地没有则查询一下网上有没有
+		 */
+		function select_thisreport_online() {
+			var body = new Object();
+			body.reportid = api.pageParam.page.iRorptId;
+			$kunchi.kunchipost('ActionApi/T_WorkStore/T_WorkStoreByUserIdAndStoreId', body, function(ret, err) {
+				//				[{"T_WorkReport":{"T_WorkStore":[],"id":17293,"iStoreId":"eb7fd846-2b65-41f8-b71e-d1cf4b2cecfc","iUserId":"30981d57-8442-4926-bf21-500b32b3c6b4","dtCreateTime":"2018-01-05T16:03:25.77","dtPlantTime":"2018-01-05T00:00:00","iReportType":0,"cUserName":"13642151379","iStatue":1,"cRemark":"","iWorkType":1},"id":30,"iReportId":17293,"iStoreId":"eb7fd846-2b65-41f8-b71e-d1cf4b2cecfc","iUserId":"30981d57-8442-4926-bf21-500b32b3c6b4","dtInStore":"2018-01-05T16:26:38","cInPicPath":"1515140797759.jpg","cInLon":"117.190341","cInLat":"39.135081","cInType":"237","dtCreateTime":"2018-01-05T16:26:39.89","iOffset":1823213.5906}]
+				//console.log(JSON.stringify(ret));
+				if (ret) {
+					if (ret.length != 0) {
+					
+						var cInType = $api.getStorage('zidianjiexicInType');
+						var ishasjilu = 0;//0没有 1 有
+						var ishasnumthis = -1;//对应的是数组里面的哪个元素
+						for(var ccc = 0; ccc < ret.length; ccc++){
+							var cInTypeonline = ret[ccc].cInType;
+							if(cInTypeonline == cInType){
+								ishasjilu = 1;
+								ishasnumthis = ccc;
+								break;
+							}
+						}
+					
+						if(ishasjilu == 1){
+							issignin = 2;
+							isallowupload = 1;
+							isallow_reloadlocation = 1;
+							userlon = ret[ishasnumthis].cInLon;
+							userlat = ret[ishasnumthis].cInLat;
+	
+							get_lonlat_address(ret[ishasnumthis].cInLon, ret[ishasnumthis].cInLat, function(retadd, erradd){
+								if(retadd){
+									if(retadd.status == 1){
+										//返回地址描述
+										document.getElementById("addressuser").innerHTML = retadd.regeocode.formatted_address;
+									}else{
+										document.getElementById("addressuser").innerHTML = "网络错误,无法显示,不影响使用.";
+									}
+								}else{
+									document.getElementById("addressuser").innerHTML = "网络错误,无法显示,不影响使用.";
+								}
+							});
+							document.getElementById("jsonintime").innerHTML = ret[ishasnumthis].dtInStore.replace("T", " ");
+							getdistance(api.pageParam.page.cLon, api.pageParam.page.cLat, ret[ishasnumthis].cInLon, ret[ishasnumthis].cInLat, function(mi) {
+								qiandaomi = mi;
+								document.getElementById("pianyiliang").innerHTML = mi + "米";
+							});
+							var fuwuqiurl = $api.posturllujie + 'Content/UploadFiles/mobile/' + ret[ishasnumthis].cInPicPath;
+							api.imageCache({
+							    url: fuwuqiurl,
+							    policy: 'cache_only'
+							}, function(cdef, gklh) {
+							    var huancunurl = cdef.url;
+							    document.getElementById("carmerid").src = huancunurl;
+							});
+							
+							uploadpicname = ret[ishasnumthis].cInPicPath;
+							
+							PDline.jiluhasonline(ret[ishasnumthis]);
+						}
+						api.hideProgress();
+					} else {
+						api.hideProgress();
+					}
+				} else {
+					api.hideProgress();
+					api.alert({
+						title : '提示',
+						msg : '网络错误,请退出重试.',
+					}, function(cc, dd) {
+						api.closeWin({
+						});
+					});
+				}
+			});
+		}
+
+		/**
+		 *调用相机开始拍照
+		 */
+		function opencarmerqiandao() {
+			if (issignin == 0) {
+				//openDiyCarmerPaiZhao("进店签到", api.pageParam.page.cStoreFullName);
+
+				api.addEventListener({
+				    name: 'PaiPicFinish'
+				}, function(ret, err) {
+				    var PaiPicFinish = ret.value.PaiPicFinish;
+				    if(PaiPicFinish == 'ok'){
+				    	api.showProgress({
+						    title: '请稍等',
+						    text: '正在展示图片',
+						    modal: true
+						});
+				    	api.closeWin({
+						    name: 'DIYCarmerWin'
+						});
+						api.closeWin({
+						    name: 'showCarmerPicSale'
+						});
+						api.removeEventListener({
+						    name: 'PaiPicFinish'
+						});
+				    	upload_toonline_diycarmer();
+				    }
+				});
+				openDiyCarmerPaiZhao(api.pageParam.page.cStoreFullName, "进店签到", "进店签到");
+
+//				opencarmer_sale(api.pageParam.page.cStoreFullName, "进店签到");
+			} else {
+				showpic();
+			}
+		}
+
+		/**
+		 *上传图片并将图片保存到本地数据库
+		 */
+		function upload_toonline_diycarmer() {
+			signinob.signpicname = DiyCarmerFinishChu_name;
+			uploadpicname = DiyCarmerFinishChu_name;
+			document.getElementById("carmerid").src = 'data:image/jpg;base64,' + DiyCarmerFinishChu_url;
+			api.hideProgress();
+			getuserelocation(function(msg, lon, lat, time) {
+				if (msg == "0") {
+					signinob.signlon = lon;
+					signinob.signlat = lat;
+					userlon = lon;
+					userlat = lat;
+					isallowupload = 1;
+					document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+					get_user_maplocation(lon, lat);
+				} else {
+					document.getElementById("addressuser").innerHTML = "无法定位,请重试.";
+					document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+					document.getElementById("pianyiliang").innerHTML = '无法计算';
+					isallowupload = 1;
+				}
+			});
+		}
+
+		var lnglatXY;
+		function get_user_maplocation(lon, lat) {
+
+			get_lonlat_address(lon, lat, function(retadd, erradd){
+				if(retadd){
+					if(retadd.status == 1){
+						//返回地址描述
+						document.getElementById("addressuser").innerHTML = retadd.regeocode.formatted_address;
+						signinob.signaddress = retadd.regeocode.formatted_address;
+						signinob.signtime = $kunchi.todaytime();
+						signinob.iRorptId = api.pageParam.page.iRorptId;
+						getdistance(api.pageParam.page.cLon, api.pageParam.page.cLat, lon, lat, function(mi) {
+							qiandaomi = mi;
+							document.getElementById("pianyiliang").innerHTML = mi + "米";
+							if(mi > 500){
+								alert('您的签到地点距离门店距离为:'+mi+'米,请确认您所在地点，如地点正确可忽略此提示,继续操作.');
+							}
+						});
+					}else{
+						document.getElementById("addressuser").innerHTML = "无法定位,请重试.";
+						document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+						document.getElementById("pianyiliang").innerHTML = '无法计算';
+						isallowupload = 1;
+					}
+				}else{
+					document.getElementById("addressuser").innerHTML = "无法定位,请重试.";
+					document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+					document.getElementById("pianyiliang").innerHTML = '无法计算';
+					isallowupload = 1;
+				}
+			});
+		}
+
+		function next() {
+			if (issignin == 1) {
+				$api.setStorage("iscloseupload","1");
+				api.sendEvent({
+			        name:'upload_databasepic'
+		        });
+				var isnostoreid = '';
+				if (!isempty(api.pageParam.page.iStoreId)) {
+					isnostoreid = api.pageParam.page.iStoreId;
+				}
+				openpage("signshop_list_win", "signshop_list_frame", api.pageParam.page.cStoreFullName, "widget://html/sale/signshop_list.html", {
+					iStoreId : isnostoreid,
+					cStoreFullName : api.pageParam.page.cStoreFullName,
+					iRorptId : api.pageParam.page.iRorptId,
+					cLon : api.pageParam.page.cLon,
+					cLat : api.pageParam.page.cLat,
+					iRorptListTime : api.pageParam.page.iRorptListTime,
+					cStoreCode : api.pageParam.page.cStoreCode,
+					hasFlag: api.pageParam.page.hasFlag,
+					iPlantFlag: api.pageParam.page.iPlantFlag
+				});
+				return;
+			}
+			$api.setStorage("iscloseupload","0");
+			api.sendEvent({
+		        name:'upload_databasepic'
+	        });
+			var isnostoreid = '';
+			if (!isempty(api.pageParam.page.iStoreId)) {
+				isnostoreid = api.pageParam.page.iStoreId;
+			}
+			openpage("signshop_list_win", "signshop_list_frame", api.pageParam.page.cStoreFullName, "widget://html/sale/signshop_list.html", {
+				iStoreId : isnostoreid,
+				cStoreFullName : api.pageParam.page.cStoreFullName,
+				iRorptId : api.pageParam.page.iRorptId,
+				cLon : api.pageParam.page.cLon,
+				cLat : api.pageParam.page.cLat,
+				iRorptListTime : api.pageParam.page.iRorptListTime,
+				cStoreCode : api.pageParam.page.cStoreCode,
+				hasFlag: api.pageParam.page.hasFlag,
+				iPlantFlag: api.pageParam.page.iPlantFlag
+			});
+		}
+
+		function showpic() {
+			api.openFrame({
+				name : 'showpic_sale',
+				url : 'widget://html/sale/showpic_sale.html',
+				rect : {
+					x : 0,
+					y : 0,
+					w : 'auto',
+					h : 'auto'
+				},
+				bounces : false,
+				bgColor : 'rgba(0,0,0,0.3)',
+				pageParam : {
+					url : document.getElementById("carmerid").src
+				}
+			});
+		}
+		
+		
+		//获取签到信息成功之后 所获取到的距离
+		var qiandaomi = 0;
+
+		function upload_signin() {
+			jiazai();
+			if (isallowupload == 0) {
+				tingzhi();
+				alert("未检查到签到数据,请签到后点击下一步.");
+				return;
+			}
+			if (issignin == 2) {
+				tingzhi();
+				var isnostoreid = '';
+				if (!isempty(api.pageParam.page.iStoreId)) {
+					isnostoreid = api.pageParam.page.iStoreId;
+				}
+				openpage("signshop_list_win", "signshop_list_frame", api.pageParam.page.cStoreFullName, "widget://html/sale/signshop_list.html", {
+					iStoreId : isnostoreid,
+					cStoreFullName : api.pageParam.page.cStoreFullName,
+					iRorptId : api.pageParam.page.iRorptId,
+					cLon : api.pageParam.page.cLon,
+					cLat : api.pageParam.page.cLat,
+					iRorptListTime : api.pageParam.page.iRorptListTime,
+					cStoreCode : api.pageParam.page.cStoreCode,
+					hasFlag: api.pageParam.page.hasFlag,
+					iPlantFlag: api.pageParam.page.iPlantFlag
+				});
+				return;
+			}
+			var dtInStore = $kunchi.todaytime();
+			var cInType = $api.getStorage('zidianjiexicInType');
+			var body = new Object();
+			var storeid = api.pageParam.page.iStoreId;
+			if (isempty(storeid)) {
+				storeid = null;
+			}
+			body.iReportId = api.pageParam.page.iRorptId;
+			body.iStoreId = storeid;
+			body.iUserId = $api.getStorage("id");
+			body.dtInStore = dtInStore;
+			body.cInPicPath = $kunchi.gettodaydate() + '/' + uploadpicname;
+			body.cInLon = userlon;
+			body.cInLat = userlat;
+			body.cInType = cInType;
+
+			/**
+			 * 上传报告的时候 要停止后台上传图片否则无法离店
+			 */
+			$api.setStorage("iscloseupload","1");
+			api.cancelAjax({
+			    tag: 'uploadpic'
+			});
+
+			body.iOffset = qiandaomi;
+			
+			
+			PDline.yanzheng("ActionApi/T_WorkStore/PostT_WorkStore", $api.jsonToStr(body), dtInStore, function(ret,err){
+				console.log(JSON.stringify(ret) + "===" + JSON.stringify(err));
+				tingzhi();
+				if (ret) {
+					next();
+				} else {
+					$api.setStorage("iscloseupload","0");
+					api.sendEvent({
+				        name:'upload_databasepic'
+			        });
+			        if(err.statusCode == '406'){
+			        	alert(err.body.errorMsg);
+			        }else{
+						alert("网络错误,请重试.");
+			        }
+				}
+			});
+		}
+
+		function reloadlocation() {
+			if (isallow_reloadlocation == 0) {
+				getuserelocation(function(msg, lon, lat, time) {
+					if (msg == "0") {
+						signinob.signlon = lon;
+						signinob.signlat = lat;
+						userlon = lon;
+						userlat = lat;
+//						isallowupload = 1;
+						document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+						get_user_maplocation(lon, lat);
+					} else {
+						document.getElementById("addressuser").innerHTML = "无法定位,请重试.";
+						document.getElementById("jsonintime").innerHTML = $kunchi.todaytime();
+						document.getElementById("pianyiliang").innerHTML = '无法计算';
+//						isallowupload = 1;
+					}
+				});
+			} else {
+				alert("进店签到已上传,不可重复保存.");
+			}
+		}
+
+	</script>
+</html>

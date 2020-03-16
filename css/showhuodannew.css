@@ -1,0 +1,20 @@
+.addressinfo{ width: 100%; height: auto; float: left;}
+.addressinfo ul{ width: 100%; height: auto; float: left;}
+.addressinfo ul li{ font-size: 15px; color: #666666; width: 96%; padding-left: 2%; padding-right: 2%; height: auto; float: left; border-bottom: 1px solid #eeeeee;}
+.addressinfo ul li .left{ width: 80px; height: 40px; line-height: 40px; float: left; text-align: left;}
+.addressinfo ul li .right{ width: calc(96% - 80px); height: auto; line-height: 20px; float: left; padding-top: 10px; padding-bottom: 10px;}
+
+.shangpin{ width: 100%; height: auto; float: left; margin-top: 10px; margin-bottom: 50px;}
+.shangpin ul{ width: 100%; height: auto; float: left;}
+.shangpin ul li{ width: 96%; height: auto; float: left; margin-left: 2%; border: 1px solid #f5f5f5;}
+.shangpin ul li .name{ width: 100%; height: 40px; line-height: 40px; float: left; background-color: #f5f5f5; font-size: 15px;}
+.shangpin ul li .ordernum{  width: 50%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shangpin ul li .goodnum{  width: 50%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shangpin ul li .goodprice{  width: 50%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shangpin ul li .goodmoney{  width: 50%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+
+.edit{ width: 100%; height: 50px; line-height: 50px; position: fixed; background-color: #FFFFFF; left: 0; bottom: 0;}
+.edit .left{ width: 50%; height: 50px; line-height: 50px; float: left; text-align: center; color: #FFFFFF; background-color: #CF2D28; font-size: 15px;}
+.edit .right{ width: 50%; height: 50px; line-height: 50px; float: left; text-align: center; color: #FFFFFF; background-color: #71C4E4; font-size: 15px;}
+
+

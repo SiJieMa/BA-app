@@ -1,0 +1,212 @@
+.list {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  width: -moz-calc(100% - 20px);
+  width: -webkit-calc(100% - 20px);
+  width: calc(100% - 20px);
+  margin: 10px 10px 10px 10px;
+  flex-direction: column;
+}
+.list .listui {
+  width: 100%;
+  height: 100%;
+}
+.list .listui .listli {
+  width: 100%;
+  height: auto;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #EFEFEF;
+  border-radius: 5px;
+  margin-top: 5px;
+}
+.list .listui .listli .good {
+  width: 100%;
+  height: 45px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.list .listui .listli .good .dian {
+  width: 8px;
+  height: 8px;
+  background-color: #666666;
+  border-radius: 8px;
+  margin: 18.5px 5px 18.5px 15px;
+}
+.list .listui .listli .good .name {
+  flex: 1;
+  height: 45px;
+  line-height: 45px;
+  color: #666666;
+  font-size: 0.9375rem;
+}
+.list .listui .listli .item1 {
+  width: 100%;
+  height: 25px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.list .listui .listli .item1 .left {
+  width: 80px;
+  margin-left: 18px;
+  height: 25px;
+  line-height: 25px;
+  color: #333333;
+  font-size: 0.875rem;
+}
+.list .listui .listli .item1 .right {
+  flex: 1;
+  height: 25px;
+  line-height: 25px;
+  color: #333333;
+  font-size: 0.875rem;
+  text-align: right;
+  margin-right: 10px;
+}
+.list .listui .listli .item2 {
+  width: 100%;
+  height: 25px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.list .listui .listli .item2 .left {
+  width: 80px;
+  margin-left: 18px;
+  height: 25px;
+  line-height: 25px;
+  color: #333333;
+  font-size: 0.875rem;
+}
+.list .listui .listli .item2 .right {
+  flex: 1;
+  height: 25px;
+  line-height: 25px;
+  color: #333333;
+  text-align: right;
+  font-size: 0.875rem;
+  margin-right: 10px;
+}
+.item3 {
+  height: auto;
+  margin: 10px;
+  padding: 10px 0;
+  border: 1px solid #EFEFEF;
+  border-radius: 5px;
+  width: -moz-calc(100% - 20px);
+  width: -webkit-calc(100% - 20px);
+  width: calc(100% - 20px);
+}
+.item3 .title-shen {
+  width: 100%;
+  height: 40px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.item3 .title-shen .shen-dian {
+  width: 40px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  color: #5A8FFF;
+  font-size: 3.125rem;
+}
+.item3 .title-shen .title-left {
+  flex: 1;
+  height: 25px;
+  line-height: 25px;
+  font-size: 0.8125rem;
+  color: #444444;
+}
+.item3 .title-shen .progress {
+  width: 100px;
+  height: 25px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.item3 .title-shen .progress .detailbtn {
+  width: 75px;
+  height: 25px;
+  line-height: 25px;
+  color: #5A8FFF;
+  text-align: right;
+  font-size: 0.875rem;
+}
+.item3 .title-shen .progress .btnimg {
+  width: 20px;
+  height: 20px;
+  margin: 2.5px;
+}
+.item3 ul {
+  width: 100%;
+  height: auto;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.item3 ul .shen-xian {
+  position: absolute;
+  width: 1px;
+  margin-left: 20px;
+  margin-top: 12.6px;
+  left: 0;
+  top: 0;
+  border-left: 1px dashed #5A8FFF;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+}
+.item3 ul .shen-xian .shen-xian-item {
+  height: 25px;
+  width: 1px;
+}
+.item3 ul li {
+  width: 100%;
+  height: 25px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.item3 ul li .dian2 {
+  width: 40px;
+  height: 25px;
+  line-height: 25px;
+  text-align: center;
+  font-size: 2.8125rem;
+  color: #999999;
+}
+.item3 ul li .lan {
+  color: #5A8FFF;
+}
+.item3 ul li .time {
+  flex: 1;
+  color: #888888;
+  height: 25px;
+  line-height: 25px;
+  font-size: 0.8125rem;
+}
+.item3 ul li .name1 {
+  width: auto;
+  text-align: right;
+  height: 25px;
+  line-height: 25px;
+  color: #888888;
+  font-size: 0.8125rem;
+  margin-right: 5px;
+}

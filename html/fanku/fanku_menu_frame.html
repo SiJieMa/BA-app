@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>盘点菜单栏</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/less/panDian_menu.css" />
+	</head>
+	<body>
+		<div id="app">
+			<div class="menu">
+				<div v-on:click="openmenucreate" value="库存盘点" class="menu-item lansediv">
+					<div class="menu-item-one">
+						<i class="menu-item-color lanse"></i>
+						<h4 class="menu-item-title">库存盘点</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pdkclogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdkc.png" />
+				</div>
+				<div @click="openhistory" class="menu-item fensediv">
+					<div class="menu-item-one">
+						<i class="menu-item-color fense"></i>
+						<h4 class="menu-item-title">历史盘点</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pdlslogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdls.png" />
+				</div>
+				<div class="menu-item chengsediv">
+					<div class="menu-item-one">
+						<i class="menu-item-color chengse"></i>
+						<h4 class="menu-item-title">待审核</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pddshlogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdsh.png" />
+				</div>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+				},
+				created: function() {
+				},
+				mounted: function() {
+				},
+				updated:function(){
+				},
+				methods: {
+					openmenucreate: function(event){
+						api.openWin({
+						    name: 'panDian_shoplist_win',
+						    url: 'widget://html/panDian/panDian_shoplist.html',
+						    pageParam: {
+						        name: 'home'
+						    }
+						});
+					},
+					openhistory: function(){
+						api.openWin({
+						    name: 'panDian_historylist_win',
+						    url: 'widget://html/panDian/history/panDian_historylist.html',
+						    pageParam: {}
+						});
+					}
+				}
+			});
+			
+			api.addEventListener({
+			    name: 'closecreatemenu'
+			}, function(ret, err) {
+				console.log('关闭');
+			    api.closeWin({
+			        name: 'panDian_goodlist_win'
+			    });
+			    api.closeWin({
+			        name: 'panDian_shoplist_win'
+			    });
+			});
+			
+		}
+		
+	</script>
+</html>

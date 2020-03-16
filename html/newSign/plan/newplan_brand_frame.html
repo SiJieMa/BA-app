@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>选择品牌</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			button{ outline: none;}
+			.pinpailist{ width: 100%; height: auto; float: left; margin-bottom: 60px;}
+			.pinpailist ul{ width: 100%; height: auto; float: left;}
+			.pinpailist ul li{ width: 100%; height: auto; float: left; border-bottom: 2px solid #F5F5F5;}
+			.pinpailist ul li button{ width: -moz-calc(90% - 20px); width: -webkit-calc(90% - 20px); width: calc(90% - 20px); font-size: 16px; text-align: left; height: 50px; line-height: 50px; float: left; margin-left: 5%; }
+			.pinpailist ul li img{ display: none; width: 20px; height: 20px; float: left; margin: 15px 5% 15px 0;}
+			.queding{ width: 100%; height: 60px; position: fixed; bottom: 0; left: 0; background-color: #EEEEEE;}
+			.queding button{ width: 90%; height: 50px; float: left; margin-left: 5%; margin-top: 5px; background-color: #71C4E4; color: #FFFFFF; border-radius: 50px;}
+		</style>
+	</head>
+	<body>
+		<div class="pinpailist">
+			<ul id="pinpailist">
+				<!--<li>
+					<button>资生堂</button>
+					<img src="../../../image/newSign/newsignok.png" />
+				</li>-->
+			</ul>
+		</div>
+		<div class="queding">
+			<button id="bottombtn" onclick="api.closeWin();">确定</button>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript">
+		var brandlist = new Array();
+		apiready = function() {
+			//{"page":{"title":"SZ龙岗宝能广场","cStoreFullName":"SZ龙岗宝能广场","iRorptId":"103586","cLon":"114.248536","cLat":"22.724555","iStoreId":"64317850-068c-4094-9cf1-0020de3c29b9","iRorptListTime":"2019-10-29","cStoreCode":"WTS008316","hasFlag":"00000000-0000-0000-0000-000000000000","iPlantFlag":"0"},"headerPos":68,"h":631}
+		};
+		
+		function initBrandList(){
+			$("#pinpailist").html("");
+			api.showProgress({
+			    title: '请稍等',
+			    text: '获取品牌..'
+			});
+			var body = new Object();
+			body.istoreid = api.pageParam.page.iStoreId;
+			body.ireportid = api.pageParam.page.iRorptId;
+			brandlist = new Array();
+			$newapi.newpost('ActionApi/Patrol/GetBrandByiStoreId', body, 30000, function(ret, err){
+				//console.log(JSON.stringify(ret));
+				api.hideProgress();
+				if(ret){
+					if(ret.length > 0){
+						initBrandHtml(ret);
+					}else{
+						$("#bottombtn").html("暂无品牌");
+					}
+				}else{
+					$("#bottombtn").html("获取失败,稍后重试.");
+				}
+			});
+		}
+		
+		
+		function initBrandHtml(msg){
+			brandlist = msg;
+			for(var a = 0; a < msg.length; a++){
+				var statues = msg[a].statues;
+				var style = 'display: none;';
+				if(statues > 0){
+					style = 'display: block;';
+				}
+				var html = '<li><button id="list'+a+'">'+msg[a].BrandName+'</button><img style="'+style+'" src="../../../image/newSign/newsignok.png" /></li>';
+				$("#pinpailist").append(html);
+				var boject = new Object();
+				boject.BrandName = msg[a].BrandName;
+				boject.BrandID = msg[a].BrandID;
+//				brandlist.push(boject);
+				$("#list"+a).bind('click', boject,function(msg){
+					openItem(msg.data.BrandName, msg.data.BrandID);
+				});
+			}
+		}
+		
+		
+		function openItem(brandname, BrandID){
+		
+			var thisbrandlist = new Array();
+			for(var a = 0; a < brandlist.length; a++){
+				var onlinebrandL = brandlist[a].BrandID;
+				if(BrandID == onlinebrandL){
+					if(!isempty(brandlist[a].Other1)){
+						var object = new Object();
+						object.BrandID = brandlist[a].Other1;
+						object.BrandName = brandlist[a].OtherName1;
+						thisbrandlist.push(object);
+					}
+					if(!isempty(brandlist[a].Other2)){
+						var object = new Object();
+						object.BrandID = brandlist[a].Other2;
+						object.BrandName = brandlist[a].OtherName2;
+						thisbrandlist.push(object);
+					}
+				}
+			}
+			
+			api.openWin({
+			    name: 'newplan_zidian_win',
+			    url: 'widget://html/newSign/plan/newplan_zidian_win.html',
+			    pageParam: {
+			        brandname: brandname,
+			        brandid: BrandID,
+			        title: api.pageParam.page.cStoreFullName,
+			        data: api.pageParam.page,
+			        brandlist: thisbrandlist
+			    }
+			});
+		}
+		
+		function isempty(str){
+			if((typeof(str) == 'undefined')||(str == null)||(str == "null")||(str == "")||(str == "undefined")){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+		
+		
+		
+	</script>
+</html>

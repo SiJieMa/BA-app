@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>选择是否到店</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <style>
+        html,
+        body {
+            background-color: #FFFFFF;
+        }
+        .shoplisttime{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%; margin-bottom: 5px;}
+        .shoplisttime ul{ width: 100%; height: 100%; float: left; overflow: scroll;}
+        .shoplisttime ul li{ width: 100%; height: auto; float: left; margin-top: 5px;}
+        .shoplisttime ul li .title{ width: 100%; height: 40px; line-height: 40px; float: left; font-size: 14px; background-color: #ccc;}
+        .shoplisttime ul li .shoptime{ width: 100%; height: auto; float: left;}
+        .shoplisttime ul li .shoptime .time{ width: 48%; height: auto; float: left; margin-top: 5px;}
+        .shoplisttime ul li .shoptime .time:nth-child(2n+2){ margin-left: 4%;}
+        .shoplisttime ul li .shoptime .time .riqi{ width: 40%; height: 40px; float: left; border-radius: 1px; line-height: 40px; text-align: center; font-size: 14px; background-color: #84c7e1;}
+        .shoplisttime ul li .shoptime .time .caozuo{ color: #fff; width: 58%; height: 40px; float: left; margin-left: 1%; border-radius: 1px; line-height: 40px; text-align: center; font-size: 14px; background-color: #169bd5;}
+        .shoplisttime ul li .shoptime .time .caozuoactive{background-color: #ececec; color: #000;}
+        .tijiao{ width: 90%; margin-left: 5%; margin-right: 5%; height: 50px; line-height: 50px; text-align: center; float: left; font-size: 14px; color: #fff; background-color: #169bd5;}
+    </style>
+</head>
+
+<body>
+  <div class="shoplisttime">
+    <ul id="shoplist">
+      <!-- <li>
+        <span class="title">门店名称</span>
+        <div class="shoptime">
+          <div class="time">
+            <span class="riqi">7/19</span>
+            <span onclick="change(this)" class="caozuo caozuoactive">到店</span>
+          </div>
+          <div class="time">
+            <span class="riqi">7/19</span>
+            <span onclick="change(this)" class="caozuo">不到店</span>
+          </div>
+        </div>
+      </li> -->
+    </ul>
+  </div>
+  <div class="tijiao" onclick="tijiao()">
+    提交申请
+  </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/apiclear.js"></script>
+<script type="text/javascript" src="../../script/kunchiba.js"></script>
+<script type="text/javascript" src="../../script/kunchisale.js"></script>
+<script type="text/javascript" src="../../script/log.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+      var shoplist = document.getElementById("shoplist");
+      var frameHeight = api.frameHeight;
+      $api.css(shoplist, 'height: '+(frameHeight - 60)+'px;');
+      initpagelist();
+    };
+
+    //将传过来的门店以及日期拼接显示
+    function initpagelist(){
+      var pageParam = api.pageParam.page;
+      var shoplistarray = pageParam.shoplist;
+      var datelist = pageParam.datelist;
+      var shoplist = document.getElementById("shoplist");
+      for(var a = 0; a < shoplistarray.length; a++){
+        var cStoreFullName = shoplistarray[a].cStoreFullName;
+        var iStoreId = shoplistarray[a].iStoreId;
+        var timedate = '';
+        for(b = 0; b < datelist.length; b++){
+          timedate = timedate + '<div class="time">'
+                      +            '<span id="a'+a+'b1'+b+'" datetoday="'+datelist[b]+'" class="riqi">'+(datelist[b].split("-")[1]+"-"+datelist[b].split("-")[2])+'</span>'
+                      +            '<span id="a'+a+'b2'+b+'" onclick="change(this)" class="caozuo caozuoactive">到店</span>'
+                      +          '</div>';
+        }
+        var html = '<li>'
+              +        '<span iStoreId="'+iStoreId+'" id="a'+a+'" class="title">'+cStoreFullName+'</span>'
+              +        '<div class="shoptime">'
+              +          timedate
+              +        '</div>'
+              +      '</li>';
+        $api.append(shoplist, html);
+      }
+    }
+
+    function change(tag){
+      var text = $api.html(tag);
+      if(text == '到店'){
+        $api.html(tag, '不到店');
+        $api.removeCls(tag, 'caozuoactive');
+      }else{
+        $api.html(tag, '到店');
+        $api.addCls(tag, 'caozuoactive');
+      }
+    }
+
+    function tijiao(){
+
+      //循环获取门店的活动列表
+      var pageParam = api.pageParam.page;
+      var shoplistarray = pageParam.shoplist;
+      var datelist = pageParam.datelist;
+      var tijiaomendianarray = [];
+      for(var a = 0; a < shoplistarray.length; a++){
+        var shopid = 'a'+a;
+        var shopidhtml = document.getElementById(shopid);
+        for(var b = 0; b < datelist.length; b++){
+          var dateid = 'a'+a+'b1'+b;
+          var dateidhtml = document.getElementById(dateid);
+
+          var dateiddao = 'a'+a+'b2'+b;
+          var dateiddaohtml = document.getElementById(dateiddao);
+          var mendianjson = {};
+          mendianjson.T_Pics = [];
+          mendianjson.iStoreId = $api.attr(shopidhtml, 'iStoreId');
+          mendianjson.iSalesCount = 0;
+          mendianjson.iSalesAmount = 0;
+          mendianjson.dtPlantTime = $api.attr(dateidhtml, 'datetoday');
+          var isdaodian = $api.html(dateiddaohtml);
+          if(isdaodian == '到店'){
+            mendianjson.iPlantFlag = 0;
+          }else{
+            mendianjson.iPlantFlag = 1;
+          }
+          tijiaomendianarray.push(mendianjson);
+        }
+      }
+      jiazai();
+      var datelist = pageParam.datelist;
+      var cTimePath = (datelist[0].split("-")[1]+"-"+datelist[0].split("-")[2] + "~" + datelist[datelist.length - 1].split("-")[1]+"-"+datelist[datelist.length - 1].split("-")[2]);
+      var url = 'ActionApi/t_SalesPlant/T_SalesPlantListAdd';
+  		var json = {
+       "T_SalesPlantDetailsList": tijiaomendianarray,
+        "cPlantCode": api.pageParam.page.tijiaojson.cPlantCode,//渠道
+        "cPlantBrand": api.pageParam.page.tijiaojson.cPlantBrand,//品牌
+        "cPlantPrep": $kunchi.todaydate(),//申请日期
+        "cPlantRemark": api.pageParam.page.tijiaojson.cPlantRemark,//审批说明
+        "iPlantStatue": api.pageParam.page.tijiaojson.iPlantStatue,//审批状态
+        "cUserId": $api.getStorage('id'),
+        "dtAuthorTime": $kunchi.todaydate(),
+        "dtPrepTime": $kunchi.todaydate(),
+        "cTimePath": cTimePath
+      }
+      //console.log(JSON.stringify(json));
+      // return; //{"Code":"200","Result":"ok"}
+  		$kunchi.kunchipost(url, json, function(ret,err){
+  			//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+  			if(ret){
+          api.sendEvent({
+            name: 'updatezglist'
+          });
+          setTimeout("closetowinsuccess()", 300);
+  			}else{
+          tingzhi();
+
+          if (err.statusCode == "406") {
+            alert(err.msg);
+          }else{
+            api.confirm({
+  					    title: '提示',
+  					    msg: '当前网络错误,是否重新提交?',
+  					    buttons: ['确定', '退出']
+  					}, function(ccc, ddd) {
+  					    var index = ccc.buttonIndex;
+  							if(index == 1){
+  								tijiao();
+  							}else {
+  								setTimeout("closetowin()", 300);
+  							}
+  					});
+          }
+  			}
+  		}, 30);
+      // openpage("zg_plan_detail_win", "zg_plan_detail_frame", "", "widget://html/zmcu/zg_plan_detail.html", "");
+    }
+
+    function closetowinsuccess(){
+      tingzhi();
+      api.openFrame({
+          name: 'zg_online_success',
+          url: 'widget://html/zmcu/zg_online_success.html',
+          rect: {
+            x: 0,
+            y: api.pageParam.page.headerPos,
+            w: api.frameWidth,
+            h: api.pageParam.page.h
+          },
+          pageParam: {
+          },
+          bounces: true,
+          bgColor: 'rgba(0,0,0,0)',
+          vScrollBarEnabled: true,
+          hScrollBarEnabled: true
+      });
+    }
+
+    function closetowin(){
+      api.closeToWin({
+          name: 'ywlistWin'
+      });
+    }
+</script>
+
+</html>

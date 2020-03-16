@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>签到页面</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/sign.css"/>
+	</head>
+	<body id="body">
+		<div id="signall" class="sign">
+			<div class="item">
+				<div id="infotext" class="info">
+					<span signtypehas="signinTypeHas" onclick="opencarmr(this)" value="上班打卡" id="signin" class="infoone">点击上班签到</span>
+					<span id="signinaddress" class="workname">上班地址:
+						<br/>
+						</span>
+					<span id="signintime" class="worktime">签到时间:
+						<br/>
+						</span>
+				</div>
+				<img signtypehas="signinTypeHas" id="signinpic" spanid="signin" onclick="opencarmr_img(this)" src="../../image/signcarmer.png" class="workpic" />
+			</div>
+			<div class="item">
+				<div id="infotext" class="info">
+					<span signtypehas="signtoutTypeHas" onclick="opencarmr(this)" value="下班打卡" id="signout" class="infoone">点击下班签到</span>
+					<span id="signoutaddress" class="workname">下班地址:
+						<br/>
+						</span>
+					<span id="signouttime" class="worktime">签到时间:
+						<br/>
+						</span>
+				</div>
+				<img signtypehas="signtoutTypeHas" id="signoutpic" spanid="signout" onclick="opencarmr_img(this)" src="../../image/signcarmer.png" class="workpic" />
+			</div>
+		</div>
+		<div id="container"></div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/synthesis.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/base64.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/gps.js"></script>
+	<script type="text/javascript" src="../../script/sign.js"></script>
+	<script type="text/javascript" src="../../script/gaodemap.js"></script>
+	<script type="text/javascript">
+		/**
+		 *拍照之后回去的参数信息
+		 */
+		var arraylist = [];
+		var todaydate = '';
+		
+		/**
+		 *判断是否允许上班或者下班 0不允许打卡 1允许打卡
+		 */
+		var signinTypeHas, signtoutTypeHas;
+		
+		apiready = function() {
+			jiazai();
+			
+			signinTypeHas = 0; 
+			signtoutTypeHas = 0;
+			
+			var infotextel = document.getElementById("signall");
+			var eldomall = $api.domAll(infotextel, "#infotext");
+			var infotextwith = api.winWidth - 150;
+			for (var a = 0; a < eldomall.length; a++) {
+				$api.css(eldomall[a], 'width: ' + infotextwith + 'px;');
+			}
+			FastClick.attach(document.body);
+			todaydate = $kunchi.todaydate();
+			initpic();
+			getuserstoreid();
+			
+		};
+		
+		
+		
+		var cStoreFullName_get;
+		
+		
+		function getuserstoreid(){
+			var body = new Object();
+			body.iuserid = $api.getStorage("id");
+			$kunchi.kunchipost("ActionApi/T_Store/T_StoreByUserId", body, function(ret,err){
+				if(ret){
+					if(ret.length == 0){
+						tingzhi();
+						api.alert({
+						    title: '提示',
+						    msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+						}, function(aaa, bbb) {
+							api.closeWin({
+                            });
+						});
+					}else{
+						cStoreFullName_get = ret[0].cStoreFullName;
+						getbapaiban();
+					}
+				}else{
+					tingzhi();
+					
+					api.confirm({
+					    title: '提示',
+					    msg: '获取您所属的门店信息失败,请重试.',
+					    buttons: ['退出', '重试']
+					}, function(ccc, ddd) {
+					    var index = ccc.buttonIndex;
+					    if(index == 1){
+					    	api.closeWin();
+					    }else{
+					    	jiazai();
+					    	getuserstoreid();
+					    }
+					});
+				}
+			});
+		}
+		
+		/**
+		 *获取到的当天的排版系统 中所给出的排班
+		 */
+		var todaywork = null;
+		
+		/**
+		 *如果没有获取到排班的话 有可能是网络错误，需要重新获取 
+		 */
+		function getbapaiban(){
+			var body = {
+				"iuserid" : $api.getStorage("id")
+			};
+			$kunchi.kunchipost('ActionApi/T_Task/T_TaskByUseridServerTime', body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				if (ret) {
+					if (!isempty(ret.ctasktype)) {
+						todaywork = ret;
+					} else {
+						todaywork = 'no';
+					}
+					getcheckworkstatus();
+				} else {
+					if (err.statusCode == "404") {
+						todaywork = 'no';
+						getcheckworkstatus();
+					}else{
+						tingzhi();
+						api.confirm({
+						    title: '提示',
+						    msg: '获取排班计划失败,请重试.',
+						    buttons: ['退出', '重试']
+						}, function(ccc, ddd) {
+						    var index = ccc.buttonIndex;
+						    if(index == 1){
+						    	api.closeWin();
+						    }else{
+						    	jiazai();
+						    	getbapaiban();
+						    }
+						});
+					}
+				}
+			});			
+		}
+		
+		
+		
+		
+		/**
+		 *点击图片来打开相机进行拍照
+		 *   signinTypeHas, signtoutTypeHas
+		 */
+		function opencarmr_img(tag){
+		
+			var signtypehas = $api.attr(tag, "signtypehas");
+			if(((signtypehas == "signinTypeHas")&&(signinTypeHas == 1))||((signtypehas == "signtoutTypeHas")&&(signtoutTypeHas == 1))){
+				var duiying_spanid = $api.attr(tag, "spanid");
+				var elduiying_spanid = document.getElementById(duiying_spanid);
+				opencarmr(elduiying_spanid);
+			}
+		}
+		
+		
+		/**
+		 *上传图片并将图片保存到本地数据库 
+		 */
+		function upload_toonline() {
+			jiazai();
+			var sql = 'INSERT INTO piclist (picurl, picname, isupload) VALUES ("' + arraylist[0].base64str + '", "' + arraylist[0].filename + '", "0")';
+			executeSql(sql, function(num) {
+				if (num == 1) {
+					getuserelocation_nolocation(function(msg, lon, lat, time) {
+						if (msg == "0") {
+							signin_user(lat, lon, time);
+						}else{
+							signin_user(lat, lon, time);
+						}
+					});
+				}else{
+					tingzhi();
+					api.alert({
+					    title: '提示',
+					    msg: '图片保存失败,请重试.',
+					}, function(xyz, abc) {
+					});
+				}
+			});
+		}
+		/**
+		 *上班签到操作 
+		 */
+		function signin_user(cLat, cLon, time) {
+		
+			var timestamp3 = time;
+			var newDate = new Date();
+			newDate.setTime(timestamp3);
+			getdistance(todaywork.lon, todaywork.lat, cLon, cLat, function(distance) {
+				var cUserName, cRealName, cTitle, iTaskid;
+				if(todaywork == "no"){
+					cUserName = $api.getStorage("realName");
+					cRealName = $api.getStorage("realName");
+					cTitle = cStoreFullName_get;
+					iTaskid = null;
+				}else{
+					cUserName = todaywork.username;
+					cRealName = todaywork.realname;
+					cTitle = todaywork.cstorename;
+					iTaskid = todaywork.taskid;
+				}
+			
+				var values = {
+					"iUserID" : $api.getStorage("id"),
+					"cUserName" : cUserName,
+					"cRealName" : cRealName,
+					"cTitle" : cTitle,
+					"dtStart" : today(),
+					"cSignType" : cSignType,
+					"dtSignTime" : newDate.format('hh:mm:ss'),
+					"dtCreateTime" : newDate.format('yyyy-MM-dd hh:mm:ss'),
+					"cLat" : cLat + "",
+					"cLon" : cLon + "",
+					"iOffset" : distance,
+					"cPicUrl" : $kunchi.gettodaydate() + "/" + arraylist[0].filename,
+					"iTaskid" : iTaskid
+				};
+				if(($api.getStorage('connectionType') == 'offline')||($api.getStorage('connectionType') == '2g')){
+					tingzhi();
+					save_signdata(values, cSignType);
+					if(cSignType.trim() == "上班打卡"){
+						var elsignin = document.getElementById("signin");
+						var elsigninaddress = document.getElementById("signinaddress");
+						var elsignintime = document.getElementById("signintime");
+						$api.css(elsignin,"display: none;");
+						$api.css(elsigninaddress,"display: block;");
+						$api.css(elsignintime,"display: block;");
+						document.getElementById("signintime").innerHTML = "签到时间:<br/>" + newDate.format('yyyy-MM-dd hh:mm:ss');
+						document.getElementById("signinaddress").innerHTML = "上班地址:<br/>" + cTitle;
+						signinTypeHas = 0; 
+					}
+					if(cSignType.trim() == "下班打卡"){
+						var signout = document.getElementById("signout");
+						var signoutaddress = document.getElementById("signoutaddress");
+						var signouttime = document.getElementById("signouttime");
+						$api.css(signout,"display: none;");
+						$api.css(signoutaddress,"display: block;");
+						$api.css(signouttime,"display: block;");
+						document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + newDate.format('yyyy-MM-dd hh:mm:ss');
+						document.getElementById("signoutaddress").innerHTML = "下班地址:<br/>" + cTitle;
+						signtoutTypeHas = 0;
+					}
+					if(cSignType.trim() == '上班打卡'){
+						document.getElementById("signinpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;
+					}else{
+						document.getElementById("signoutpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;			
+					}
+					return;
+				}
+				
+				
+				/**
+				 * 上传报告的时候 要停止后台上传图片否则无法离店
+				 */
+				$api.setStorage("iscloseupload","1");
+				api.cancelAjax({
+				    tag: 'uploadpic'
+				});
+//				console.log(JSON.stringify(values));
+				$kunchi.kunchipost('ActionApi/T_Sign/PostT_Sign', values, function(ret,err){
+					//console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+					tingzhi();
+				    $api.setStorage("iscloseupload","0");
+					api.sendEvent({
+				        name:'upload_databasepic'
+			        });
+					if (ret) {
+						/**
+						 *保存是否上下班打卡的标记 方便首页获取并提示用户是否已经打卡 
+						 */
+						var cSignType = ret.cSignType;
+						$api.setStorage((today()+cSignType),$api.getStorage("id"));
+					
+						if(cSignType.trim() == "上班打卡"){
+							var elsignin = document.getElementById("signin");
+							var elsigninaddress = document.getElementById("signinaddress");
+							var elsignintime = document.getElementById("signintime");
+							$api.css(elsignin,"display: none;");
+							$api.css(elsigninaddress,"display: block;");
+							$api.css(elsignintime,"display: block;");
+							document.getElementById("signintime").innerHTML = "签到时间:<br/>" + ret.dtCreateTime.replace("T"," ");
+							document.getElementById("signinaddress").innerHTML = "上班地址:<br/>" + ret.cTitle;
+							signinTypeHas = 0; 
+						}
+						if(cSignType == "下班打卡"){
+							var signout = document.getElementById("signout");
+							var signoutaddress = document.getElementById("signoutaddress");
+							var signouttime = document.getElementById("signouttime");
+							$api.css(signout,"display: none;");
+							$api.css(signoutaddress,"display: block;");
+							$api.css(signouttime,"display: block;");
+							document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + ret.dtCreateTime.replace("T"," ");
+							document.getElementById("signoutaddress").innerHTML = "下班地址:<br/>" + ret.cTitle;
+							signtoutTypeHas = 0;
+						}
+						if(cSignType == '上班打卡'){
+							document.getElementById("signinpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;
+						}else{
+							document.getElementById("signoutpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;			
+						}
+					} else {
+						post_other_errorinfo(JSON.stringify(values), $api.getStorage('id'), 'ActionApi/T_Sign/PostT_Sign', JSON.stringify(err));
+						if(err.statusCode == 404){
+							if(typeof(err.body.errorCode) != 'undefined'){
+								/**
+								 *如果网络有问题的话 就暂时保存到本地 
+								 */
+								api.alert({
+								    title: '提示',
+								    msg: '您当前网络有问题,已将您的签到记录保存到本地,等网络恢复之后,点击首页的同步按钮即可.',
+								}, function(aaaccc, bbbddd) {
+									
+									save_signdata(values, values.cSignType);
+									if(values.cSignType.trim() == "上班打卡"){
+										var elsignin = document.getElementById("signin");
+										var elsigninaddress = document.getElementById("signinaddress");
+										var elsignintime = document.getElementById("signintime");
+										$api.css(elsignin,"display: none;");
+										$api.css(elsigninaddress,"display: block;");
+										$api.css(elsignintime,"display: block;");
+										document.getElementById("signintime").innerHTML = "签到时间:<br/>" + newDate.format('yyyy-MM-dd hh:mm:ss');
+										document.getElementById("signinaddress").innerHTML = "上班地址:<br/>" + cTitle;
+										signinTypeHas = 0; 
+									}
+									if(values.cSignType == "下班打卡"){
+										var signout = document.getElementById("signout");
+										var signoutaddress = document.getElementById("signoutaddress");
+										var signouttime = document.getElementById("signouttime");
+										$api.css(signout,"display: none;");
+										$api.css(signoutaddress,"display: block;");
+										$api.css(signouttime,"display: block;");
+										document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + newDate.format('yyyy-MM-dd hh:mm:ss');
+										document.getElementById("signoutaddress").innerHTML = "下班地址:<br/>" + cTitle;
+										signtoutTypeHas = 0;
+									}
+									if(values.cSignType == '上班打卡'){
+										document.getElementById("signinpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;
+									}else{
+										document.getElementById("signoutpic").src = 'data:image/jpg;base64,' + arraylist[0].base64str;			
+									}
+								});
+							}else{
+								api.alert({
+								    title: '提示',
+								    msg: err.msg,
+								}, function(ret, err) {
+								});
+							}
+						}else{
+							api.alert({
+							    title: '提示',
+							    msg: err.msg,
+							}, function(ret, err) {
+							});
+						}
+					}
+				},15);
+				
+			});
+		}
+
+
+		Date.prototype.format = function(format) {
+			var date = {
+				"M+" : this.getMonth() + 1,
+				"d+" : this.getDate(),
+				"h+" : this.getHours(),
+				"m+" : this.getMinutes(),
+				"s+" : this.getSeconds(),
+				"q+" : Math.floor((this.getMonth() + 3) / 3),
+				"S+" : this.getMilliseconds()
+			};
+			if (/(y+)/i.test(format)) {
+				format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+			}
+			for (var k in date) {
+				if (new RegExp("(" + k + ")").test(format)) {
+					format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+				}
+			}
+			return format;
+		}
+		
+		/**
+		 *获取用户当日是否已经签到 
+		 * 
+		 * http://120.27.114.88:8999/Content/UploadFiles/mobile/1513740954068.jpg
+		 */
+		function getcheckworkstatus(){
+			var values = {
+				"iuserid": $api.getStorage("id"),
+				"taskTime": todaydate
+			};
+			
+			$kunchi.kunchipost('ActionApi/T_Sign/T_SignByUserid', values, function(ret,err){
+			
+//				console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+				if (ret) {
+					if(ret.length != 0){
+						for(var a = 0; a < ret.length; a++){
+							var cSignType = ret[a].cSignType;
+							
+							/**
+							 *保存是否上下班打卡的标记 方便首页获取并提示用户是否已经打卡 
+							 */
+							$api.setStorage((today()+cSignType),$api.getStorage("id"));
+							
+							if(cSignType.trim() == "上班打卡"){
+							
+								signinTypeHas = 0; 
+							
+								var elsignin = document.getElementById("signin");
+								var elsigninaddress = document.getElementById("signinaddress");
+								var elsignintime = document.getElementById("signintime");
+								$api.css(elsignin,"display: none;");
+								$api.css(elsigninaddress,"display: block;");
+								$api.css(elsignintime,"display: block;");
+								document.getElementById("signintime").innerHTML = "签到时间:<br/>" + ret[a].dtCreateTime.replace("T"," ");
+								document.getElementById("signinaddress").innerHTML = "上班地址:<br/>" + ret[a].cTitle;
+								exexutesqlother('SELECT * FROM piclist where picname = "'+ret[a].cPicUrl.split("/")[1]+'";', function(aaa){
+									if(aaa != "no"){
+										document.getElementById("signinpic").src = 'data:image/jpg;base64,'+aaa.data[0].picurl;
+									}else{
+										document.getElementById("signinpic").src = $api.posturllujie+'Content/UploadFiles/mobile/'+ret[a].cPicUrl;
+									}
+								});
+								
+							}else if(cSignType == "下班打卡"){
+							
+								signtoutTypeHas = 0; 
+							
+								var signout = document.getElementById("signout");
+								var signoutaddress = document.getElementById("signoutaddress");
+								var signouttime = document.getElementById("signouttime");
+								$api.css(signout,"display: none;");
+								$api.css(signoutaddress,"display: block;");
+								$api.css(signouttime,"display: block;");
+								document.getElementById("signouttime").innerHTML = "签到时间:<br/>" + ret[a].dtCreateTime.replace("T"," ");
+								document.getElementById("signoutaddress").innerHTML = "下班地址:<br/>" + ret[a].cTitle;
+								
+								exexutesqlother('SELECT * FROM piclist where picname = "'+ret[a].cPicUrl.split("/")[1]+'";', function(aaa){
+									if(aaa != "no"){
+										document.getElementById("signoutpic").src = 'data:image/jpg;base64,'+aaa.data[0].picurl;
+									}else{
+										document.getElementById("signoutpic").src = $api.posturllujie+'Content/UploadFiles/mobile/'+ret[a].cPicUrl;
+									}
+								});
+							}
+						}
+						if(ret.length == 1){
+							signinTypeHas = 0; 
+							signtoutTypeHas = 1;
+						}
+					}else{
+						signinTypeHas = 1; 
+						signtoutTypeHas = 1;
+					}
+				} else {
+					signinTypeHas = 0; 
+					signtoutTypeHas = 0;
+					api.alert({
+					    title: '提示',
+					    msg: err.msg,
+					}, function(ret, err) {
+						api.closeWin({
+	                    });
+					});
+				}
+				get_today_sign();
+			});
+		}
+		
+		
+		
+		
+	</script>
+</html>

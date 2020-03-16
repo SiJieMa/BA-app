@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>BA指标</title>
+    <meta name="viewport"
+        content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../../css/BA_zhibiao.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+</head>
+
+<body>
+    <div class="index-main" id="app">
+        <div class="index-list">
+            <ul v-if="listdata.length > 0">
+                <li v-for="itemli in listdata">
+                    <div class="index-list-title">
+                        <i class="left">{{itemli.name}}</i>  <i class="right">（{{itemli.storename}}）</i> 
+                    </div>
+                    <div class="index-list-context">
+                        <div v-for="(itembrand, index) in itemli.brandlist" :value="index" class="index-list-context-items" v-bind:style="{width: itemwidth+'px', height: 165+'px', 'margin-left': marginleft+'px'}">
+                            <span class="item-num-percent" :style="{color: itembrand.color}">{{itembrand.percent}}%</span>
+                            <div class="index-list-context-item" v-bind:style="{width: itemwidth+'px', height: '90px', 'padding-left': vancircle+'px'}">
+                                <van-circle
+                                  v-model="currentRate"
+                                  :rate="itembrand.percent"
+                                  :speed="100"
+								  color="itembrand.color"
+                                  :text="itembrand.money"
+								  :size="80"
+								  :stroke-width="90"
+								  layer-color="#F2F2F4"
+                                />
+                            </div>
+                            <span class="item-name-brand" :style="{border: '1px solid '+itembrand.color, color: itembrand.color}">{{itembrand.brandname}}</span>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../../script/vue.min.js"></script>
+<script type="text/javascript" src="../../script/vant.min.js"></script>
+<script src="../../script/jquery-1.8.3.min.js"></script>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/apiclear.js"></script>
+<script type="text/javascript" src="../../script/es6/BA_zhibiao-compiled.js"></script>
+<script type="text/javascript" src="../../script/log.js"></script>
+<script type="text/javascript" src="../../script/kunchiba.js"></script>
+<script type="text/javascript" src="../../script/kunchisale.js"></script>
+<script>
+	var appvue;
+	apiready = function(){
+		appvue = new Vue({
+		    el: "#app",
+		    data: {
+		        itemwidth: (window.screen.width - 20) / 3 - 10,
+		        itemheight: (window.screen.width - 20) / 3 - 10,
+		        margintop: (((window.screen.width - 20) / 3 - 10) - 40) / 2,
+		        radiuswidth: ((window.screen.width - 20) / 3 - 10)/2-8,
+				currentRate: 0,
+				marginleft: (window.screen.width - ((window.screen.width - 20) / 3 - 10) * 3) / 6,
+				vancircle: ((window.screen.width - 20) / 3 - 10 - 80) / 2,
+				listdata: []
+				// {
+				// 	name: "",
+				// 	storename: "",
+				// 	brandlist: [{
+				// 		brandname: "品牌",
+				// 		money: 0+'元',
+				// 		percent: "0"
+				// 	}]
+				// }
+		    },
+			beforeCreate() {
+			},
+			created() {
+			},
+		    mounted: function(){
+				initbalist();
+		    },
+			methods:{
+				showcolor: function(){
+					return '#'+Math.floor(Math.random()*0xffffff).toString(16);
+				}
+			},
+			computed:{
+			}
+		});
+	}
+	
+    
+</script>
+
+</html>

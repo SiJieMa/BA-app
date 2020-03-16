@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>陈列</title>
+		<link rel="stylesheet" type="text/css" href="../../../../css/api.css"/>
+		<style>
+			html, body {
+				background-color: #FFFFFF;
+			}
+			input,button,select,textarea{
+			outline:none;
+			box-shadow:none;
+			background:none;
+			border: none;
+			-webkit-tap-highlight-color:rgba(0,0,0,0); 
+			}
+			textarea{resize:none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
+			.pinpailist{ width: 100%; height: auto; float: left; margin-bottom: 60px;}
+			.pinpailist .item1{ width: 90%; margin-left: 5%; margin-right: 5%; height: 50px; float: left;}
+			.pinpailist .item1 .ishu{ font-size: 15px; width: auto; height: 50px; line-height: 50px; float: left; color: #000;}
+			.pinpailist .item1 .jiacu{ font-size: 17px; font-weight: 800;}
+			.pinpailist .item1 .hui{ color: #D9D9D9;}
+			.pinpailist .item1 .hei{ color: #333333;}
+			.pinpailist .item1 .lan{ color: #71C4E4;}
+			.pinpailist .item1 button{background-color: #fff; font-size: 14px; color: #666; border: 1px solid #666; margin-left: 5px; border-radius: 5px; float: right; width: 60px; height: 25px; line-height: 25px; margin-top: 12.5px;}
+			.pinpailist .item1 .native{background-color: #71C4E4; color: #FFFFFF; border: 1px solid #71C4E4;}
+			.pinpailist .item2{ width: 90%; margin-left: 5%; margin-right: 5%; border-bottom: 1px solid #EFEFEF; height: 50px; float: left;}
+			.pinpailist .item2 .name{ width: 80px; height: 50px; line-height: 50px; float: left; color: #666;}
+			.pinpailist .item2 input{ width: -moz-calc(90% - 80px); width: -webkit-calc(90% - 80px); width: calc(90% - 80px); height: 30px; line-height: 30px; float: left; margin-top: 10px;}
+			.pinpailist .item3{ width: 90%; margin-left: 5%; margin-right: 5%; border-bottom: 1px solid #EFEFEF; height: auto; float: left;}
+			.pinpailist .item3 .itempicupload{ margin: 5px 0; border-radius: 5px; width: 30%; margin-left: 1.5%; margin-right: 1.5%; height: 100px; float: left; background-color: #D9D9D9;}
+			.pinpailist .item3 .itempicupload img{ width: 100%; height: 100%; float: left; border-radius: 5px;}
+			.pinpailist .item3 .itempic{ margin: 5px 0; border-radius: 5px; width: 30%; margin-left: 1.5%; margin-right: 1.5%; height: 100px; float: left; background-color: #D9D9D9;}
+			.pinpailist .item3 .itempic img{ width: 100%; height: 100%; float: left; border-radius: 5px;}
+			.pinpailist .item3 .itempic .add{ width: 40px; height: 40px; float: left; margin-left: -webkit-calc(50% - 20px); margin-left: -moz-calc(50% - 20px); margin-left: calc(50% - 20px); margin-top: 30px;}
+			.pinpailist .item3 .information{ width: 98.5%; margin-left: 1.5%; height: 50px; line-height: 25px; float: left; color: #D9D9D9; font-size: 12px;}
+			.pinpailist .item3 .information i{ color: #71C4E4; font-style: normal;}
+			.pinpailist .item4{ width: 90%; margin-left: 5%; margin-right: 5%; height: auto; float: left;}
+			.pinpailist .item5{ width: 90%; margin-left: 5%; margin-right: 5%; height: auto; float: left;}
+			.pinpailist .item6{ width: 90%; margin-left: 5%; margin-right: 5%; height: auto; float: left;}
+			.pinpailist .item7{ width: 100%; height: auto; float: left; display: none;}
+			.pinpailist .item4 textarea{ border-radius: 5px; color: #999; padding: 10px 2%; width: 96%; height: 150px; line-height: 30px; font-size: 15px; float: left; margin-top: 10px;  background-color: #D9D9D9;}
+			.pinpailist .line{ width: 100%; height: 5px; float: left; background-color: #EEEEEE; margin-top: 30px; margin-bottom: 30px;}
+			.pinpailist .line1{ width: 100%; height: 1px; float: left; background-color: #EEEEEE; margin-top: 30px; margin-bottom: 30px;}
+			.pinpailist .item5 .addjingpin{ border-radius: 5px; border: 1px solid #999; width: 100%; height: 50px; float: left; }
+		</style>
+	</head>
+	<body id="body">
+		<div class="pinpailist" id="pinpailist">
+			<div class="item1">
+				<span class="ishu jiacu" id="621">基础陈列</span>
+			</div>
+			<div class="item3">
+				<div id="addpic621" value="621" class="itempic  jiancelist" onclick="paizhaochenlie(this)">
+					<img class="add" src="../../../../image/newSign/newsignadd.png" />
+				</div>
+				<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="$api.showguize()">拍摄图片标准</i></span>
+			</div>
+			<div class="item1">
+				<span class="ishu" id="642">摆放是否符合标准</span>
+				<button value="642" id="642no" class="no" onclick="clickisfoustatic(this)">否</button>
+				<button value="642" id="642yes" class="yes" onclick="clickisyesstatic(this)">是</button>
+			</div>
+			<div class="item1">
+				<span class="ishu" id="643">是否有做清洁</span>
+				<button value="643" id="643no" class="no" onclick="clickisfoustatic(this)">否</button>
+				<button value="643" id="643yes" class="yes" onclick="clickisyesstatic(this)">是</button>
+			</div>
+			<i class="line"></i>
+			<div class="item1">
+				<span class="ishu jiacu" id="647">新品陈列</span>
+			</div>
+			<div class="item1">
+				<span class="ishu" id="644">新品是否已上架</span>
+				<button motherid="647" value="644" id="644no" class="no" onclick="clickisfoustaticxinpin(this)">否</button>
+				<button motherid="647" value="644" id="644yes" class="yes" onclick="clickisyesstaticxinpin(this)">是</button>
+			</div>
+			<div class="item3" id="piclist647" style="display: none;">
+				<div id="addpic647" value="647" class="itempic  jiancelist" onclick="paizhaoxinpin(this)">
+					<img class="add" src="../../../../image/newSign/newsignadd.png" />
+				</div>
+				<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="$api.showguize()">拍摄图片标准</i></span>
+			</div>
+			<i class="line"></i>
+			<div class="item1">
+				<span class="ishu jiacu" id="622">特殊陈列</span>
+			</div>
+			<div class="item1">
+				<span class="ishu" id="658">是否有特殊陈列</span>
+				<button motherid="622" value="658" id="658no" class="no" onclick="clickisfoustatictechen(this)">否</button>
+				<button motherid="622" value="658" id="658yes" class="yes" onclick="clickisyesstatictechen(this)">是</button>
+			</div>
+			<i class="line"></i>
+			<div class="item5" id="piclist622" style="display: none;">
+				<button id="addjingpinbutton" class="addjingpin">继续添加</button>
+				<i class="line"></i>
+			</div>
+			
+			<div class="item1">
+				<span class="ishu jiacu" id="623">陈列物料</span>
+			</div>
+			<div class="item1">
+				<span class="ishu" id="646">是否有陈列物料</span>
+				<button value="646" id="646no" class="no" onclick="clickywclwlno(this)">否</button>
+				<button value="646" id="646yes" class="yes" onclick="clickywclwlyes(this)">是</button>
+			</div>
+			<div class="item3" id="piclist646" style="display: none;">
+				<div id="addpic646" value="646" class="itempic jiancelist" onclick="paizhaochenliewuliaoyouwu(this)">
+					<img class="add" src="../../../../image/newSign/newsignadd.png" />
+				</div>
+				<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="$api.showguize()">拍摄图片标准</i></span>
+			</div>
+			<div class="item7 son646html">
+				<div class="item1">
+					<span class="ishu" id="645">是否破损</span>
+					<button value="645" id="645no" class="no" onclick="clickclwlsfplno(this)">否</button>
+					<button value="645" id="645yes" class="yes" onclick="clickclwlsfplyes(this)">是</button>
+				</div>
+				<div class="item3" id="piclist645" style="display: none;">
+					<div id="addpic645" value="645" class="itempic  jiancelist" onclick="paizhaochenliewuliaoposun(this)">
+						<img class="add" src="../../../../image/newSign/newsignadd.png" />
+					</div>
+					<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="$api.showguize()">拍摄图片标准</i></span>
+				</div>
+			</div>
+			<i class="line"></i>
+			
+			<div class="item1">
+				<span class="ishu jiacu" id="624">竞品陈列</span>
+			</div>
+			<div class="item6" id="brand624">
+				<!--<div class="item1">
+					<span class="ishu hui">·汉高</span>
+				</div>
+				<div class="item3">
+					<div class="itempic">
+						<img class="add" src="../../../../image/newSign/newsignadd.png" />
+					</div>
+					<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘。</span>
+				</div>
+				<div class="item1">
+					<span class="ishu" id="567">是否有特殊陈列</span>
+					<button value="567" id="567no" class="no" onclick="clickisfou(this)">否</button>
+					<button value="567" id="567yes" class="yes" onclick="clickisyes(this)">是</button>
+				</div>
+				<div class="item1">
+					<span class="ishu" id="568">当月是否有新品</span>
+					<button value="568" id="568no" class="no" onclick="clickisfou(this)">否</button>
+					<button value="568" id="568yes" class="yes" onclick="clickisyes(this)">是</button>
+				</div>-->
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/chen.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/chenget.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/chenupload.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/chenshifou.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newChenLocalPic.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../../../../script/newpicdb/localdb.js"></script>
+	<!-- 开始初始化照相模块 -->
+	<script type="text/javascript" src="../../../../script/newSign/newSynthesis.js"></script>
+	<script type="text/javascript" src="../../../../script/newSign/newSignCarmerReportChen.js"></script>
+	<!-- 结束初始化照相模块 -->
+	<script type="text/javascript">
+	
+		//是否添加过商品
+		
+	
+	
+		//点击哪个就用哪个guid来保存图片
+		var guid;
+		var typezidianid;
+		var iStoreId;
+		var cPicClass = '陈列报告';
+		
+		var thisbrandid, thisbrandname;
+		
+		//初始化当前产品所包含的竞品
+		var brandjingpinlist = new Array();
+		var oUseTool;
+		apiready = function() {
+			oUseTool = new PicCK();
+		
+			iStoreId = api.pageParam.page.iStoreId;
+			thisbrandid = api.pageParam.brandid;
+			thisbrandname = api.pageParam.brandname;
+			getchenlielist();
+			initpic();
+			initclick();
+			
+		};
+		
+		function getarrayindex(array, arr){
+			var ab = 0;
+			for(var a = 0; a < array.length; a++){
+				if(array[a].BrandName == arr){
+					ab = a;
+				}
+			}
+			return ab;
+		}
+		
+		function initjingpin(brandlist, guidone, guidtwo, guidthree){
+			var localbrandlist = api.pageParam.brandlist;
+			if(brandlist.length == 0){
+				brandlist = api.pageParam.brandlist;
+				//brand624
+				for(var a = 0; a < brandlist.length; a++){
+					var guidone1, guidtwo2, guidthree3;
+					guidone1 = newguid();
+					guidtwo2 = newguid();
+					guidthree3 = newguid();
+					var html = jingpin(brandlist[a].BrandName, brandlist[a].BrandID, guidone1, guidtwo2, guidthree3);
+					$("#brand624").append(html);
+				}
+			}else{
+				for(var b = 0; b < localbrandlist.length; b++){
+					var isshowthisjingpin = 1; //0 显示网络的  1显示本地的
+					var isshowthisjingpinnum;
+					for(var a = 0; a < brandlist.length; a++){
+						if(brandlist[a].BrandName == localbrandlist[b].BrandName){
+							isshowthisjingpin = 0;
+							isshowthisjingpinnum = a;
+						}
+					}
+					//console.log("isshowthisjingpin:"+isshowthisjingpin);
+					if(isshowthisjingpin == 0){
+						var guidone1, guidtwo2, guidthree3;
+						guidone1 = guidone[isshowthisjingpinnum];
+						guidtwo2 = guidtwo[isshowthisjingpinnum];
+						guidthree3 = guidthree[isshowthisjingpinnum];
+						var html = jingpin(brandlist[isshowthisjingpinnum].BrandName, brandlist[isshowthisjingpinnum].BrandID, guidone1, guidtwo2, guidthree3);
+						//console.log(brandlist[a].BrandName);
+						var getarrayindexnum = getarrayindex(localbrandlist, brandlist[isshowthisjingpinnum].BrandName);
+						if(getarrayindexnum == 0){
+							$("#brand624").prepend(html);
+						}else if(getarrayindexnum == 1){
+							$("#brand624").append(html);
+						}else{
+							$("#brand624").append(html);
+						}
+					}else{
+						var guidone1, guidtwo2, guidthree3;
+						guidone1 = newguid();
+						guidtwo2 = newguid();
+						guidthree3 = newguid();
+						var html = jingpin(localbrandlist[a].BrandName, localbrandlist[a].BrandID, guidone1, guidtwo2, guidthree3);
+						$("#brand624").append(html);
+					}
+					
+				}
+			}
+		}
+		
+		var techennum = 1;
+		function initclick(){
+			$(".addjingpin").click(function(){
+				api.confirm({
+				    title: '提醒',
+				    msg: '是否 新添加一个特殊陈列?',
+				    buttons: ['确定', '取消']
+				}, function(ret, err) {
+				    var index = ret.buttonIndex;
+				    if(index == 1){
+				    	$(".addjingpin").before(techen(newguid()));
+						techennum++;
+				    }
+				});
+			});
+		}
+		
+		function jingpin(brandname, brandid, guidone, guidtwo, guidthree){
+		
+			var html = '<div class="item1">'
+				+			'<span class="ishu hei">·'+brandname+'</span>'
+				+		'</div>'
+				+		'<div class="item3" id="'+guidone+'zero" value="'+brandid+'">'
+				+			'<div guid="'+guidone+'zero"  id="tjjp'+guidone+'" uploadguid="'+guidone+'" class="itempic jingpinchenlieadd  jiancelist" onclick="javascript:shifouteshuchenlie(this)" brandname="'+brandname+'" name="'+brandname+'">'
+				+				'<img class="add" src="../../../../image/newSign/newsignadd.png" />'
+				+			'</div>'
+				+			'<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="javascript:openbiaozhun(\'' + brandname + '\')">拍摄图片标准</i></span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="567'+brandid+guidtwo+'">是否有特殊陈列</span>'
+				+			'<button class="no" id="'+guidtwo+'oneno" htmlid="'+guidtwo+'one" onclick="javascript:clickisfou(this)">否</button>'
+				+			'<button class="yes" id="'+guidtwo+'oneyes" htmlid="'+guidtwo+'one" onclick="javascript:clickisyes(this)">是</button>'
+				+		'</div>'
+				+		'<div class="item3" id="'+guidtwo+'one" style="display: none;">'
+				+			'<div guid="'+guidtwo+'one" id="tjjp'+guidtwo+'" uploadguid="'+guidtwo+'" onclick="javascript:shifouteshuchenlie(this)" brandname="'+brandname+'" name="是否有特殊陈列" class="itempic jingpinchenlieadd  jiancelist">'
+				+				'<img class="add" src="../../../../image/newSign/newsignadd.png" />'
+				+			'</div>'
+				+			'<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="javascript:openbiaozhun(\'' + brandname + '\')">拍摄图片标准</i></span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="568">当月是否有新品</span>'
+				+			'<button class="no" id="'+guidthree+'twono" htmlid="'+guidthree+'two" onclick="javascript:clickisfou(this)">否</button>'
+				+			'<button class="yes" id="'+guidthree+'twoyes" htmlid="'+guidthree+'two" onclick="javascript:clickisyes(this)">是</button>'
+				+		'</div>'
+				+		'<div class="item3" uploadguid="'+guidthree+'" id="'+guidthree+'two" style="display: none;">'
+				+			'<div class="itempic jingpinchenlieadd jiancelist" id="tjjp'+guidthree+'" guid="'+guidthree+'two"  uploadguid="'+guidthree+'" onclick="javascript:shifouteshuchenlie(this)" brandname="'+brandname+'" name="是否有新品">'
+				+				'<img class="add" src="../../../../image/newSign/newsignadd.png" />'
+				+			'</div>'
+				+			'<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="javascript:openbiaozhun(\'' + brandname + '\')">拍摄图片标准</i></span>'
+				+		'</div>';
+			return html;
+		}
+		
+		function techen(guidhtml){
+			var html = '<div class="item1">'
+				+			'<span class="ishu lan">特陈'+techennum+'</span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="655">特陈性质</span>'
+				+			'<button value="655'+guidhtml+'one" id="655'+guidhtml+'oneno" class="no" onclick="javascript:finalclickno(this)">自主谈判</button>'
+				+			'<button value="655'+guidhtml+'one" id="655'+guidhtml+'oneyes" class="yes" onclick="javascript:finalclickyes(this)">统一陈列</button>'
+				+		'</div>'
+				+		'<div class="item3">'
+				+			'<div onclick="javascript:shifouteshuchenlie(this)" id="tianjiatupian'+guidhtml+'" uploadguid="'+guidhtml+'" class="itempic tianjiateshuchenlie  jiancelist" brandname="特陈'+techennum+'" name="特陈'+techennum+'">'
+				+				'<img class="add" src="../../../../image/newSign/newsignadd.png" />'
+				+			'</div>'
+				+			'<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="javascript:openbiaozhuntechen()">拍摄图片标准</i></span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="656">位置是否符合要求</span>'
+				+			'<button value="656'+guidhtml+'two" id="656'+guidhtml+'twono" class="no" onclick="javascript:finalclickno(this)">否</button>'
+				+			'<button value="656'+guidhtml+'two" id="656'+guidhtml+'twoyes" class="yes" onclick="javascript:finalclickyes(this)">是</button>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="657">摆放是否符合标准</span>'
+				+			'<button value="657'+guidhtml+'three" id="657'+guidhtml+'threeno" class="no" onclick="javascript:finalclickno(this)">否</button>'
+				+			'<button value="657'+guidhtml+'three" id="657'+guidhtml+'threeyes" class="yes" onclick="javascript:finalclickyes(this)">是</button>'
+				+		'</div>'
+				+		'<i class="line1"></i>';
+			return html;
+		}
+		
+		
+		function techenonline(guidhtml, techennumonline){
+			var html = '<div class="item1">'
+				+			'<span class="ishu lan">特陈'+techennumonline+'</span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="655">特陈性质</span>'
+				+			'<button value="655'+guidhtml+'one" id="655'+guidhtml+'oneno" class="no" onclick="javascript:finalclickno(this)">自主谈判</button>'
+				+			'<button value="655'+guidhtml+'one" id="655'+guidhtml+'oneyes" class="yes" onclick="javascript:finalclickyes(this)">统一陈列</button>'
+				+		'</div>'
+				+		'<div class="item3">'
+				+			'<div onclick="javascript:shifouteshuchenlie(this)" id="tianjiatupian'+guidhtml+'" uploadguid="'+guidhtml+'" class="itempic tianjiateshuchenlie  jiancelist" brandname="特陈'+techennumonline+'" name="特陈'+techennumonline+'">'
+				+				'<img class="add" src="../../../../image/newSign/newsignadd.png" />'
+				+			'</div>'
+				+			'<span class="information">*注：图片拍摄范围不小于1米货架，陈列照片不得有明显灰尘，查看 <i class="biaozhun" onclick="javascript:openbiaozhuntechen()">拍摄图片标准</i></span>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="656">位置是否符合要求</span>'
+				+			'<button value="656'+guidhtml+'two" id="656'+guidhtml+'twono" class="no" onclick="javascript:finalclickno(this)">否</button>'
+				+			'<button value="656'+guidhtml+'two" id="656'+guidhtml+'twoyes" class="yes" onclick="javascript:finalclickyes(this)">是</button>'
+				+		'</div>'
+				+		'<div class="item1">'
+				+			'<span class="ishu" id="657">摆放是否符合标准</span>'
+				+			'<button value="657'+guidhtml+'three" id="657'+guidhtml+'threeno" class="no" onclick="javascript:finalclickno(this)">否</button>'
+				+			'<button value="657'+guidhtml+'three" id="657'+guidhtml+'threeyes" class="yes" onclick="javascript:finalclickyes(this)">是</button>'
+				+		'</div>'
+				+		'<i class="line1"></i>';
+			return html;
+		}
+		
+		function newguid() {
+		    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+		        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+		        return v.toString(16);
+		    });
+		}
+		
+		function openbiaozhun(brandname){
+			$api.showguizename(brandname);
+		}
+		function openbiaozhuntechen(){
+			$api.showguize();
+		}
+		
+	</script>
+</html>

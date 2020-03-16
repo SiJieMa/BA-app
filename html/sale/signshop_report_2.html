@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>缺货检查报告</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/font-awesome.min.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/signshop_report_2.css"/>
+	</head>
+	<body>
+		<div class="alltype">
+			<div class="titleone">
+				<div class="pinlei" id="pinlei" onclick="init_bottom_menu()">
+					<span class="itemleft">品类:</span>
+					<span class="itemmiddle" id="init_bottom_menu">全部</span>
+					<i class="fa fa-angle-down" aria-hidden="true"></i>
+				</div>
+				<div onclick="refushlistque()" class="searchimg">
+					<img src="../../image/refush.png"/>
+				</div>
+				<div onclick="searchgood()" class="searchimg">
+					<img src="../../image/search.png"/>
+				</div>
+				<div onclick="scanergood()" class="searchimg">
+					<img src="../../image/saoyisao.png"/>
+				</div>
+			</div>
+			<div class="titletwo">
+				<span class="one">产品名称</span>
+				<span class="two">缺货数量</span>
+			</div>
+		</div>
+		<div class="list">
+			<ul id="list">
+				<!-- <li>
+					<span class="typename">产品名称</span>
+					<div class="check">
+						<i class="activei fa fa-check-circle" aria-hidden="true"></i>
+					</div>
+				</li> -->
+			</ul>
+		</div>
+		<div onclick="savetoDB()" class="save">保存</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/sale_db.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/base64.js"></script>
+	<script type="text/javascript" src="../../script/synthesis.js"></script>
+	<script type="text/javascript">
+
+	var productlist_type = new Array();
+
+		apiready = function() {
+
+			var neirong = document.getElementById("list");
+			var pinlei = document.getElementById("pinlei");
+			var frameheight = api.frameHeight;
+			var pinleiwidth = api.frameWidth;
+			$api.css(neirong, 'height: '+(frameheight - 132)+'px;');
+			$api.css(pinlei, 'width: '+(pinleiwidth - 120)+'px;');
+			jiazai();
+			init_dblist();
+		};
+
+		function refushlistque(){
+			select_productlist('全部');
+			document.getElementById("init_bottom_menu").innerHTML = '全部';
+		}
+
+		function searchgood(){
+			api.prompt({
+					title: '请输入名称或者商品编码',
+			    buttons: ['确定', '取消']
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    var text = ret.text;
+					if(index == 1){
+						reloadsearchgoodlist(text);
+					}
+			});
+		}
+
+		function scanergood(){
+			var FNScanner = api.require('FNScanner');
+			FNScanner.open({
+				sound: 'widget://res/di.wav',
+			  autorotation: false
+			}, function(ret, err) {
+			    if (ret) {
+			        if(ret.eventType == "success"){
+			        	var content = ret.content;
+								reloadsearchgoodlist(content);
+			        }
+			    }
+			});
+		}
+
+		function reloadsearchgoodlist(msg){
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "li");
+			for(var a = 0; a < ellist.length; a++){
+					$api.css(ellist[a], 'display: none;');
+					if($api.attr(ellist[a], "cProductFullName").indexOf(msg) > -1){
+						$api.css(ellist[a], 'display: block;');
+					}
+					if($api.attr(ellist[a], "cProductProductCode").indexOf(msg) > -1){
+						$api.css(ellist[a], 'display: block;');
+					}
+				}
+			}
+
+
+		//将本地保存的数据保存下来 方便显示
+		var local_db_list = new Array();
+
+		function init_dblist(){
+			local_db_list = new Array();
+			var db = api.require('db');
+			db.selectSql({
+			    name: 'kunchidb',
+			    sql: 'SELECT * FROM quehuolist WHERE iRorptId="' + api.pageParam.page.iReportId + '" AND userid="'+$api.getStorage("id")+'"'
+			}, function(ret, err) {
+			    if (ret.status) {
+			        if (ret.data.length != 0) {
+								local_db_list = ret.data;
+			        }
+			    }
+					getProductlist();
+			});
+		}
+
+
+		var T_ProductList = '';
+		function getProductlist(){
+			$kunchi.kunchipost("ActionApi/T_Product/T_ProductList", "", function(ret,err){
+				//console.log(JSON.stringify(ret)+"=="+JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					if(ret.length != 0){
+						T_ProductList = ret;
+						dealxml(ret);
+					}else{
+						alert("查询不到商品信息");
+					}
+				}else{
+					alert("当前网络错误,请退出重试.");
+				}
+			});
+		}
+
+		function dealxml(ret){
+			var el = document.getElementById("list");
+			document.getElementById("list").innerHTML = '';
+			productlist_type.push("全部");
+			for(var a = 0; a < ret.length; a++){
+				productlist_type.push(ret[a].BrandName);
+				for(var b = 0; b < ret[a].listProtduct.length; b++){
+					var activeiclass = '';
+					var idselect = '0';
+					for(var c = 0; c < local_db_list.length; c++){
+						if((local_db_list[c].pinpaiid == ret[a].BrandID)&&(local_db_list[c].goodid == ret[a].listProtduct[b].id)){
+							activeiclass = 'activei';
+							idselect = '1';
+						}
+					}
+					var html = '<li liname="'+ret[a].BrandName+'" cProductFullName="'+ret[a].listProtduct[b].cProductFullName+'" cProductProductCode="'+ret[a].listProtduct[b].cProductProductCode+'">'
+									+			'<span onclick="showtypename(this)" class="typename">'+ret[a].listProtduct[b].cProductFullName+'<br/>'+ret[a].listProtduct[b].cProductProductCode+'</span>'
+									+			'<div class="check">'
+									+				'<i BrandName="'+ret[a].BrandName+'" BrandID="'+ret[a].BrandID+'" productid="'+ret[a].listProtduct[b].id+'" productname="'+ret[a].listProtduct[b].cProductFullName+'" onclick="selectthis(this)" idselect="'+idselect+'" class="fa fa-check-circle '+activeiclass+'" aria-hidden="true"></i>'
+									+			'</div>'
+									+		'</li>';
+					$api.append(el, html);
+				}
+			}
+		}
+
+		function showtypename(tag){
+			api.toast({
+			    msg: $api.html(tag),
+			    duration: 1500,
+			    location: 'top'
+			});
+		}
+
+		function selectthis(tag){
+			var idselect = $api.attr(tag, 'idselect');
+			if(idselect == 0){
+				$api.addCls(tag, 'activei');
+				$api.attr(tag, 'idselect', '1');
+			}else{
+				$api.removeCls(tag, 'activei');
+				$api.attr(tag, 'idselect', '0');
+			}
+		}
+
+		function init_bottom_menu(){
+			api.actionSheet({
+			    title: '选择品类',
+			    cancelTitle: '取消',
+			    buttons: productlist_type
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+					if(index <= productlist_type.length){
+						document.getElementById("init_bottom_menu").innerHTML = productlist_type[index-1];
+						select_productlist(productlist_type[index-1]);
+					}
+			});
+		}
+
+		function select_productlist(name){
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "li");
+			for(var a = 0; a < ellist.length; a++){
+				if(name == '全部'){
+					$api.css(ellist[a], 'display: block;');
+				}else{
+					$api.css(ellist[a], 'display: none;');
+					if($api.attr(ellist[a], "liname") == name){
+						$api.css(ellist[a], 'display: block;');
+					}
+				}
+			}
+		}
+		/**
+		* 将缺货情况保存到本地
+		* userid, zidianname, zidianid, zidiantype, pinpainame, pinpaiid, iRorptId, iRorptListTime, iStoreId, cStoreCode, goodname, goodid, bei1, bei2, bei3, bei4, bei5, bei6, bei7, bei8
+		*/
+		var quehuo_array = new Array();
+		function savetoDB(){
+			quehuo_array = new Array();
+			var el = document.getElementById("list");
+			var ellist = $api.domAll(el, "i");
+			for(var a = 0; a < ellist.length; a++){
+				if($api.hasCls(ellist[a], "activei")){
+					var object = new Object();
+					var productid = $api.attr(ellist[a], 'productid');
+					var productname = $api.attr(ellist[a], 'productname');
+					var BrandID = $api.attr(ellist[a], 'BrandID');
+					var BrandName = $api.attr(ellist[a], 'BrandName');
+					object.userid = $api.getStorage("id");
+					object.zidianname = api.pageParam.page.name;
+					object.zidianid = api.pageParam.page.tagid;
+					object.zidiantype = api.pageParam.page.zidiantype;
+					object.goodid = productid;
+					object.goodname = productname;
+					object.pinpaiid = BrandID;
+					object.pinpainame = BrandName;
+					object.iRorptId = api.pageParam.page.iReportId;
+					object.iRorptListTime = api.pageParam.page.iRorptListTime;
+					object.iStoreId = api.pageParam.page.iStoreId;
+					object.cStoreCode = api.pageParam.page.cStoreCode;
+					object.bei1 = "";
+					object.bei2 = "";
+					object.bei3 = "";
+					object.bei4 = "";
+					object.bei5 = "";
+					object.bei6 = "";
+					object.bei7 = "";
+					object.bei8 = "";
+					quehuo_array.push(object);
+				}
+			}
+			save_quehuoDB(api.pageParam.page.iReportId);
+		}
+
+	</script>
+</html>

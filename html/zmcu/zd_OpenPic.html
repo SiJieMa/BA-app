@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>开店图片列表</title>
+    <link rel="stylesheet" type="text/css" href="../../css/api.css" />
+    <style>
+        html,
+        body {
+            background-color: #FFFFFF;
+        }
+        .paizhao{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%; margin-top: 20px;}
+        .paizhao .title{ width: 80px; height: 40px; line-height: 40px; float: left; font-size: 14px; text-align: center;}
+        .paizhao .paizhaobtn{ width: 150px; height: 40px; line-height: 40px; float: left; font-size: 14px; text-align: center; border: 1px solid #ddd; border-radius: 5px;}
+        .piclist{ width: 90%; height: auto; float: left; margin-left: 5%; margin-right: 5%; margin-top: 20px;}
+        .piclist ul{width: 100%; height: auto; float: left;}
+        .piclist ul li{ width:  30%; height: auto; float: left; position: relative;}
+        .piclist ul li .main{ width: 100%; height: auto; float: left;}
+        .piclist ul li .right{ width: 20px; height: 20px; position: absolute; z-index: 99; top: 0; right: 0; padding: 10px;}
+        .piclist ul li:nth-child(3n+2){ margin-left: 5%; margin-right: 5%;}
+        .shangchuan{
+          width: 80%;
+          margin-left: 10%;
+          margin-right: 10%;
+          float: left;
+          margin-top: 100px;
+          margin-bottom: 40px;
+          text-align: center;
+          height: 40px;
+          line-height: 40px;
+          font-size: 14px;
+          background-color: #169bd5;
+          color: #fff;
+          border-radius: 2px;
+        }
+    </style>
+</head>
+<body id="body">
+  <div class="paizhao">
+    <span class="title">开店照片</span>
+    <span onclick="openpaimenu()" class="paizhaobtn">拍照</span>
+  </div>
+  <div class="piclist">
+    <ul id="piclist">
+    </ul>
+  </div>
+  <div onclick="shangchuantupian()" class="shangchuan">
+    上传
+  </div>
+</body>
+<script type="text/javascript" src="../../script/api.js"></script>
+<script type="text/javascript" src="../../script/apiclear.js"></script>
+<script type="text/javascript" src="../../script/kunchiba.js"></script>
+<script type="text/javascript" src="../../script/kunchisale.js"></script>
+<script type="text/javascript" src="../../script/log.js"></script>
+<script type="text/javascript" src="../../script/db.js"></script>
+<script type="text/javascript" src="../../script/base64Update.js"></script>
+<script type="text/javascript" src="../../script/synthesis.js"></script>
+<script type="text/javascript">
+
+    var isallowopenlibrary = 0;//0不可以使用相册 1可以使用相册 判断计划时间距离当前时间 是否小于一天
+    var detial;
+    apiready = function() {
+        //需要动态的计算一下列表高度 frameheight-71
+        initpic();
+        //初始化已经上传的图片列表
+        detial = api.pageParam.page.detial;
+        if(api.pageParam.page.iPlantFlag == 1){
+          isallowopenlibrary = 1;
+        }
+        initpiclist();
+    };
+
+    function initpiclist(){
+      var htmlpiclist = document.getElementById("piclist");
+      for(var a = 0; a < detial.length; a++){
+        var cPicPath = detial[a].cPicPath;
+        var fuwuqiurl = $api.posturllujie + 'Content/UploadFiles/mobile/' + cPicPath;
+        var picitemid = detial[a].id;
+        var img = '<li id="m'+idnum+'" value="'+idnum+'" valuestate="old">'
+              +      '<img onclick="javascript:delpic(this);" motherid="m'+idnum+'" onlineid="'+picitemid+'" class="right" src="../../image/delimg.png" alt="">'
+              +      '<img onclick="javascript:openpicdetial(this);" savetime="'+cPicPath.split("/")[0]+'" value="'+cPicPath.split("/")[1]+'" motherid="m'+idnum+'" id="'+idnum+'" src="'+fuwuqiurl+'" class="main" alt="加载失败">'
+              +    '</li>';
+        $api.append(htmlpiclist, img);
+        idnum++;
+        initnum++;
+      }
+    }
+
+    function openpaimenu(){
+      if(initnum == 6){
+        api.toast({
+            msg: '最多6张照片',
+            duration: 3000,
+            location: 'bottom'
+        });
+        return;
+      }
+      var menulist = ['拍照', '相册选择'];
+      if(isallowopenlibrary == 0){
+        menulist = ['拍照'];
+      }
+      api.actionSheet({
+          title: '图片来源',
+          cancelTitle: '取消',
+          buttons: menulist
+      }, function(ret, err) {
+          //console.log(JSON.stringify(ret));
+          var index = ret.buttonIndex;
+          if(index > menulist.length){
+            return;
+          }
+          if(index == 1){
+            opencarmer()
+          }else{
+            openPhoneDBAlumn(api.pageParam.page.cStoreFullName, "周末促", "促销开店照");
+            api.addEventListener({
+      			    name: 'PaiPicFinish'
+      			}, function(ret, err) {
+      			    	upload_toonline_diycarmer();
+      			});
+          }
+      });
+    }
+
+    function opencarmer(){
+      api.addEventListener({
+			    name: 'PaiPicFinish'
+			}, function(ret, err) {
+			    var PaiPicFinish = ret.value.PaiPicFinish;
+			    if(PaiPicFinish == 'ok'){
+			    	api.closeWin({
+					    name: 'DIYCarmerWin'
+					});
+					api.closeWin({
+					    name: 'showCarmerPicSale'
+					});
+			    upload_toonline_diycarmer();
+			    }
+			});
+			openDiyCarmerPaiZhao(api.pageParam.page.cStoreFullName, "周末促", "促销开店照");
+    }
+    var initnum = 0;
+    //每增加一个 就加1 不减
+    var idnum = 0;
+    function upload_toonline_diycarmer(){
+
+      jiazai();
+      var myDate = new Date();
+      var thissavetime = myDate.getTime();
+      var savetime = $kunchi.getMillonDate_noline(thissavetime);
+      var piclistitem = [{"filename":DiyCarmerFinishChu_name,"base64str":""+DiyCarmerFinishChu_url, filepath: savetime}];
+    	$kunchi.kunchiuploadpic('api/Upload', JSON.stringify(piclistitem), function(ret,err){
+    		//console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+        tingzhi();
+    		if (ret) {
+          var htmlpiclist = document.getElementById("piclist");
+          var img = '<li id="m'+idnum+'" value="'+idnum+'" valuestate="new">'
+                +      '<img onclick="javascript:delpic(this);" motherid="m'+idnum+'" class="right" src="../../image/delimg.png" alt="">'
+                +      '<img onclick="javascript:openpicdetial(this);" id="'+idnum+'" motherid="m'+idnum+'" savetime="'+thissavetime+'" value="'+DiyCarmerFinishChu_name+'" class="main" src="data:image/jpg;base64,'+DiyCarmerFinishChu_url+'" alt="暂时没有">'
+                +    '</li>';
+  				$api.append(htmlpiclist, img);
+          idnum++;
+          initnum++;
+    		}else{
+          api.toast({
+              msg: '上传图片失败，请确认网络是否通畅.',
+              duration: 2000,
+              location: 'bottom'
+          });
+    		}
+    	});
+		}
+
+    function openpicdetial(pictag){
+			api.openFrame({
+					name: 'showpic',
+					url: 'widget://html/sale/showpic_sale.html',
+					rect: {
+							x: 0,
+							y: 0,
+							w: 'auto',
+							h: 'auto'
+					},
+					bounces: false,
+					bgColor: 'rgba(0,0,0,0.3)',
+					pageParam: {
+							url: $api.attr(pictag, 'src')
+					}
+			});
+		}
+
+
+    function delpic(tag){
+      var motherid = $api.attr(tag, 'motherid');
+      var motherhtml = document.getElementById(motherid);
+      var valuestate = $api.attr(motherhtml, "valuestate");
+      var onlineid = $api.attr(tag, 'onlineid');
+      api.confirm({
+          title: '提示',
+          msg: '确定要删除此照片吗，删除后无法找回?',
+          buttons: ['确定', '取消']
+      }, function(ret, err) {
+          var index = ret.buttonIndex;
+          if(index == 1){
+            if(valuestate == 'new'){
+              delxml(motherid);
+              initnum--;
+            }else{
+              postdelpiconline(motherid, onlineid);
+            }
+          }
+      });
+    }
+
+    function postdelpiconline(motherid, onlineid){
+      jiazai();
+      var url = "ActionApi/T_Pics/DeleteT_Pics";
+    	$kunchi.kunchipost(url, {id: onlineid}, function(ret,err){
+    		//console.log(JSON.stringify(ret) + "----" + JSON.stringify(err));
+        tingzhi();
+    		if (ret) {
+          delxml(motherid);
+          initnum--;
+          api.sendEvent({
+              name: 'updateoneitem',
+              extra: {
+                  updateid: api.pageParam.page.Id
+              }
+          });
+          reloadlocalpiclist();
+    		}else{
+          api.toast({
+              msg: '删除失败,请重试.',
+              duration: 3000,
+              location: 'middle'
+          });
+    		}
+    	});
+    }
+
+    //删除一张图片之后将本地存储的数组更新一下 清理掉
+    function reloadlocalpiclist(){
+      var picsavelocallist = new Array();
+      var htmlpiclist = document.getElementById("piclist");
+      var lilist = $api.domAll(htmlpiclist, "li");
+      //判断是否更新本地信息 用来保存拍好的开店照 方便下次进来查看
+      var uploadlocal = api.pageParam.page.uploadlocal;
+      for(var a = 0; a < lilist.length; a++){
+        var valuestate = $api.attr(lilist[a], 'valuestate');
+
+        var id = $api.attr(lilist[a], 'value');
+        var imghtml = document.getElementById(id);
+        var PicsAdds = new Object();
+        var savetime = $api.attr(imghtml, 'savetime');
+        if(valuestate == "old"){
+          PicsAdds.cPicPath = savetime + '/' + $api.attr(imghtml, "value");
+        }else{
+          savetime = Number(savetime);
+          PicsAdds.cPicPath = $kunchi.getMillonDate_noline(savetime) + '/' + $api.attr(imghtml, "value");
+        }
+        PicsAdds.cPicClass = "开店照片";
+        PicsAdds.iSize = 0;
+        PicsAdds.cPicType = "PhotoType";
+        PicsAdds.iStoreId = api.pageParam.page.iStoreId;
+        PicsAdds.iUserId = $api.getStorage("id");
+        PicsAdds.cRoleName = $api.getStorage("roleName");
+        PicsAdds.cUserName = $api.getStorage("realName");
+        PicsAdds.iTrainId = api.pageParam.page.Id;//传过来的那个ID就好
+        PicsAdds.dtUploadTime = $kunchi.todaytime();
+        if(valuestate == "old"){
+          PicsAdds.id = id;
+          picsavelocallist.push(PicsAdds);
+        }
+      }
+      if(uploadlocal == "0"){
+        $api.setStorage('xundianpiclist', picsavelocallist);
+      }
+    }
+
+
+    function shangchuantupian(){
+      jiazai();
+      var picsaddlist = new Array();
+      var picsavelocallist = new Array();
+      var htmlpiclist = document.getElementById("piclist");
+      var lilist = $api.domAll(htmlpiclist, "li");
+
+      //判断是否更新本地信息 用来保存拍好的开店照 方便下次进来查看
+      var uploadlocal = api.pageParam.page.uploadlocal;
+      for(var a = 0; a < lilist.length; a++){
+        var valuestate = $api.attr(lilist[a], 'valuestate');
+
+        var id = $api.attr(lilist[a], 'value');
+        var imghtml = document.getElementById(id);
+        var PicsAdds = new Object();
+        var savetime = $api.attr(imghtml, 'savetime');
+        if(valuestate == "old"){
+          PicsAdds.cPicPath = savetime + '/' + $api.attr(imghtml, "value");
+        }else{
+          savetime = Number(savetime);
+          PicsAdds.cPicPath = $kunchi.getMillonDate_noline(savetime) + '/' + $api.attr(imghtml, "value");
+        }
+        PicsAdds.cPicClass = "开店照片";
+        PicsAdds.iSize = 0;
+        PicsAdds.cPicType = "PhotoType";
+        PicsAdds.iStoreId = api.pageParam.page.iStoreId;
+        PicsAdds.iUserId = $api.getStorage("id");
+        PicsAdds.cRoleName = $api.getStorage("roleName");
+        PicsAdds.cUserName = $api.getStorage("realName");
+        PicsAdds.iTrainId = api.pageParam.page.Id;//传过来的那个ID就好
+        PicsAdds.dtUploadTime = $kunchi.todaytime();
+        if(valuestate == "old"){
+          PicsAdds.id = id;
+          picsavelocallist.push(PicsAdds);
+          continue;
+        }
+        picsaddlist.push(PicsAdds);
+      }
+
+      if(picsaddlist.length == 0){
+        api.toast({
+            msg: '没有提交任何的内容,请确认或者返回上一页.',
+            duration: 3000,
+            location: 'bottom'
+        });
+        tingzhi();
+        return;
+      }
+
+      //console.log(JSON.stringify(picsaddlist));
+      $kunchi.kunchipost('ActionApi/T_Pics/T_PicsAdds', picsaddlist, function(ret,err){
+        //[{"id":12,"cPicPath":"15143451038591.jpg","cPicClass":"陈列照片","iSize":128378,"dtCreateTime":"2017-12-27T11:55:39.697","cPicType":"PhotoType","iStoreId":"3f59d20c-200e-4967-bc99-d6d8ce797169","iUserId":"b26915ea-b218-428b-a2b3-54395e2a901e","cRoleName":"BA人员","cUserName":"邵芳","iBrandName":"4"},{"id":13,"cPicPath":"15143451038591.jpg","cPicClass":"陈列照片","iSize":128378,"dtCreateTime":"2017-12-27T11:55:39.697","cPicType":"PhotoType","iStoreId":"3f59d20c-200e-4967-bc99-d6d8ce797169","iUserId":"b26915ea-b218-428b-a2b3-54395e2a901e","cRoleName":"BA人员","cUserName":"邵芳","iBrandName":"4"},{"id":14,"cPicPath":"15143451038591.jpg","cPicClass":"陈列照片","iSize":128378,"dtCreateTime":"2017-12-27T11:55:39.697","cPicType":"PhotoType","iStoreId":"3f59d20c-200e-4967-bc99-d6d8ce797169","iUserId":"b26915ea-b218-428b-a2b3-54395e2a901e","cRoleName":"BA人员","cUserName":"邵芳","iBrandName":"4"},{"id":15,"cPicPath":"15143451038591.jpg","cPicClass":"陈列照片","iSize":128378,"dtCreateTime":"2017-12-27T11:55:39.7","cPicType":"PhotoType","iStoreId":"3f59d20c-200e-4967-bc99-d6d8ce797169","iUserId":"b26915ea-b218-428b-a2b3-54395e2a901e","cRoleName":"BA人员","cUserName":"邵芳","iBrandName":"4"}]
+        // console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+        tingzhi();
+        if (ret) {
+          for(var aa = 0; aa < ret.length; aa++){
+            picsavelocallist.push(ret[aa]);
+          }
+          if(uploadlocal == "0"){
+            $api.setStorage('xundianpiclist', picsavelocallist);
+          }
+
+          api.alert({
+              title: '提示',
+              msg: '提交完成',
+          }, function(ccc, ddd) {
+            api.sendEvent({
+                name: 'updateoneitem',
+                extra: {
+                    updateid: api.pageParam.page.Id
+                }
+            });
+            setTimeout(cacleevent(), 300);
+          });
+        } else {
+          api.confirm({
+              title: '提示',
+              msg: '提交失败,是否重新提交?',
+              buttons: ['确定', '取消']
+          }, function(ccc, ddd) {
+              var index = ccc.buttonIndex;
+              if(index == 1){
+                shangchuantupian();
+              }
+          });
+        }
+      });
+    }
+
+    function cacleevent(){
+      api.closeWin();
+    }
+
+</script>
+
+</html>

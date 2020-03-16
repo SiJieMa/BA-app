@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>消息列表</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../css/message.css"/>
+	</head>
+	<body>
+		<div class="messagelist">
+			<ul id="list">
+				<!--<li>
+					<div class="title">
+						<span class="titlemsg">题目</span>
+						<i class="isread"></i>
+					</div>
+					<span class="content">内容</span>
+					<span class="time">201708-11</span>
+				</li>-->
+			</ul>
+		</div>
+		<div class="tishi">红点表示您尚未读取此信息,读取之后请点击红点表示您已经收到并读取此信息.</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+		var pageindex, pagesize;
+		//是否允许上拉加载 0不允许 1允许
+		var isbottom = 0;
+		apiready = function() {
+			FastClick.attach(document.body);
+			jiazai();
+			pageindex = 0;
+			pagesize = 10;
+			document.getElementById("list").innerHTML = '';
+			get_messagelist(pageindex, pagesize);
+			xiala(function() {
+				pageindex = 0;
+				document.getElementById("list").innerHTML = '';
+				get_messagelist(pageindex, pagesize);
+			});
+			api.addEventListener({
+				name : 'scrolltobottom',
+				extra : {
+					threshold : 100 //设置距离底部多少距离时触发，默认值为0，数字类型
+				}
+			}, function(ret, err) {
+				if(isbottom == 1){
+					isbottom = 0;
+					pageindex = pageindex + 10;
+					get_messagelist(pageindex, pagesize);
+				}
+			});
+		};
+		
+		
+		function get_messagelist(pageindex, pagesize) {
+			var body = {
+				pageindex : pageindex,
+				pagesize : pagesize,
+				userid : $api.getStorage("id")
+			};
+			$kunchi.kunchipost("ActionApi/T_InBox/T_InBoxList", body, function(ret, err) {
+				tingzhi();
+				api.refreshHeaderLoadDone();
+				if (ret) {
+					if(ret.length == 10){
+						isbottom = 1;
+						dealxml(ret);
+					}else if(ret.length == 0){
+						isbottom = 0;
+						api.toast({
+						    msg: '暂无消息',
+						    duration: 2000,
+						    location: 'top'
+						});
+					}else{
+						isbottom = 0;
+						dealxml(ret);
+					}
+				} else {
+				}
+			});
+		}
+		function dealxml(ret){
+			var el = document.getElementById("list");
+			for(var a = 0; a < ret.length; a++){
+			
+				var style = 'background-color: #FF5722;';
+				var isreadthis = 0;
+				if(ret[a].isRead){
+					style = 'background-color: #ffffff;';
+					isreadthis = 1;
+				}
+			
+				var html = '<li onclick="changestatethis(this)" id="'+ret[a].id+'" isRead="'+isreadthis+'">'
+					+			'<div class="title">'
+					+				'<span class="titlemsg">'+ret[a].cTitle+'</span>'
+					+				'<i id="dian'+ret[a].id+'" style="'+style+'" class="isread"></i>'
+					+			'</div>'
+					+			'<span class="content">'+ret[a].cContent+'</span>'
+					+			'<span class="time">'+ret[a].dtCreateTime.replace("T"," ")+'</span>'
+					+		'</li>';
+					
+				$api.append(el, html);
+			}
+		}
+		
+		function changestatethis(tag){
+			api.confirm({
+			    title: '提示',
+			    msg: '是否标记为已读?',
+			    buttons: ['确定', '取消']
+			}, function(aaa, bbb) {
+			    var index = aaa.buttonIndex;
+			    if(index == 1){
+					jiazai();
+					var id = $api.attr(tag, "id");
+					var dianid = 'dian'+id;
+					var body = {
+						id : id
+					};
+					$kunchi.kunchipost("ActionApi/T_InBox/T_InBoxRead", body, function(ret, err) {
+						tingzhi();
+						if (ret) {
+							var dianhtml = document.getElementById(dianid);
+							$api.css(dianhtml,'background-color: #ffffff;');
+							api.toast({
+							    msg: '已读',
+							    duration: 2000,
+							    location: 'top'
+							});
+							api.sendEvent({
+	                            name:'noreadmessagenum'
+                            });
+						} else {
+							alert("读取错误,请检查网络后重试.");
+						}
+					});
+			    }
+			});
+		}
+		
+	</script>
+</html>

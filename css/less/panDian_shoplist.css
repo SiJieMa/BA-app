@@ -1,0 +1,219 @@
+.search {
+  width: 100%;
+  height: 50px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.search .search-down {
+  width: auto;
+  height: 50px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.search .search-down .search-down-qudao {
+  width: auto;
+  padding-left: 10px;
+  height: 50px;
+  line-height: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: center;
+}
+.search .search-down .search-down-logo {
+  width: 10px;
+  height: 10px;
+  padding-left: 5px;
+  margin-top: 20px;
+}
+.search .search-input {
+  flex: 1;
+}
+.list-top {
+  width: 100%;
+  height: 50px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.list-top .list-top-name {
+  width: -moz-calc(100% - 120px);
+  width: -webkit-calc(100% - 120px);
+  width: calc(100% - 120px);
+  margin-left: 10px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 1.125rem;
+}
+.list-top .list-top-city {
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  font-size: 0.875rem;
+  margin-right: 10px;
+  text-align: right;
+  padding-right: 10px;
+}
+.shoplist {
+  width: -moz-calc(100% - 20px);
+  width: -webkit-calc(100% - 20px);
+  width: calc(100% - 20px);
+  margin: 0 10px;
+  height: auto;
+}
+.shoplist ul {
+  width: 100%;
+  height: auto;
+  overflow: scroll;
+}
+.shoplist ul .shoplist-hasselect {
+  background-color: #cee2ff;
+  border-radius: 5px;
+}
+.shoplist ul li {
+  width: 100%;
+  height: auto;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid #eeeeee;
+  padding: 5px 0;
+}
+.shoplist ul li .shoplist-left {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.shoplist ul li .shoplist-left .shoplist-left-up {
+  height: 30px;
+  line-height: 30px;
+  font-size: 1rem;
+  color: #333333;
+}
+.shoplist ul li .shoplist-left .shoplist-left-down {
+  height: 20px;
+  line-height: 20px;
+  font-size: 0.625rem;
+  color: #999999;
+}
+.shoplist ul li .shoplist-right {
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  text-align: right;
+  color: #999999;
+  padding-right: 10px;
+}
+.shoplist ul li .select {
+  width: 30px;
+  height: 30px;
+  margin: 10px;
+}
+.next-button {
+  width: 100%;
+  height: 50px;
+}
+.next-button .van-button {
+  height: 50px;
+}
+.brandback {
+  width: 100%;
+  height: auto;
+  position: fixed;
+  z-index: 16777271;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.brandback .brandlist {
+  background-color: #ffffff;
+  border-radius: 5px 5px 0 0;
+  width: -moz-calc(100% - 20px);
+  width: -webkit-calc(100% - 20px);
+  width: calc(100% - 20px);
+  margin: 0 10px;
+}
+.brandback .brandlist ul {
+  width: 100%;
+  height: 100%;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+}
+.brandback .brandlist ul li {
+  width: 100%;
+  height: 50px;
+  border-bottom: 1px solid #eeeeee;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.brandback .brandlist ul li .newliname {
+  flex: 1;
+  height: 50px;
+  line-height: 50px;
+  font-size: 0.875rem;
+  color: #333333;
+  font-weight: 600;
+}
+.brandback .brandlist ul li .newliimg {
+  width: 30px;
+  height: 30px;
+  padding: 11px 0 9px 0;
+}
+.cangkuback {
+  width: 100%;
+  background-color: #ffffff;
+}
+.cangkuback .cangkulist {
+  width: 100%;
+  height: 100%;
+  background-image: url(../../image/cangku-back.png);
+  background-position: top;
+  background-size: 100% 70%;
+  background-repeat: no-repeat;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.cangkuback .cangkulist .cangkubtn {
+  width: 120px;
+  height: 120px;
+  line-height: 120px;
+  border-radius: 50%;
+  text-align: center;
+  color: #ffffff;
+  font-size: 1.125rem;
+  margin: 30px;
+}
+.cangkuback .cangkulist .item0 {
+  background-image: linear-gradient(#5a8fff, #76a5fd);
+}
+.cangkuback .cangkulist .item1 {
+  background-image: linear-gradient(#ff6a6a, #ff6a6a);
+}
+.cangkuback .cangkulist .item2 {
+  background-image: linear-gradient(#ffb042, #ffd877);
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.block {
+  width: 120px;
+  height: 120px;
+}

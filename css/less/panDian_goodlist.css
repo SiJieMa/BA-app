@@ -1,0 +1,166 @@
+.search {
+  width: -moz-calc(100% - 10px);
+  width: -webkit-calc(100% - 10px);
+  width: calc(100% - 10px);
+  margin: 0 5px;
+  height: 50px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+  background-color: #ffffff;
+}
+.search .search-down {
+  width: 50px;
+  height: 50px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.search .search-down .search-down-logo {
+  width: 27px;
+  height: 30px;
+}
+.search .search-input {
+  flex: 1;
+  height: 50px;
+}
+.shoptitle {
+  width: -moz-calc(100% - 10px);
+  width: -webkit-calc(100% - 10px);
+  width: calc(100% - 10px);
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  margin: 50px 5px 0 5px;
+  font-size: 1rem;
+  background-color: #ffffff;
+}
+.shoptitle .left {
+  flex: 1;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: #333333;
+}
+.shoptitle .right {
+  width: 100px;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  color: #333333;
+}
+.shoplist {
+  width: -moz-calc(100% - 10px);
+  width: -webkit-calc(100% - 10px);
+  width: calc(100% - 10px);
+  margin: 100px 5px 50px 5px;
+}
+.shoplist .itemshoplist {
+  width: 100%;
+  min-height: 50px;
+  border-bottom: 1px solid #eeeeee;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: row;
+}
+.shoplist .itemshoplist .left {
+  flex: 1;
+  min-height: 50px;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: flex;
+  flex-direction: column;
+}
+.shoplist .itemshoplist .left .up {
+  width: 100%;
+  height: auto;
+  line-height: 30px;
+  color: #333333;
+  font-size: 1rem;
+}
+.shoplist .itemshoplist .left .down {
+  color: #999999;
+  width: 100%;
+  height: 20px;
+  line-height: 20px;
+  font-size: 0.8125rem;
+}
+.shoplist .itemshoplist .right {
+  width: 100px;
+  height: 30px;
+}
+.shoplist .itemshoplist .right .inputkucun {
+  width: 80px;
+  height: 30px;
+  margin-left: 10px;
+  margin-top: 10px;
+  background-color: #f8f8f8;
+  font-size: 0.875rem;
+  color: #5a8fff;
+  text-align: center;
+  outline: none;
+}
+.nextupload {
+  width: 100%;
+  height: 50px;
+  background-color: #ffffff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+}
+.nextupload button {
+  width: 250px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 1.125rem;
+  color: #ffffff;
+  background-color: #5a8fff;
+  margin-top: 5px;
+  margin-left: -moz-calc(50% - 125px);
+  margin-left: -webkit-calc(50% - 125px);
+  margin-left: calc(50% - 125px);
+  border-radius: 8px;
+}
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+.wrapper .block {
+  width: 200px;
+  height: 200px;
+  position: relative;
+}
+.wrapper .block .successpandian {
+  width: 200px;
+  height: 200px;
+}
+.wrapper .block .successpandiantext {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 50px;
+  line-height: 50px;
+  margin-top: 30px;
+  text-align: center;
+  font-size: 1.25rem;
+  color: #333333;
+}

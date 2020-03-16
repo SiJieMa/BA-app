@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>客户退货单</title>
+		<link rel="stylesheet" type="text/css" href="../../../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../../../css/showhuodannew.css"/>
+		<style>
+			.kuaididanhao{ display: none; width: 96%; height: auto; float: left; padding-left: 2%; padding-right: 2%; border-bottom: 5px solid #f5f5f5;}
+			.kuaididanhao .name{ width: 80px; height: 40px; line-height: 40px; float: left; font-size: 15px;}
+			.kuaididanhao .num{ width: auto; height: 40px; line-height: 40px; float: left; font-size: 15px;}
+			.liyou{ display: none; width: 100%; height: 100%; position: fixed; top: 0; left: 0; z-index: 999; background-color: rgba(0,0,0,0.5);}
+			.liyou .liyouson{ width: 90%; height: auto; float: left; background-color: #FFFFFF; margin-left: 5%;}
+			.liyou .liyouson .liyoutitle{ width: 98%; height: 50px; line-height: 50px; float: left; padding-left: 2%; font-size: 16px; background-color: #f5f5f5;}
+			.liyou .liyouson .liyouwenzi{ font-size: 16px; width: 96%; padding-left: 2%; padding-right: 2%; padding-top: 5px; padding-bottom: 5px; float: left; outline: none; height: 150px;}
+			.liyou .liyouson .caozuo{ width: 100%; height: 50px; float: left;}
+			.liyou .liyouson .caozuo span{ width: 50%; height: 50px; line-height: 50px; float: left; text-align: center; color: #FFFFFF;}
+			.liyou .liyouson .caozuo .one{ background-color: #71C4E4;}
+			.liyou .liyouson .caozuo .two{ background-color: #FF5C01;}
+		</style>
+	</head>
+	<body>
+		<div id="liyou" class="liyou">
+			<div id="liyoushuruinput" class="liyouson">
+				<span class="liyoutitle">退货理由:</span>
+				<textarea id="tuiguoseason" class="liyouwenzi" placeholder="请输入退货理由..."></textarea>
+				<div class="caozuo">
+					<span onclick="closeremark()" class="one">取消</span>
+					<span onclick="upload_huodan()" class="two">确定</span>
+				</div>
+			</div>
+		</div>
+	
+		<div class="shangpin">
+			<ul id="list">
+				<!--<li>
+					<span class="name">名称名称名称名称名称名称名称名称名称</span>
+					<span class="ordernum">商品编号:8888888888888</span>
+					<span class="goodnum">商品数量:88</span>
+					<span class="goodprice">商品单价:88</span>
+					<span class="goodmoney">商品总价:88</span>
+				</li>-->
+			</ul>
+		</div>
+		<div class="edit">
+			<span onclick="api.closeWin();" class="left">返回编辑</span>
+			<span onclick="openremark()" class="right">确定</span>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../../script/api.js"></script>
+	<script type="text/javascript" src="../../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../../script/log.js"></script>
+	<script type="text/javascript" src="../../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../../script/kunchisale.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			jiazai()
+			var winheight = api.winHeight;
+			var elliyoushuruinputheight = 'margin-top: '+((winheight - 250)/2 - 100)+'px';
+			var elliyou = document.getElementById("liyou");
+			var elliyoushuruinput= document.getElementById("liyoushuruinput");
+			$api.css(elliyoushuruinput,elliyoushuruinputheight);
+			$api.css(elliyou,'height: '+winheight+'px;');
+		
+			var el = document.getElementById("list");
+			document.getElementById("list").innerHTML = '';
+			var tijiaohuodan = $api.getStorage('tijiaohuodan');
+			for(var a = 0; a < tijiaohuodan.T_OrderDetail.length; a++){
+				var li = '<li>'
+					+			'<span class="name">'+tijiaohuodan.T_OrderDetail[a].name+'</span>'
+					+			'<span class="ordernum">商品编号:'+tijiaohuodan.T_OrderDetail[a].cProductCodeNc+'</span>'
+					+			'<span class="goodnum">商品数量:'+tijiaohuodan.T_OrderDetail[a].iCount+'</span>'
+					+			'<span class="goodprice">商品单价:'+tijiaohuodan.T_OrderDetail[a].iPrice+'</span>'
+					+			'<span class="goodmoney">商品总价:'+(parseInt(tijiaohuodan.T_OrderDetail[a].iCount) * parseFloat(tijiaohuodan.T_OrderDetail[a].iPrice))+'</span>'
+					+		'</li>';
+				$api.append(el, li);
+			}
+			tingzhi();
+		};
+		
+		function openremark(){
+			var elliyou = document.getElementById("liyou");
+			$api.css(elliyou,'display: block;');
+		}
+		
+		function closeremark(){
+			var elliyou = document.getElementById("liyou");
+			$api.css(elliyou,'display: none;');
+		}
+		
+		function upload_huodan() {
+			jiazai();
+			var tuiguoseason = document.getElementById("tuiguoseason").value;
+			var json = $api.getStorage("tijiaohuodan");
+			json.cRemark = tuiguoseason;
+			url = "ActionApi/T_Orders/T_OrdersSalesOutReturn";
+			$kunchi.kunchipost(url, json, function(ret, err) {
+				//console.log(JSON.stringify(ret) + "+++" + JSON.stringify(err));
+				tingzhi();
+				if(ret){
+					api.sendEvent({
+	                    name:'updatehuodan'
+                    });
+					api.alert({
+					    title: '提示',
+					    msg: '提交成功',
+					}, function(aaa, bbb) {
+						api.closeToWin({
+	                        name: 'jinhuolist'
+                        });
+					});
+				}else{
+					if(err.statusCode == '406'){
+						alert(err.msg);
+					}else{
+						alert("网络错误,稍后重试.");
+					}
+				}
+			});
+		}
+		function get_huodan_type(){
+			if((api.pageParam.page.listid == $api.getStorage('xiaoshoudan'))||(api.pageParam.page.listid == $api.getStorage('xiaoshoutuihuodan'))||(api.pageParam.page.listid == $api.getStorage('wuliaoshiyongdan'))||(api.pageParam.page.listid == $api.getStorage('shangpinzhuanwuliao'))){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		
+		
+	</script>
+</html>

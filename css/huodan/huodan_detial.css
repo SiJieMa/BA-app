@@ -1,0 +1,44 @@
+html,body{ background-color: #FFFFFF;}
+
+.timelineleft{ margin-top: 5px; width: 30px; margin-left: 50px; height: auto; float: left; background-image: url(../../image/huiline.png); background-size: 5px 100%; background-repeat: no-repeat; background-position: center;}
+.timelineleft ul{ width: 100%; height: 100%; float: left;}
+.timelineleft ul li{ width: 30px; height: 30px; float: left; background-color: #71C4E4; border-radius: 30px; margin-bottom: 80px;}
+.timelineleft ul li i{ width: 20px; height: 20px; float: left; background-color: #f2f2f2; border-radius: 20px; margin: 5px;}
+.timelineleft ul li:nth-last-child(1){ margin-bottom: 0;}
+
+
+
+.timeline{ margin-top: 20px; width: calc(100% - 100px); height: auto; float: left;}
+.timeline ul{ width: 100%; height: auto; float: left;}
+.timeline ul li{ margin-bottom: 30px; width: 90%; padding-left: 5%; padding-right: 5%; height: auto; float: left;}
+.timeline ul li .info{ width: auto; height: auto; float: left; border: 1px solid #f5f5f5;}
+.timeline ul li .info .name{ width: 80%;padding-left: 10%; margin-top: 5px; padding-right: 10%; height: 40px; line-height: 20px; float: left; font-size: 14px;}
+.timeline ul li .info .time{ width: 90%; padding-left: 10%; height: 30px; line-height: 30px; float: left; font-size: 15px; background-color: #f5f5f5;}
+.timeline ul li:nth-last-child(1){ margin-bottom: 0;}
+
+.goodtitle{ width: 95%; height: 40px; background-color: #f2f2f2; line-height: 40px; padding-left: 5%; float: left; font-size: 15px; margin-top: 5px;}
+.goodlist{ width: 100%; height: auto; float: left;}
+.goodlist ul{ width: 100%; height: auto; float: left;}
+.goodlist ul li{ width: 90%; padding-left: 5%; padding-right: 5%; height: auto; float: left; border-bottom: 1px solid #f5f5f5;}
+.goodlist ul li .name{ width: 60%; height: auto; line-height: 40px; text-align: center; float: left; font-size: 14px;}
+.goodlist ul li .num{ width: 20%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px;}
+.goodlist ul li .beizhu{ width: 20%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px; padding-top: 2px;}
+.goodlist ul li .beizhu i{ font-style: normal; font-size: 12px; width: 100%; float: left; text-align: center;}
+
+.goodlist ul li .nameson{ width: 50%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px;}
+.goodlist ul li .numson{ width: 20%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px;}
+.goodlist ul li .beizhuson{ width: 30%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px; padding-top: 2px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

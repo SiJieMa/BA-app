@@ -1,0 +1,23 @@
+body { background-color: #FFFFFF;}
+.alltype{ width: 100%; height: auto; float: left; background-color: #f2f2f2;}
+.alltype .titleone{ width: 100%; height: auto; float: left; font-size: 15px;}
+.alltype .titleone .pinlei{ width: calc(100% - 120px); height: auto; float: left; font-size: 15px;}
+.alltype .titleone .pinlei .itemleft{ width: 80px; height: 40px; line-height: 40px; text-align: right; background-color: #fff; float: left; padding-right: 10px;}
+.alltype .titleone .pinlei .itemmiddle{ width: auto; height: 40px; line-height: 40px; float: left; color: #666; margin-left: 10px;}
+.alltype .titleone .pinlei .fa{ width: 20px; height: 40px; line-height: 40px; float: right; font-size: 20px; color: #666;}
+.alltype .titleone .searchimg{ width: 40px; height: 40px; float: right;}
+.alltype .titleone .searchimg img{ width: 20px; height: 20px; float: left; margin: 10px;}
+
+.alltype .titletwo{ width: 100%; height: auto; float: left; border-bottom: 1px solid #DDDDDD;border-top: 1px solid #DDDDDD;}
+.alltype .titletwo .one{ width: 65%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px; color: #666;}
+.alltype .titletwo .two{ width: 35%; height: 40px; line-height: 40px; text-align: center; float: left; font-size: 14px; color: #666;}
+
+.list{ width: 100%; height: auto; float: left;}
+.list ul{ width: 100%; height: 100%; float: left; overflow: scroll;}
+.list ul li{ width: 100%; height: auto; float: left; border-bottom: 1px solid #DDDDDD;}
+.list ul li .typename{overflow: hidden; text-overflow:ellipsis; white-space:nowrap; width: 65.5%; padding: 0 2%; height: auto; line-height: 20px; float: left; font-size: 15px; color: #666; border-right: 1px solid #DDDDDD;}
+.list ul li .check{ width: 28%; padding: 0 1%; height: 40px; float: left; background-color: #FFFFFF;}
+.list ul li .check .fa{ width: 100%; height: 36px; margin: 2px 0; background-color: #f2f2f2; float: left; line-height: 36px; text-align: center; color: #CCCCCC;}
+.list ul li .check .activei{ background-color: #999; color: #333;}
+.list ul li:nth-child(2n) .typename{ background-color: #f2f2f2;}
+.save{ width: 100%; height: 50px; line-height: 50px; text-align: center; position: fixed; bottom: 0; left: 0; font-size: 15px; color: #fff; background-color: #71C4E4;}

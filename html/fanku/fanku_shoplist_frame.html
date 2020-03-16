@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>盘点菜单栏</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/less/panDian_shoplist.css" />
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vant@2.4/lib/index.css">
+		<style>
+			[class*=van-hairline]::after{
+				border: 0 solid #FFFFFF;
+			}
+			.van-dropdown-menu__title{
+				color: #333333;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app">
+			<div class="search">
+				<div v-on:click="showbrandlist" class="search-down">
+					<span class="search-down-qudao" v-text="qudaoname"></span>
+					<img class="search-down-logo" src="../../image/pandian-down.png" />
+				</div>
+				<div class="search-input">
+					<van-search v-model="value" placeholder="搜索你需要的门店" @search="searchcodename" @input="inputchange" @clear="clearlist" />
+				</div>
+			</div>
+
+			<div class="list-top">
+				<h3 class="list-top-name">门店名称</h3>
+				<h3 class="list-top-city">城市</h3>
+			</div>
+			<div class="shoplist" v-if="listdatavue.length > 0">
+				<ul :style="{height: listheight+'px'}">
+					<li v-for="(item, index) in listdatavue" v-if="item.isshow" v-on:click.stop="selectcity(index)">
+						<img v-if="index==hasselectindex" class="select" src="../../image/panDian/listselect.png" />
+						<div class="shoplist-left">
+							<h3 class="shoplist-left-up" v-text="item.name"></h3>
+							<h3 class="shoplist-left-down" v-text="item.code"></h3>
+						</div>
+						<h6 class="shoplist-right" v-text="item.city"></h6>
+					</li>
+				</ul>
+			</div>
+			<div class="next-button">
+				<van-button block @click="nextstep" color="#5A8FFF">下一步</van-button>
+			</div>
+
+			<!-- <van-popup v-model="brandshow" position="bottom" :style="{ height: '50%' }">
+				<div class="newlist-brand-list">
+					<ul class="newul">
+						<li class="newli" v-for="item in brandlist">
+							<h6 class="newliname">{{item.text}}</h6>
+							<img v-if="item.id == hasselectbrand" class="newliimg" src="../../image/panDian/listselect.png" />
+						</li>
+					</ul>
+				</div>
+			</van-popup> -->
+
+			<!-- <div v-if="brandshow" class="brandback" :style="{height: cangkuheight+'px'}">
+				<div class="brandlist" :style="{height: brandlisthalf+'px', 'margin-top': brandlisthalf+'px'}">
+					<ul>
+						<li v-for="item in brandlist">
+							<h6 class="newliname">{{item.text}}</h6>
+							<img v-if="item.id == hasselectbrand" class="newliimg" src="../../image/panDian/listselect.png" />
+						</li>
+					</ul>
+				</div>
+			</div> -->
+
+			<van-overlay :show="cangkushow">
+				<div class="wrapper">
+					<div class="cangkuback" :style="{height: cangkuheight+'px'}">
+						<div class="cangkulist" :style="{height: cangkuheight+'px'}">
+							<button :class="[itemck.classname]" @click="nextpage(itemck.name, itemck.id)" v-for="itemck in cangkulist" class="cangkubtn">{{itemck.name}}</button>
+						</div>
+					</div>
+				</div>
+			</van-overlay>
+
+			<van-overlay :show="loading">
+				<div class="wrapper">
+					<van-loading type="spinner" color="#71C4E4" />
+				</div>
+			</van-overlay>
+
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/gaodemap.js"></script>
+	<script type="text/javascript" src="../../script/es6/pandian/pandian-shoplist-compiled.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script type="text/javascript" src="../../script/vant.min.js"></script>
+	<script>
+		apiready = function() {
+			var vue = new Vue({
+				el: "#app",
+				data: {
+					loading: false,
+					brandshow: true,
+					cangkushow: false,
+					listheight: api.frameHeight - 150,
+					brandlistheight: api.frameHeight / 2 - 50,
+					cangkuheight: api.frameHeight,
+					brandlisthalf: api.frameHeight / 2,
+					value: '',
+					value1: 0,
+					cangkulist: [],
+					oldbrandlist: [],
+					brandlist: [],
+					hasselectbrand: 3,
+					listdatavue: [],
+					qudaoid: 999,
+					qudaoname: '全部',
+					hasselectindex : -1,
+					hasselectid: -1,//选择的门店ID
+					disabled: false
+
+				},
+				created: function() {
+					this.loading = true;
+					//初始化仓库列表
+					initbrandlocal(this);
+				},
+				mounted: function() {
+					this.getBAcitylist();
+					this.getqudao();
+				},
+				updated: function() {},
+				methods: {
+					showbrandlist: function() {
+						var appvue = this;
+						if (appvue.qudaoname == '刷新') {
+							appvue.loading = true;
+							appvue.getqudao();
+							return;
+						}
+						api.actionSheet({
+							title: '选择品牌',
+							cancelTitle: '取消',
+							buttons: appvue.brandlist
+						}, function(ret, err) {
+							var index = ret.buttonIndex;
+							if (index <= appvue.brandlist.length) {
+								shaixuancity(appvue.brandlist[index - 1], 1, appvue);
+							}
+						});
+					},
+					getBAcitylist: function() {
+						var appvue = this;
+						var body = new Object();
+						body.iuserid = $api.getStorage("id");
+						$kunchi.kunchipost("ActionApi/T_Store/T_StoreByUserId", body, function(ret, err) {
+							//console.log(JSON.stringify(ret)+"---"+JSON.stringify(err));
+							appvue.loading = false;
+							if (ret) {
+								if (ret.length == 0) {
+									vant.Dialog.alert({
+										title: '提示',
+										message: '您暂无负责门店，请联系上级或管理员分配门店之后再试。'
+									}).then(() => {
+										api.closeWin();
+									});
+								} else {
+									initvueshop(ret, appvue)
+								}
+							} else {
+								vant.Dialog.alert({
+									title: '提示',
+									message: '当前网络环境较差，无法获取对应门店信息。'
+								}).then(() => {
+									api.closeWin();
+								});
+							}
+						});
+					},
+					getSaleCitylist: function() {
+						var appvue = this;
+						var ret = $api.getStorage('SELECTSHOP');
+						initvuesale(ret, appvue);
+					},
+					selectcity: function(index) {
+						var appvue = this;
+						selectcity(appvue, index);
+					},
+					showbrandshop: function(name) {
+						var appvue = this;
+						shaixuancity(name, 1, appvue);
+					},
+					searchcodename: function(value) {
+						var appvue = this;
+						shaixuancity(value, 2, appvue);
+					},
+					inputchange: function(value) {
+						var appvue = this;
+						if (value.length == 0) {
+							reloadshoplist(appvue);
+						}
+					},
+					clearlist: function(value) {
+						var appvue = this;
+						reloadshoplist(appvue);
+					},
+					getqudao: function() {
+						var appvue = this;
+						var url = 'ActionApi/T_Customer/POST_Customer';
+						$kunchi.kunchipost(url, "", function(ret, err) {
+							appvue.loading = false;
+							//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							if (ret) {
+								// custormer = ret;
+								// tijiaojson.cPlantCode = custormer[0].id;
+								// document.getElementById("qudaoname").innerHTML = custormer[0].cCustomerFullName;
+								showbrandlist(appvue, ret);
+							} else {
+								appvue.qudaoname = '刷新';
+							}
+						}, 30);
+					},
+					nextstep: function(event){
+						console.log("dianji");
+						var appvue = this;
+						if(appvue.disabled == true){
+							appvue.cangkushow = true;
+						}else{
+							vant.Toast.fail('请先选择门店');
+						}
+					},
+					nextpage: function(name, id){
+						var appvue = this;
+						appvue.cangkushow = false;
+						api.openWin({
+						    name: 'panDian_goodlist_win',
+						    url: 'widget://html/panDian/panDian_goodlist.html',
+						    pageParam: {
+						        istoreid: appvue.hasselectid,
+								houseid: id
+						    }
+						});
+					}
+				}
+			});
+		}
+	</script>
+</html>

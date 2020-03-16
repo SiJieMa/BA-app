@@ -1,0 +1,129 @@
+i {
+	font-style: normal
+}
+
+html,
+body {
+	background-color: #F8F8F8
+}
+
+.index-main {
+	width: 100vw;
+	height: 100%
+}
+
+.index-main .index-list {
+	width: 100%;
+	height: 100%
+}
+
+.index-main .index-list ul {
+	width: calc(100% - 10px);
+	margin: 0 5px;
+	height: 100%
+}
+
+.index-main .index-list ul li {
+	width: calc(100% - 10px);
+	height: auto;
+	padding: 10px 5px;
+	border-radius: 8px;
+	background-color: #ffffff;
+	display: flex;
+	flex-direction: column;
+	margin-top: 5px
+}
+
+.index-main .index-list ul li .index-list-title {
+	width: 100%;
+	height: 40px;
+	display: flex;
+	flex-direction: row
+}
+
+.index-main .index-list ul li .index-list-title .left {
+	width: auto;
+	height: 40px;
+	line-height: 40px;
+	color: #333333;
+	font-size: 18px
+}
+
+.index-main .index-list ul li .index-list-title .right {
+	width: auto;
+	height: 40px;
+	line-height: 40px;
+	color: #999999;
+	font-size: 14px
+}
+
+.index-main .index-list ul li .index-list-context {
+	width: 100%;
+	height: auto;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	flex-wrap: wrap;
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items {
+	display: flex;
+	flex-direction: column;
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .item-num-percent {
+	width: 100%;
+	height: 38px;
+	line-height: 38px;
+	text-align: center;
+	font-size: 18px;
+	color: #14D6D7
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .item-name-brand {
+	width: 80%;
+	margin-left: 10%;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	font-size: 16px;
+	color: #14D6D7;
+	border-radius: 30px;
+	border: 1px solid #14D6D7
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .index-list-context-item {
+	position: relative;
+	display: inline-block
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .index-list-context-item .rad-prg {
+	display: inline-block;
+	position: relative
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .index-list-context-item .index-list-context-item-money {
+	width: 100%;
+	height: 40px;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 99;
+	text-align: center
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .index-list-context-item .index-list-context-item-money .money-num {
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	color: #333333;
+	font-size: 15px
+}
+
+.index-main .index-list ul li .index-list-context .index-list-context-items .index-list-context-item .index-list-context-item-money .money-yuan {
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	color: #333333;
+	font-size: 15px
+}

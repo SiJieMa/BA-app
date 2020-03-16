@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>其他报告填写</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			.reporttext {
+				margin-top: 20px;
+				width: 88%;
+				padding: 1%;
+				height: 300px;
+				float: left;
+				margin-left: 5%;
+				background-color: #f2f2f2;
+				text-align: left;
+				font-size: 18px;
+			}
+			.queding {
+				margin-top: 50px;
+				width: 90%;
+				height: 50px;
+				line-height: 50px;
+				float: left;
+				text-align: center;
+				margin-left: 5%;
+				color: #fff;
+				background-color: #71C4E4;
+			}
+		</style>
+	</head>
+	<body>
+		<textarea class="reporttext" id="reporttext" placeholder="报告内容...."></textarea>
+		<span class="queding" onclick="savereport()">确定</span>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/db.js"></script>
+	<script type="text/javascript" src="../../script/sale_db.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+			FastClick.attach(document.body);
+			init_otherreport();
+		};
+		function init_otherreport() {
+			var db = api.require('db');
+			db.selectSql({
+				name : 'kunchidb',
+				sql : 'SELECT * FROM reportlist WHERE iRorptId="' + api.pageParam.page.iReportId + '" AND userid="' + $api.getStorage("id") + '"'
+			}, function(ret, err) {
+				if (ret.status) {
+					if (ret.data.length != 0) {
+						document.getElementById("reporttext").value = ret.data[0].context;
+					}
+				}
+			});
+		}
+
+		function savereport() {
+			var reporttext = document.getElementById("reporttext").value;
+			if (reporttext.trim().length == 0) {
+				alert("内容不能为空");
+				return;
+			}
+			
+			reporttext = reporttext.replace(/"([^"]*)"/g, "“$1”");
+			reporttext = reporttext.replace(/'([^']*)'/g, "‘$1’");
+			
+			var db = api.require('db');
+			db.selectSql({
+				name : 'kunchidb',
+				sql : 'SELECT * FROM reportlist WHERE iRorptId="' + api.pageParam.page.iReportId + '" AND userid="' + $api.getStorage("id") + '"'
+			}, function(ret, err) {
+				if (ret.status) {
+					if (ret.data.length != 0) {
+						var sqlaaa = 'DELETE FROM reportlist WHERE iRorptId="' + api.pageParam.page.iReportId + '" AND userid="' + $api.getStorage("id") + '"';
+						executeSql(sqlaaa, function(numonea) {
+							if (numonea == 1) {
+								var sql = 'INSERT INTO reportlist (userid, context, iRorptId) VALUES ("' + $api.getStorage("id") + '", "' + reporttext + '", "' + api.pageParam.page.iReportId + '")';
+								executeSql(sql, function(numone) {
+									if (numone == 1) {
+										api.sendEvent({
+											name : 'upload_shijianlist'
+										});
+										api.alert({
+											title : '提示',
+											msg : '保存成功',
+										}, function(ret, err) {
+											api.closeWin({
+											});
+										});
+									}
+								});
+							}
+						});
+					} else {
+						var sql = 'INSERT INTO reportlist (userid, context, iRorptId) VALUES ("' + $api.getStorage("id") + '", "' + reporttext + '", "' + api.pageParam.page.iReportId + '")';
+						executeSql(sql, function(numone) {
+							if (numone == 1) {
+								api.sendEvent({
+									name : 'upload_shijianlist'
+								});
+								api.alert({
+									title : '提示',
+									msg : '保存成功',
+								}, function(ret, err) {
+									api.closeWin({
+									});
+								});
+							}
+						});
+					}
+				}
+			});
+		}
+	</script>
+</html>

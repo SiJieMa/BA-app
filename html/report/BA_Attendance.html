@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>业务指标</title>
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<link rel="stylesheet" type="text/css" href="../../css/api.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/BA_Attendance.css" />
+	</head>
+	<body>
+		<div class="index-main" id="app">
+			<div class="index-main-rili" id="indexmainrili"></div>
+			<!--第二条item-->
+			<div class="index-main-item2">
+				<span class="index-main-item2-msg">
+					上班打卡：<i v-text="one"></i> 人
+				</span>
+				<span class="index-main-item2-msg">
+					下班打卡：<i v-text="two">{{two}}</i> 人
+				</span>
+				<span class="index-main-item2-msg">
+					考勤异常：<i class="hong" v-text="three"></i> 人
+				</span>
+			</div>
+			<!--巡店流程列表-->
+			<div class="index-main-signlist">
+				<ul v-show="isshow">
+					<li v-for="item in datajson">
+						<span class="index-main-signlist-title">{{item.name}}</span>
+						<span class="index-main-signlist-time" v-if="item.uptextcolor == 0">上班打卡 <i v-text="item.upbantime"></i></span>
+						<span class="index-main-signlist-time" v-if="item.uptextcolor == 1">上班打卡 <i v-text="item.upbantime" class="hong"></i></span>
+						<span class="index-main-signlist-time" v-if="typeof(item.uptextcolor) == 'undefined'">上班打卡 <i class="hong">未打卡</i></span>
+						<div class="index-main-signlist-address" v-if="typeof(item.uptextcolor) != 'undefined'">
+							<img src="../../image/BA_index_sign/location.png" />
+							<span>{{item.shopname}}距店{{item.updistance}}</span>
+						</div>
+						<div class="index-main-signlist-address" v-if="typeof(item.uptextcolor) == 'undefined'">
+							<img src="../../image/BA_index_sign/location.png" />
+							<span>暂无数据</span>
+						</div>
+						<i class="index-main-signlist-line"></i>
+						<span class="index-main-signlist-time" v-if="item.dwontextcolor == 0">下班打卡 <i v-text="item.downbantime"></i></span>
+						<span class="index-main-signlist-time" v-if="item.dwontextcolor == 1">下班打卡 <i class="hong" v-text="item.downbantime"></i></span>
+						<span class="index-main-signlist-time" v-if="typeof(item.dwontextcolor) == 'undefined'">下班打卡 <i class="hong">未打卡</i></span>
+						<div class="index-main-signlist-address" v-if="typeof(item.dwontextcolor) != 'undefined'">
+							<img src="../../image/BA_index_sign/location.png" />
+							<span>{{item.shopname}}距店{{item.downdistance}}</span>
+						</div>
+						<div class="index-main-signlist-address" v-if="typeof(item.dwontextcolor) == 'undefined'">
+							<img src="../../image/BA_index_sign/location.png" />
+							<span>暂无数据</span>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/es6/BA_Attendance-compiled.js"></script>
+	<script type="text/javascript" src="../../script/jquery-1.8.3.min.js"></script>
+	<script type="text/javascript" src="../../script/baold.js"></script>
+	<script type="text/javascript" src="../../script/vue.min.js"></script>
+	<script>
+		var appvue;
+		apiready = function() {
+			appvue = new Vue({
+				el: "#app",
+				data: {
+					year: '',
+					month: '',
+					starttime: '',
+					stoptime: '',
+					blistyle: [],
+					one: 0,
+					two: 0,
+					three: 0,
+					todaytime: "",
+					datajson: [],
+					isfirst: 0,//第一次加载完得时候获取详情 稍后就不获取了
+					isshow: false
+				},
+				created: function() {
+					var now = new Date();
+					var year = now.getFullYear();
+					var month = now.getMonth() + 1;
+					if (month < 10) month = "0" + month;
+					this.year = year;
+					this.month = month;
+					this.todaytime = $kunchi.todaydate();
+				},
+				mounted: function() {
+					this.showcalend();
+				},
+				updated:function(){
+				},
+				methods: {
+					posttodaydata: function(){
+						var appvuefuc = this;
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						body.startime = appvuefuc.todaytime;
+						$kunchi.kunchipost("ActionApi/KPI/KPI_BASigneByUseridAndTime", body, function(ret, err) {
+							//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err) + "===" + appvuefuc.todaytime);
+							api.hideProgress();
+							if (ret) {
+								showoneday(ret);
+							} else {
+								api.alert({
+									title: '提示',
+									msg: '当前网络错误,请稍后重试.',
+								}, function(ret, err) {
+									api.closeWin({});
+								});
+							}
+						});
+					},
+					postdate: function() {
+						var appvuefuc = this;
+						api.showProgress({
+							modal: true
+						});
+						var body = new Object();
+						body.userid = $api.getStorage('id');
+						body.startime = appvuefuc.starttime;
+						body.endtime = appvuefuc.stoptime;
+						$kunchi.kunchipost("ActionApi/KPI/KPI_BASigneByUserid", body, function(ret, err) {
+							//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+							api.hideProgress();
+							if (ret) {
+								initdata(ret);
+							} else {
+								api.alert({
+									title: '提示',
+									msg: '当前网络错误,请稍后重试.',
+								}, function(ret, err) {
+									api.closeWin({});
+								});
+							}
+						});
+					},
+
+					showcalend: function() {
+						var appvuefuc = this;
+						ba.initcalendar({
+							html: "#indexmainrili",
+							liyear: appvuefuc.year, //打开日历默认显示的年
+							lidays: appvuefuc.month, //打开日历默认显示的月
+							cwidth: api.frameWidth, //日历宽度
+							cheight: 300, //日历高度
+							bleftbtn: "../../image/BA_index_sign/jiantouleft.png", //左侧箭头图片
+							brightbtn: "../../image/BA_index_sign/jiantouright.png", //右侧箭头图片
+							bdatacolor: "#12B3B4", //中间年月颜色
+							bdatasize: "18px", //中间年月字体大小
+							btitlesize: "12px", //星期的一排的字体大小
+							btitlecolor: "#333333", //星期的一排的字体大小
+							bitemmargin: 10, //每个日历背景色的间隔
+							bliback: "rgba(0,0,0,0)", //日历默认背景圆圈颜色
+							blisize: "15px", //日历的日子的默认文字大小
+							blicolor: "#666666", //日历日子的默认文字颜色
+							bdiansize: "60px", //圆点大小
+							bdiancolor: "#14D6D7", //圆点颜色
+							bulback: "#ffffff", //UL的背景颜色
+							bulpadding: "10", //ul的PADDING值
+							blistyle: appvuefuc.blistyle,
+							buttonleft: function(msg) {
+								console.log("left");
+							},
+							buttonright: function(msg) {
+								console.log("right");
+							},
+							binitdateday: function(start, stop) {
+								if(appvuefuc.starttime != start.dateeverydayitem){
+									appvuefuc.starttime = start.dateeverydayitem;
+									appvuefuc.stoptime = stop.dateeverydayitem;
+									appvuefuc.year = start.dateeverydayitem.split("-")[0];
+									appvuefuc.month = start.dateeverydayitem.split("-")[1];
+									appvuefuc.postdate();
+								}
+							},
+							beveryday: function(ret){
+								appvuefuc.todaytime = ret;
+								showdate();
+							}
+						});
+					}
+				}
+			});
+		}
+	</script>
+</html>

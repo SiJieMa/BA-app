@@ -1,0 +1,41 @@
+html, body{ background-color: #ffffff;}
+.shenhelist{ width: 100%; height: auto; float: left;}
+.shenhelist ul{ width: 100%; height: auto; float: left;}
+.shenhelist ul li{ width: 94%; margin-left: 3%; margin-right: 3%; margin-top: 5px; height: auto; float: left; background-color: #f2f2f2; border-radius: 5px;}
+.shenhelist ul li .oneitem{ width: 90%; padding-left: 5%; padding-right: 5%; height: auto; font-size: 14px; float: left; border-bottom: 1px solid #fff;}
+.shenhelist ul li .oneitem .order{ width: auto; height: 40px; line-height: 40px; font-size: 14px; float: left;}
+.shenhelist ul li .oneitem .time{ width: auto; height: 40px; line-height: 40px; font-size: 14px; float: right;}
+.shenhelist ul li .twoitem{ width: 90%; padding-left: 5%; padding-right: 5%; height: auto; float: left;}
+.shenhelist ul li .twoitem .faqi{ width: 100%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shenhelist ul li .twoitem .shop{ width: 100%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shenhelist ul li .twoitem .goodnun{ width: 100%; height: 30px; line-height: 30px; float: left; font-size: 14px;}
+.shenhelist ul li .detail{ width: 90%; padding-left: 5%; padding-right: 5%; height: auto; float: left;}
+.shenhelist ul li .detail span{ width: 100%; height: 40px; line-height: 40px; float: left; text-align: right; font-size: 14px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

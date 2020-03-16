@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>软件首页</title>
+		<link rel="stylesheet" type="text/css" href="../css/api.css"/>
+		<link rel="stylesheet" type="text/css" href="../css/home.css"/>
+	</head>
+
+	<!-- <body class="wrap">
+		<header id="header">
+			<span>路捷</span>
+		</header>
+		<section class="flex-1">
+			<span onclick="get_aboutuserinfo()" id="errorid" tapmode="erroron" class="error">所需资料加载失败,点击重新获取.</span>
+			<div class="userinfo">
+				<div class="msg">
+					<span id="zhiwei">职位：</span>
+					<span id="realName">姓名:</span>
+					<span id="dianhua">电话:</span>
+				</div>
+				<div class="banbenhao" id="banbenhao"></div>
+			</div>
+			<div class="menu">
+				<ul id="gongge" class="item">
+				</ul>
+			</div>
+			<div id="errorinfo" class="errorinfo">
+				<div onclick="opencaozuo(this)" value="上班" imgid="signinimg" spanid="signinspan" class="erroritem">
+					<img id="signinimg" src="../image/nosign.png" />
+					<span id="signinspan">上班未打卡签到(点击查看)</span>
+				</div>
+				<div onclick="opencaozuo(this)" value="下班" imgid="signoutimg" spanid="signoutspan" class="erroritem">
+					<img id="signoutimg" src="../image/nosign.png" />
+					<span id="signoutspan">下班未打卡签到(点击查看)</span>
+				</div>
+				<div onclick="opencaozuo(this)" value="日报" imgid="reportimg" spanid="reportspan" class="erroritem">
+					<img id="reportimg" src="../image/noreport.png" />
+					<span id="reportspan">今日尚未上传日报(点击查看)</span>
+				</div>
+				<div class="errormsg">提示信息仅供参考,如已签到或已提交日报则无需理会.</div>
+			</div>
+
+			<div id="progress" class="progress">
+				<img src="../image/loading_more.gif" />
+				<span>正在加载所需资料...</span>
+			</div>
+		</section>
+		<footer id="footer">
+			<span>登记号:2019SR0468086</span>
+		</footer>
+	</body> -->
+
+	<body id="body">
+		<div id="wrap">
+			<div id="header"><h1>路捷</h1></div>
+			<div id="main">
+				<span onclick="get_aboutuserinfo()" id="errorid" tapmode="erroron" class="error">所需资料加载失败,点击重新获取.</span>
+				<div class="userinfo">
+					<div class="msg">
+						<span id="zhiwei">职位：</span>
+						<span id="realName">姓名:</span>
+						<span id="dianhua">电话:</span>
+					</div>
+					<div class="banbenhao" id="banbenhao"></div>
+				</div>
+				<div class="menu">
+					<ul id="gongge" class="item">
+					</ul>
+				</div>
+				<div id="errorinfo" class="errorinfo">
+					<div onclick="opencaozuo(this)" value="上班" imgid="signinimg" spanid="signinspan" class="erroritem">
+						<img id="signinimg" src="../image/nosign.png" />
+						<span id="signinspan">上班未打卡签到(点击查看)</span>
+					</div>
+					<div onclick="opencaozuo(this)" value="下班" imgid="signoutimg" spanid="signoutspan" class="erroritem">
+						<img id="signoutimg" src="../image/nosign.png" />
+						<span id="signoutspan">下班未打卡签到(点击查看)</span>
+					</div>
+					<div onclick="opencaozuo(this)" value="日报" imgid="reportimg" spanid="reportspan" class="erroritem">
+						<img id="reportimg" src="../image/noreport.png" />
+						<span id="reportspan">今日尚未上传日报(点击查看)</span>
+					</div>
+					<div class="errormsg">提示信息仅供参考,如已签到或已提交日报则无需理会.</div>
+				</div>
+
+				<div id="progress" class="progress">
+					<img src="../image/loading_more.gif" />
+					<span>正在加载所需资料...</span>
+				</div>
+			</div>
+			<div id="footer"><h5>登记号:2019SR0468086</h5></div>
+		</div>
+	</body>
+	<script type="text/javascript" src="../script/api.js"></script>
+	<script type="text/javascript" src="../script/apiclear.js"></script>
+	<script type="text/javascript" src="../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../script/db.js"></script>
+	<script type="text/javascript" src="../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../script/base64.js"></script>
+	<script type="text/javascript" src="../script/houtaiupload.js"></script>
+	<script type="text/javascript" src="../script/sale_caozuo.js"></script>
+	<script type="text/javascript" src="../script/zidian.js"></script>
+	<script type="text/javascript" src="../script/yunxiufu.js"></script>
+	<script type="text/javascript" src="../script/sign.js"></script>
+	<script type="text/javascript" src="../script/push.js"></script>
+	<script type="text/javascript" src="../script/log.js"></script>
+	<script type="text/javascript" src="../script/IOSshenhe.js"></script>
+	<script type="text/javascript" src="../script/DelPic.js"></script>
+	<script type="text/javascript" src="../script/PD.js"></script>
+	<script type="text/javascript" src="../script/gonggao.js"></script>
+	<script type="text/javascript" src="../script/newSign/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../script/newSign/newApi.js"></script>
+	<script type="text/javascript" src="../script/newpicdb/localdb.js"></script>
+	<script type="text/javascript">
+
+		function opencaozuo(tag){
+			var value = $api.attr(tag, 'value');
+			if((value == "上班")||(value == "下班")){
+				openpage("basignwin", "basignframe", '工作签到', "widget://html/BA/signNew.html", "");
+			}else{
+				openpage("sale_dailywin", "sale_dailyframe", value, "widget://html/BA/sale_daily.html", "");
+			}
+		}
+		var PDline = new PDline();
+		apiready = function() {
+			var header = $api.byId('header');
+			$api.fixStatusBar(header);
+			$api.fixTabBar($api.byId('footer'));
+			//console.log($api.getStorage("id"));
+			/**
+			 *判断是不是假的测试账号
+			 */
+			if($api.getStorage("IOSshenhe") == "0"){
+				initshenhe();
+				return;
+			}
+			//copydb()
+//			openold();
+			/**
+			 *绑定推送消息
+			 */
+			setTimeout("initgetuiSDK()", 7000);
+			setTimeout(function(){
+				$file.zidianinit();
+			}, 1000);
+
+			/**
+			 *检查未读消息并随时监听未读消息数量
+			 */
+			setTimeout("get_noread_messagenum()", 4000);
+			/**
+			 *监听闪退日志
+			 */
+//			setTimeout("writelogcrash()", 2000);
+
+			document.getElementById("zhiwei").innerHTML = '职位:'+$api.getStorage("roleName");
+			document.getElementById("dianhua").innerHTML = '电话:'+$api.getStorage("username");
+			document.getElementById("realName").innerHTML = '姓名:'+$api.getStorage("realName");
+
+			var winwith = api.winWidth;
+
+			var progress = document.getElementById("progress");
+			$api.css(progress,'margin-left: '+((winwith - 175) / 2)+'px;');
+
+			var itemwith = (winwith - 4) / 4;
+			var cssitemwith = 'width: '+itemwith+'px;';
+			var cssitemheight = 'height: '+itemwith+'px;';
+
+			var BAlist = [];
+			document.getElementById("gongge").innerHTML = "";
+			if($api.getStorage("roleName") == "BA人员"){
+				BAlist = [
+						{ imgpath: "../image/plane.png", text: "排班计划"},
+						{ imgpath: "../image/basign.png", text: "工作签到"},
+						{ imgpath: "../image/xiaoshou.png", text: "销售日报"},
+//						{ imgpath: "../image/SKU.png", text: "SKU"},
+						{ imgpath: "../image/SKU.png", text: "盘点库存"},
+						{ imgpath: "../image/huodan.png", text: "货单"},
+						{ imgpath: "../image/chanpinprice.png", text: "产品报价"},
+						{ imgpath: "../image/message.png", text: "收件箱"},
+						{ imgpath: "../image/updatepass.png", text: "系统设置"},
+						{ imgpath: "../image/location.png", text: "门店矫正"},
+						{ imgpath: "../image/errpic.png", text: "本地图库"},
+//						{ imgpath: "../image/crash.png", text: "闪退报告"},
+						{ imgpath: "../image/reload.png", text: "更新数据"},
+						{ imgpath: "../image/xunikucun.png", text: "盘点"},
+						{ imgpath: "../image/fanku/fankudan.png", text: "返库"},
+						{ imgpath: "../image/tonbbu.png", text: "上传问题"},
+						// { imgpath: "../image/saleform.png", text: "周末促"},
+						// { imgpath: "../image/help.png", text: "帮助文档"},
+						{ imgpath: "../image/signout.png", text: "注销登录"}];
+				get_user_footinfo();
+			}else{
+				var elerrorinfo = document.getElementById("errorinfo");
+				$api.css(elerrorinfo,"display: none;");
+
+				BAlist = [
+						{ imgpath: "../image/baifang.png", text: "拜访计划"},
+						{ imgpath: "../image/dangribaifang.png", text: "当日拜访"},
+						{ imgpath: "../image/paiban.png", text: "导购排班"},
+						{ imgpath: "../image/huodan.png", text: "货单"},
+						{ imgpath: "../image/saleform.png", text: "周末促"},
+						{ imgpath: "../image/SKU.png", text: "库存"},
+						{ imgpath: "../image/BA_index/yejizhibiao.png", text: "业绩指标"},
+						{ imgpath: "../image/location.png", text: "门店矫正"},
+						{ imgpath: "../image/message.png", text: "收件箱"},
+						//{ imgpath: "../image/xunikucun.png", text: "盘点库存"},
+						{ imgpath: "../image/xunikucun.png", text: "盘点"},
+						{ imgpath: "../image/fanku/fankudan.png", text: "返库"},
+						{ imgpath: "../image/dangribaifang.png", text: "原当日拜访"},
+						{ imgpath: "../image/updatepass.png", text: "系统设置"},
+//						{ imgpath: "../image/crash.png", text: "闪退报告"},
+						{ imgpath: "../image/chanpinprice.png", text: "产品报价"},
+						{ imgpath: "../image/tonbbu.png", text: "上传问题"},
+						{ imgpath: "../image/reload.png", text: "更新数据"},
+						{ imgpath: "../image/errpic.png", text: "本地图库"},
+						// { imgpath: "../image/help.png", text: "帮助文档"},
+						{ imgpath: "../image/signout.png", text: "注销登录"}];
+			}
+
+			var eldiv = document.getElementById("gongge");
+
+
+			for(var a = 0; a < BAlist.length; a++){
+
+				var messagenum = '';
+				if(BAlist[a].text == '收件箱'){
+					messagenum = '<i id="messagenum">0</i>';
+				}
+				if(BAlist[a].text == '货单'){
+					messagenum = '<i id="huodannum">0</i>';
+				}
+				if(BAlist[a].text == '周末促'){
+					messagenum = '<i id="zhoumocunum">0</i>';
+				}
+				if(BAlist[a].text == '本地图库'){
+					messagenum = '<i id="bendizhaopianshuliang">0</i>';
+				}
+
+				var htmlli = '<li onclick="openwin(this)" value="'+BAlist[a].text+'" tapmode="liActive" style="'+cssitemwith+'">'
+						+		'<img src="'+BAlist[a].imgpath+'" />'
+						+		'<span>'+BAlist[a].text+'</span>'
+						+		messagenum
+						+	'</li>';
+				$api.append(eldiv, htmlli);
+			}
+
+			var ulli = document.getElementById("gongge");
+			$api.css(ulli,"display: block;");
+
+			//创建本地数据库
+			opendb();
+			initLocalPath();
+			//更新本地数据需要更改一下，如果没有则不加载了
+			var ismendiandown = $api.getStorage('ismendiandown');
+			if(ismendiandown != 2){
+				get_aboutuserinfo();
+			}
+			setTimeout("getgonggao();", 600);
+			//关闭自动上传图片功能setTimeout("upload_all_fail_piclist()",5000);
+
+			/**
+			 *添加标记为证明可以 上传图片
+			 */
+			$api.setStorage("iscloseupload","0");
+			api.addEventListener({
+			    name: 'upload_databasepic'
+			}, function(ret, err) {
+			    upload_all_fail_piclist();
+			});
+
+			//修改日志上传机制，报错就上传
+			api.addEventListener({
+			    name: 'uploaderrLog'
+			}, function(ret, err) {
+			    uploadUserLog('today');
+			});
+
+			api.addEventListener({
+			    name: 'keyback'
+			}, function(aaa, bbb) {
+			    api.confirm({
+				    title: '提示',
+				    msg: '是否退出此应用?',
+				    buttons: ['确定', '取消']
+				}, function(ret, err) {
+				    var index = ret.buttonIndex;
+				    if(index == 1){
+				    	api.closeWidget({
+						    id: 'A6067912196305',
+						    silent: true
+						});
+				    }
+				});
+			});
+
+
+			/**
+			 *当token失效的时候出发此功能
+			 */
+			api.addEventListener({
+			    name: 'tokenIsOld'
+			}, function(ret, err) {
+			    tokenisload();
+			});
+
+
+			/**
+			 *显示版本号
+			 */
+			document.getElementById("banbenhao").innerHTML = '版本号:' + $api.app_usevison;
+
+			ischongqi($api.getStorage('username'));
+
+			setTimeout('clearchace()', 6000);
+
+			/**
+			 *保存窗口 宽度高度 留着打开选择商品列表的时候调用
+			 */
+			$api.setStorage('winheight',api.winHeight);
+			PDline.initSign();
+			
+			
+			//同意用户的手机号 版本号 以及APP版本号
+			api.addEventListener({
+			    name:'viewappear'
+			}, function(ret, err){        
+				setTimeout("initbendizhaopianshuliang()", 1000);
+				
+				if($api.getStorage("roleName") != "BA人员"){
+					//获取货单待处理数量
+					setTimeout("getHuoDanNum()", 3000);
+				}
+			});
+		};
+		
+		
+		function initbendizhaopianshuliang(){
+			var oUseTool = new PicCK();
+			var picnum = oUseTool.picAllNum()[0]['count(*)'];
+			$("#bendizhaopianshuliang").html(picnum);
+		}
+
+
+		/**
+		 *判断是否需要上传报告
+		 */
+		
+		//初始化一次性提交所有日志的日志地址数组
+		var uploadAllUserLogArray = new Array();
+		var uploadAllUserLogNum = 0;
+		function uploadUserLog(date){
+			
+			uploadAllUserLogArray = new Array();
+			uploadAllUserLogNum = 0;
+			if(date == 'today'){
+				var now = new Date();
+				var year = now.getFullYear();
+				var month = now.getMonth() + 1;
+				var day = now.getDate();
+				var clock = year + "";
+				if (month < 10)
+					clock += "0";
+				clock += month + "";
+				if (day < 10)
+					clock += "0";
+				clock += day;
+				$api.Lofilepath(clock, function(ret){
+					if(ret != ""){
+						var pathlist = new Array();
+						pathlist.push(ret);
+						$newapi.newpostLog(pathlist, function(retpush){
+							api.hideProgress();
+							console.log("OK");
+						});
+					}else{
+						api.hideProgress();
+						console.log("OK");
+					}
+				});
+			}else{
+				$api.Lologpathlist(function(retlist){
+					uploadAllUserLog(retlist);
+				});
+			}
+		}
+		
+		
+		function uploadAllUserLog(retlist){
+			var retlistret = retlist;
+			if(retlistret.length == 0){
+				api.hideProgress();
+				return;
+			}
+			for(var a = 0; a < retlistret.length; a++){
+				var retlistretitem = retlistret[a];
+				if(retlistretitem.indexOf("journal") > -1){
+					continue;
+				}
+				var retcreatefilepath = 'fs://.kunchilog/'+retlistret[a];
+				uploadAllUserLogArray.push(retcreatefilepath);
+			}
+			$newapi.newpostLog(uploadAllUserLogArray, function(retpush){
+				if(retpush){
+					api.toast({
+		                msg:'上传成功'
+	                });
+				}else{
+					api.toast({
+		                msg:'上传失败'
+	                });
+				}
+			});
+		}
+		
+
+		/**
+		 *用来判断是否已经获取到用户的签到信息了
+		 */
+		function get_user_footinfo(){
+			var elsigninimg = document.getElementById("signinimg");
+			var elsigninspan = document.getElementById("signinspan");
+			var elsignoutimg = document.getElementById("signoutimg");
+			var elsignoutspan = document.getElementById("signoutspan");
+			var elreportimg = document.getElementById("reportimg");
+			var elreportspan = document.getElementById("reportspan");
+
+			if($api.getStorage((today() + "上班打卡")) == $api.getStorage("id")){
+				$api.attr(elsigninimg, 'src', "../image/hassign.png");
+				$api.html(elsigninspan, "上班已签到打卡");
+			}
+			if($api.getStorage((today() + "下班打卡")) == $api.getStorage("id")){
+				$api.attr(elsignoutimg, 'src', "../image/hassign.png");
+				$api.html(elsignoutspan, "下班已签到打卡");
+			}
+
+			if($api.getStorage((today() + "日报")) == $api.getStorage("id")){
+				$api.attr(elreportimg, 'src', "../image/hasreport.png");
+				$api.html(elreportspan, "当天已经上传日报");
+			}
+			// var elerrorinfo = document.getElementById("errorinfo");
+			// $api.css(elerrorinfo,"display: block;");
+		}
+
+
+		function openwin(tag){
+			var value = $api.attr(tag, 'value');
+			switch (value){
+				case "排班计划":
+					openpage("Check_workwin", "Check_workframe", value, "widget://html/BA/Check_work.html", "");
+					break;
+
+				case "工作签到":
+					openpage("basignwin", "basignframe", value, "widget://html/BA/signNew.html", "");
+					break;
+
+				case "销售日报":
+                    openpage("sale_dailywin", "sale_dailyframe", value, "widget://html/BA/sale_daily.html", "");
+					break;
+				case "门店矫正":
+					openpage("shop_address_right_win", "shop_address_right_frame", value, "widget://html/sale/shop_address_right.html", "");
+					break;
+				case "导购排班":
+					openpage("BA_Check_work_win", "BA_Check_work_frame", value, "widget://html/sale/BA_Check_work.html", "");
+					break;
+				case "SKU":
+					openpage("sku_daily_win", "sku_daily_frame", value, "widget://html/BA/sku_daily.html", "");
+					break;
+				case "库存":
+					openpage("kucun_menu_win", "kucun_menu_frame", value, "widget://html/kucun/kucun_menu.html", "");
+					break;
+				case "货单":
+//					alert("即将开放");
+					openpage("huodan_menu_win", "huodan_menu_frame", value, "widget://html/BA/huodan/huodan_menu.html", "");
+					break;
+				case "系统设置":
+					openpage("set_win", "set_frame", value, "widget://html/setting/set_menu_frame.html", "");
+					break;
+				case "上下班签到":
+					openpage("BA_sign_shenhe_win", "BA_sign_shenhe_frame", value, "widget://html/tools/BA_sign_shenhe.html", "");
+					break;
+				case "收件箱":
+					openpage("message_win", "message_frame", value, "widget://html/tools/message.html", "");
+					break;
+				case "产品报价":
+					openpage("mproduct_price_win", "product_price_frame", value, "widget://html/BA/product_price.html", "");
+					break;
+				case "盘点库存":
+					openpage("SKUNEW_win", "SKUNEW_frame", value, "widget://html/BA/SKUNEW.html", "");
+					break;
+				case "盘点":
+					var pdroleName = $api.getStorage("roleName");
+					if((pdroleName.indexOf("经理")!=-1)&&(pdroleName != "客户经理")){
+						api.openWin({
+						    name: 'panDian_shenhelist_win',
+						    url: 'widget://html/panDian/shenhe/panDian_shenhelist.html',
+						    pageParam: {}
+						});
+					}else{
+						api.openWin({
+						    name: 'panDian_menu_win',
+						    url: 'widget://html/panDian/panDian_menu.html',
+						    pageParam: {
+						        name: 'home'
+						    }
+						});
+					}
+					break;
+				case "返库":
+					api.openWin({
+					    name: 'fanku_online_list_win',
+					    url: 'widget://html/fanku/fanku_online_list.html',
+					    pageParam: {
+					        name: 'home'
+					    }
+					});
+					break;
+					
+				case "失败图片":
+					openpage("failuploadpic_win", "failuploadpic_frame", value, "widget://html/tools/failuploadpic.html", "");
+					break;
+				case "本地图库":
+					api.openWin({
+	                    name: 'planeList_win',
+	                    url: 'widget://html/localPic/localPic_win.html',
+	                    pageParam: {
+					        name: 'home'
+					    }
+                    });
+					break;
+				case "拜访计划":
+					api.openWin({
+	                    name: 'planeList_win',
+	                    url: 'widget://html/sale/planeList_win.html',
+	                    slidBackEnabled: false
+                    });
+					break;
+				case "业绩指标":
+					api.openWin({
+	                    name: 'BA_index_win',
+	                    url: 'widget://html/report/BA_index_win.html',
+	                    slidBackEnabled: false
+                    });
+					break;
+				case "当日拜访":
+					api.openWin({
+	                    name: 'today_plane_win',
+	                    url: 'widget://html/sale/today_plane_win.html',
+	                    slidBackEnabled: false,
+	                    pageParam: {
+					        name: '当日拜访'
+					    }
+                    });
+					break;
+				case "原当日拜访":
+					api.openWin({
+	                    name: 'today_plane_win',
+	                    url: 'widget://html/sale/today_plane_win.html',
+	                    slidBackEnabled: false,
+	                    pageParam: {
+					        name: '原当日拜访'
+					    }
+                    });
+					break;
+				case "帮助文档":
+					openpage("help_win", "help_frame", value, "widget://html/setting/help.html", "");
+					break;
+				case "注销登录":
+					logout();
+					break;
+				case "闪退报告":
+					copyallcrash();
+					break;
+				case "更新数据":
+					$api.setStorage("zidiankeyN1","0");
+					get_aboutuserinfo();
+					break;
+				case "清理缓存":
+					api.showProgress({
+					    title: '请稍等',
+					    text: '正在清理软件空间',
+					    modal: true
+					});
+					DelALLPic();
+					break;
+				case "同步签到":
+					kaishitongbu();
+					break;
+				case "上传问题":
+					api.showProgress({
+					    title: '请稍等',
+					    text: '正在上传日志'
+					});
+					uploadUserLog('all');
+					break;
+				case "上传失败图片":
+
+					break;
+				case "上传失败报告记录":
+
+					break;
+				case "周末促":
+					if($api.getStorage("roleName") == '业务主管'){
+						api.openWin({
+						    name: 'ywlistWin',
+						    url: 'widget://html/zmcu/ywlistWin.html',
+								pageParam: {
+									index: 0
+								}
+						});
+					}else{
+						api.openWin({
+						    name: 'dqlistWin',
+						    url: 'widget://html/zmcu/dqlistWin.html'
+						});
+					}
+					break;
+			}
+		}
+		//注销登录
+		function logout(){
+			var username = $api.getStorage("username");
+			api.confirm({
+			    title: '提示',
+			    msg: '确定注销次用户?',
+			    buttons: ['确定', '取消']
+			}, function(ret, err) {
+			    var index = ret.buttonIndex;
+			    if(index == 1){
+			    	//清空所有本地数据
+			    	$api.clearStorage();
+					$api.setStorage("username",username);
+					setTimeout("closeframe()",300);
+			    }
+			});
+		}
+
+		function closeframe(){
+			api.closeWin({
+            });
+		}
+
+		/**
+		 *清理缓存
+		 */
+		function clearchace(){
+			api.getFreeDiskSpace(function(ret, err) {
+			    var size = ret.size;
+			    //当剩余内存不足20M的时候 清理内存 25700569088
+			    if(size > 0){
+				    if(size < 20971520){
+				    	api.clearCache();
+				    }
+			    }
+			});
+		}
+
+
+		function get_aboutuserinfo(){
+			showloadinfo();
+			if($api.getStorage("roleName") == "BA人员"){
+				getT_DirTable();
+			}else{
+				get_sale_balist();
+			}
+			$file.zidianinit();
+		}
+
+		function showloadinfo(){
+			var progress = document.getElementById("progress");
+			$api.css(progress,"display: block;");
+		}
+
+		function hideloadinfo(){
+			var progress = document.getElementById("progress");
+			$api.css(progress,"display: none;");
+		}
+
+//		获取排班计划列表
+//		{
+//		    "$id": "1",
+//		    "username": "13817298158",
+//		    "realname": "徐慧敏",
+//		    "istoreid": "5454b1b5-9df3-499c-9d5e-4563780b2ca1",
+//		    "iUserID": "6b862968-6d91-4bb5-b2bb-1b3029a28f74",
+//		    "starttime": "08:30:00",
+//		    "endtime": "16:00:00",
+//		    "taskid": 1,
+//		    "cstorecode": "WTS008872",
+//		    "cstorename": "JH东阳银泰城"
+//		}
+
+		function tokenisload(){
+			var username = $api.getStorage("username");
+			$api.clearStorage();
+			$api.setStorage("username",username);
+			setTimeout("closeTowinhome()",300);
+		}
+		function closeTowinhome(){
+			api.closeToWin({
+	            name: 'root'
+            });
+		}
+
+		function writelogcrash(){
+			var LogMoudle = api.require('logCrash');
+			LogMoudle.listenCrash();
+		}
+
+
+	</script>
+</html>

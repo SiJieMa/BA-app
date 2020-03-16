@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+		<meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+		<title>矫正门店地理位置</title>
+		<link rel="stylesheet" type="text/css" href="../../css/api.css"/>
+		<style>
+			.title{ width: 90%; padding-left: 5%; padding-right: 5%; height: 50px; line-height: 50px; float: left; font-size: 16px; background-color: #f5f5f5;}
+			.shoplist{ width: 90%; padding-left: 5%; padding-right: 5%; float: left; height: auto;}
+			.shoplist ul{ width: 100%; float: left; height: auto;}
+			.shoplist ul li{ width: 100%; float: left; height: auto; border-bottom: 1px solid #f2f2f2;}
+			.shoplist ul li .name{ width: auto; height: 50px; line-height: 50px; float: left; text-align: center; font-size: 15px;}
+			.shoplist ul li .reloadlocation{ width: auto; height: 50px; line-height: 50px; float: right; text-align: center; font-size: 15px;}
+
+			.inputdiv{ width: 100%; height: 50px; float: left; border-bottom: 1px solid #f5f5f5;}
+			.inputdiv input{ outline: none; margin-left: 10px; margin-right: 10px; width: 100px; height: 30px; line-height: 30px; margin-top: 10px; float: left; font-size: 16px; color: #333;}
+			.inputdiv img{ width: 30px; height: 30px; padding: 10px; float: left;}
+			.inputdiv span{ width: 60px; height: 50px; line-height: 20px; color: #666; padding-top: 5px; font-size: 16px; text-align: center; float: left;}
+
+		</style>
+	</head>
+	<body>
+	    <span class="title">可以修改的门店信息</span>
+	    <div class="inputdiv">
+			<input id="inputshoplocation" placeholder="门店名称或编号" />
+			<img onclick="searchlocationshop()" src="../../image/search.png" />
+			<span onclick="refushshoplist()">还原<br>列表</span>
+		</div>
+		<div class="shoplist">
+			<ul id="list">
+				<!--<li>
+					<span class="name">门店名称</span>
+					<span class="reloadlocation">重新定位</span>
+				</li>-->
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript" src="../../script/api.js"></script>
+	<script type="text/javascript" src="../../script/apiclear.js"></script>
+	<script type="text/javascript" src="../../script/log.js"></script>
+	<script type="text/javascript" src="../../script/kunchiba.js"></script>
+	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/fastclick.js"></script>
+	<script type="text/javascript" src="../../script/gps.js"></script>
+	<script type="text/javascript">
+		apiready = function() {
+
+			var inputchazhaoel = document.getElementById("inputshoplocation");
+			var inputwidth = api.frameWidth - 130;
+			$api.css(inputchazhaoel,'width:'+inputwidth+'px');
+
+			showshoplist();
+		};
+		var shoplist = new Array();
+		function showshoplist() {
+
+			if($api.getStorage("roleName") == "BA人员"){
+				getBAfuzemendian();
+			}else{
+				var saleshopba = $api.getStorage("SELECTSHOP");
+				if(typeof(saleshopba) == 'undefined'){
+					api.toast({
+		                msg:'门店信息'
+		            });
+					return;
+				}
+				var el = document.getElementById("list");
+				for (var a = 0; a < saleshopba.length; a++) {
+					var li = '<li value="'+saleshopba[a].cStoreFullName+"-"+saleshopba[a].cStoreCode+'">'
+						+			'<span class="name">'+saleshopba[a].cStoreFullName+'('+saleshopba[a].cStoreCode+')'+'</span>'
+						+			'<span onclick="reloadmap(this)" cStoreFullName="'+saleshopba[a].cStoreFullName+'"  cStoreCode="'+saleshopba[a].cStoreCode+'" class="reloadlocation">重新定位</span>'
+						+		'</li>';
+					$api.append(el, li);
+				}
+			}
+		}
+
+		function getBAfuzemendian(){
+			var body = new Object();
+			body.iuserid = $api.getStorage("id");
+			$kunchi.kunchipost("ActionApi/T_Store/T_StoreByUserId", body, function(ret,err){
+				//console.log(JSON.stringify(ret) + "==" + JSON.stringify(err));
+				if(ret){
+					if(ret.length == 0){
+						tingzhi();
+						api.alert({
+						    title: '提示',
+						    msg: '您暂无负责门店，请联系上级或管理员分配门店之后再试。',
+						}, function(aaa, bbb) {
+						});
+					}else{
+						tingzhi();
+						var el = document.getElementById("list");
+						for(var a = 0; a < ret.length; a++){
+							var li = '<li value="'+ret[a].cStoreFullName+"-"+ret[a].cStoreCode+'">'
+								+			'<span class="name">'+ret[a].cStoreFullName+'('+ret[a].cStoreCode+')'+'</span>'
+								+			'<span onclick="reloadmap(this)" cStoreFullName="'+ret[a].cStoreFullName+'"  cStoreCode="'+ret[a].cStoreCode+'" class="reloadlocation">重新定位</span>'
+								+		'</li>';
+							$api.append(el, li);
+						}
+					}
+				}else{
+					tingzhi();
+					api.alert({
+					    title: '提示',
+					    msg: '当前网络环境较差，无法获取对应门店信息。',
+					}, function(aaa, bbb) {
+						api.closeWin({
+                        });
+					});
+				}
+			});
+		}
+
+		function refushshoplist(){
+			var el = document.getElementById("list");
+			var lilist = $api.domAll(el, 'li');
+			for(var a = 0; a < lilist.length; a++){
+				$api.css(lilist[a],'display: block;');
+			}
+			document.getElementById("inputshoplocation").value = "";
+		}
+
+		function searchlocationshop(){
+			var elinputshoplocation = document.getElementById("inputshoplocation").value;
+			var el = document.getElementById("list");
+			var lilist = $api.domAll(el, 'li');
+			for(var a = 0; a < lilist.length; a++){
+				var livalue = $api.attr(lilist[a], 'value');
+				if(livalue.indexOf(elinputshoplocation) > -1){
+					$api.css(lilist[a],'display: block;');
+				}else{
+					$api.css(lilist[a],'display: none;');
+				}
+			}
+		}
+
+
+		function reloadmap(tag){
+			var cStoreFullName = $api.attr(tag, 'cStoreFullName');
+			var cStoreCode = $api.attr(tag, 'cStoreCode');
+			getuserelocation(function(msg, lon, lat, time){
+				if(msg == "0"){
+					//成功
+					api.confirm({
+					    title: '提示',
+					    msg: '确认将您当前所在位置定位为门店:'+cStoreFullName+' 的新地理位置.',
+					    buttons: ['确定', '取消']
+					}, function(ret, err) {
+					    var index = ret.buttonIndex;
+					    if(index == 1){
+					    		update_shoplocation(cStoreCode, cStoreFullName, lon, lat);
+					    }
+					});
+				}else{
+					alert("定位失败,请确认已经打开软件的定位权限以及GPS开关,请移至开阔地带或信号比较好的位置重试.");
+				}
+			});
+
+		}
+
+		function update_shoplocation(cStoreCode, cStoreFullName, lon, lat) {
+			jiazai();
+			var body = new Object();
+			body.cStoreCode = cStoreCode;
+			body.cStoreFullName = cStoreFullName;
+			body.cLon = lon;
+			body.clat = lat;
+			body.iUserId = $api.getStorage("id");
+			$kunchi.kunchipost('ActionApi/T_StoreLocation/PostT_StoreLocation', body, function(ret, err) {
+//				console.log(JSON.stringify(ret) + "---" + JSON.stringify(err));
+				tingzhi();
+				if (ret) {
+					api.alert({
+						title : '提示',
+						msg : '提交修改成功,我们会尽快核实并更新位置信息.',
+					}, function(cc, dd) {
+					});
+				} else {
+					api.alert({
+						title : '提示',
+						msg : '网络错误,请退出重试.',
+					}, function(cc, dd) {
+					});
+					post_other_errorinfo(JSON.stringify(body), $api.getStorage('id'), 'ActionApi/T_StoreLocation/PostT_StoreLocation',  JSON.stringify(err));
+				}
+			});
+		}
+	</script>
+</html>
