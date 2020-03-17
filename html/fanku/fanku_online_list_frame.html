@@ -10,7 +10,43 @@
 	</head>
 	<body>
 		<div id="app">
-			
+			<div class="menu" v-show="!fankuTypeshow">
+				<div v-on:click="openmenucreate" value="新建返库" class="menu-item lansediv">
+					<div class="menu-item-one">
+						<i class="menu-item-color lanse"></i>
+						<h4 class="menu-item-title">新建返库</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pdkclogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdkc.png" />
+				</div>
+				<div @click="openhistory" class="menu-item fensediv">
+					<div class="menu-item-one">
+						<i class="menu-item-color fense"></i>
+						<h4 class="menu-item-title">历史返库</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pdlslogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdls.png" />
+				</div>
+				<div @click="daishenhe" class="menu-item chengsediv" v-show="daishen">
+					<div class="menu-item-one">
+						<i class="menu-item-color chengse"></i>
+						<h4 class="menu-item-title">待审核</h4>
+					</div>
+					<img class="rightimg" src="../../image/panDian/pddshlogo.png" />
+					<img class="bottomimg" src="../../image/panDian/pdsh.png" />
+				</div>
+			</div>
+
+			<!-- 返库类型选择 -->
+			<van-overlay v-show="fankuTypeshow">
+				<div class="wrapper">
+					<div class="cangkuback" :style="{height: fankuheight+'px'}">
+						<div class="cangkulist" :style="{height: fankuheight+'px'}">
+							<div :class="[itemck.classname]" @click="nextpage(itemck.name, itemck.id)" v-for="itemck in FanKuTypeList" class="cangkubtn">{{itemck.name}}</button>
+						</div>
+					</div>
+				</div>
+			</van-overlay>
 		</div>
 	</body>
 	<script type="text/javascript" src="../../script/api.js"></script>
@@ -18,6 +54,7 @@
 	<script type="text/javascript" src="../../script/log.js"></script>
 	<script type="text/javascript" src="../../script/kunchiba.js"></script>
 	<script type="text/javascript" src="../../script/kunchisale.js"></script>
+	<script type="text/javascript" src="../../script/es6/fanku/fanku_online_list_compiled.js"></script>
 	<script type="text/javascript" src="../../script/vue.min.js"></script>
 	<script>
 		var appvue;
@@ -25,18 +62,77 @@
 			appvue = new Vue({
 				el: "#app",
 				data: {
+					xinijian: false,
+					lishi: false,
+					daishen: false,
+					fankuheight: api.frameHeight,
+					FanKuTypeList: [],
+					fankuTypeshow: false
 				},
 				created: function() {
+					if($api.getStorage("roleName") == "BA人员"){
+						this.xinijian = true;
+						this.lishi = true;
+					}else if($api.getStorage("roleName") == "大区经理"){
+						this.daishen = true;
+					}else{
+						this.xinijian = true;
+						this.lishi = true;
+						this.daishen = true;
+					}
+					
+					//初始化新建返库类型列表
+					initbrandlocal(this);
 				},
 				mounted: function() {
 				},
 				updated:function(){
 				},
 				methods: {
-					
+					openmenucreate: function(event){
+						// this.fankuTypeshow = true
+
+						var jsfun = 'changetitle();';
+						api.execScript({
+						    name: 'fanku_online_list_win',
+						    script: jsfun
+						});
+						
+						var appvue = this;
+						appvue.fankuTypeshow = true;
+						// api.openWin({
+						//     name: 'panDian_shoplist_win',
+						//     url: 'widget://html/panDian/panDian_shoplist.html',
+						//     pageParam: {
+						//         name: 'home'
+						//     }
+						// });
+					},
+					openhistory: function(){
+						// api.openWin({
+						//     name: 'panDian_historylist_win',
+						//     url: 'widget://html/panDian/history/panDian_historylist.html',
+						//     pageParam: {}
+						// });
+					},
+					daishenhe: function(){
+						// api.openWin({
+						//     name: 'panDian_shenhelist_win',
+						//     url: 'widget://html/panDian/shenhe/panDian_shenhelist.html',
+						//     pageParam: {}
+						// });
+					},
+					nextpage: function (name, id) {
+						console.log(name, id)
+					}
 				}
 			});
 		}
-		
+	
+		function isclosefankuType(){
+			if(appvue.fankuTypeshow == true){
+				appvue.fankuTypeshow = false;
+			}
+		}
 	</script>
 </html>

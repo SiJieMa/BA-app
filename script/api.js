@@ -7,8 +7,8 @@
 
     //	u.posturllujie = "http://api.ba.ikunchi.cn/";
 	//	u.posturllujie = "http://120.27.114.88:8999/";
-	//	u.posturllujie = "https://dev-api-ba.ikunchi.com/";
-		u.posturllujie = "https://qa-api-ba.ikunchi.com/";
+		u.posturllujie = "https://dev-api-ba.ikunchi.com/";
+		// u.posturllujie = "https://qa-api-ba.ikunchi.com/";
 	//  u.posturllujie = "https://test-api-ba.ikunchi.com/";
 	//	u.posturllujie = "http://192.168.0.75/api/";
 	//	u.posturllujie = "http://120.27.114.88:9091/";
