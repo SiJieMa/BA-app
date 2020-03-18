@@ -168,6 +168,12 @@
 		 *仓库列表
 		 */
 		var CangKuList = new Array();
+
+		/**
+		 *返库类型
+		 */
+		var FanKuTypeList = new Array();
+
 		/**
 		 *销售单对应的客户列表
 		 */
@@ -456,6 +462,14 @@
 				cangkuobject.id = message_zidian[a].id;
 				CangKuList.push(cangkuobject);
 			}
+			if((message_zidian[a].cDictClass == "ReturnOrderType")&&(message_zidian[a].iParentDict != 0)){
+				var FanKuobject = new Object();
+				FanKuobject.cDictName = message_zidian[a].cDictName;
+				FanKuobject.cDictValue = message_zidian[a].cDictValue;
+				FanKuobject.id = message_zidian[a].id;
+				FanKuTypeList.push(FanKuobject);
+			}
+			
 			//把已签收的文字保存起来
 			if((message_zidian[a].cDictClass == 'OrderState')&&(message_zidian[a].cDictValue == '98')){
 				$api.setStorage('yiqianshou',message_zidian[a].cDictName);
@@ -467,6 +481,7 @@
 		}
 
 		$api.setStorage('CangKuList',CangKuList);
+		$api.setStorage('FanKuTypeList',FanKuTypeList);
 		$api.setStorage('XSkehuList',XSkehuList);
 		$api.setStorage('renwulist',renwulist);
 		$api.setStorage('chenlielist',chenlielist);

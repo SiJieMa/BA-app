@@ -110,7 +110,7 @@
 		<div id="wrap">
 			<header id='header'>
 				<nav id="nav">
-					<a id="left" onclick="api.closeWin();"> <span></span> </a>
+					<a id="left" onclick="closewinormenu()"> <span></span> </a>
 					<div id="middle">
 						<strong id="title">返库单</strong>
 					</div>
@@ -171,6 +171,24 @@
 			});
 		};
 
+		function closewinormenu(){
+			var title = document.getElementById("title").innerHTML;
+			if(title == "新建返库类型"){
+				document.getElementById("title").innerHTML = "返库单";
+				var jsfun = 'isclosefankuType();';
+				api.execScript({
+				    name: 'fanku_online_list_win',
+					frameName: 'fanku_online_list_frame',
+				    script: jsfun
+				});
+			}else{
+				api.closeWin();
+			}
+		}
+
+		function changetitle(){
+			document.getElementById("title").innerHTML = "新建返库类型";
+		}
 
 		function isempty(str){
 			if((typeof(str) == 'undefined')||(str == null)||(str == "null")||(str == "")||(str == "undefined")){

@@ -7,8 +7,13 @@
 
     //	u.posturllujie = "http://api.ba.ikunchi.cn/";
 	//	u.posturllujie = "http://120.27.114.88:8999/";
+<<<<<<< HEAD
 		// u.posturllujie = "https://dev-api-ba.ikunchi.com/";
 		u.posturllujie = "https://qa-api-ba.ikunchi.com/";
+=======
+		u.posturllujie = "https://dev-api-ba.ikunchi.com/";
+		// u.posturllujie = "https://qa-api-ba.ikunchi.com/";
+>>>>>>> cd23a2bf0b129a5b6058def739f215ca0a153715
 	//  u.posturllujie = "https://test-api-ba.ikunchi.com/";
 	//	u.posturllujie = "http://192.168.0.75/api/";
 	//	u.posturllujie = "http://120.27.114.88:9091/";
