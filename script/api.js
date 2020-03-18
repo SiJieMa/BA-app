@@ -7,7 +7,7 @@
 
     //	u.posturllujie = "http://api.ba.ikunchi.cn/";
 	//	u.posturllujie = "http://120.27.114.88:8999/";
-	//	u.posturllujie = "https://dev-api-ba.ikunchi.com/";
+		// u.posturllujie = "https://dev-api-ba.ikunchi.com/";
 		u.posturllujie = "https://qa-api-ba.ikunchi.com/";
 	//  u.posturllujie = "https://test-api-ba.ikunchi.com/";
 	//	u.posturllujie = "http://192.168.0.75/api/";
@@ -16,7 +16,7 @@
 
 	//	第三位表示大版本更新 第一位表示当前版本是第几版  55.4.54
 	u.app_usevison = '70.7.70';
-	
+
 	//u.devid = '0a0df203-eff0-40f4-a77d-cdff657c741d';
 	//u.qaid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
 	//u.httpid = 'bf7e492c-99ca-454e-994c-d5f2e7fb2830';
@@ -732,7 +732,7 @@
 		});
 	}
 	/*end*/
-	
+
 	/**
 	 * 接下来开始制作日志
 	 */
@@ -746,7 +746,7 @@
 		},function(ret) {
 			console.log("LologC:" + JSON.stringify(ret));
 		});**/
-		
+
 		var createdbsql = 'CREATE TABLE "kunchibalog" ("date"	TEXT,"log"	TEXT,"phone" TEXT,"jiekou"	TEXT,"postvalue" TEXT,"pagename" TEXT,"step" TEXT)'
 		var now = new Date();
 		var year = now.getFullYear();
@@ -759,7 +759,7 @@
 		if (day < 10)
 			clock += "0";
 		clock += day;
-		
+
 		///////////////////////////////////////////////////
 		var fslog = api.require('fs');
 		var dblog = api.require('db');
@@ -823,7 +823,7 @@
 							path : retcreatefilepath
 						});
 						if(retopendb.status){
-						
+
 							var retsqllog = dblog.selectSqlSync({
 							    name: "kunchibalog",
 							    sql: "SELECT * FROM kunchibalog limit 1;"
@@ -833,7 +833,7 @@
 								console.log('初始化新日志完成');
 							}else{
 								//没有数据库 需要创建一下
-								
+
 								var eventBindPic = dblog.executeSqlSync({
 								    name: "kunchibalog",
 								    sql: createdbsql
@@ -879,7 +879,7 @@
 		    console.log('初始化新日志失败');
 		}
 	}
-	
+
 	u.Losteplog = function(pagename, step){
 		/**var demo = api.require('LologC');
 		demo.Losteplog({
@@ -911,7 +911,7 @@
 		if (ss < 10)
 			clock += '0';
 		clock += ss;
-		
+
 		var sqlpicin = 'INSERT INTO kunchibalog VALUES ("'+clock+'","","","","","'+pagename+'","'+step+'");';
 		var db = api.require('db');
 		//console.log("sqlpicin:"+sqlpicin);
@@ -922,7 +922,7 @@
 		//{"status":false,"msg":"no such table: kunchibalog (code 1): , while compiling: INSERT INTO kunchibalog VALUES (\"2019-12-11 10:15:34\",\"\",\"\",\"\",\"\",\"1\",\"2\");"}
 		console.log(JSON.stringify(ret));
 	}
-	
+
 	u.Loonlinelog = function(log, phone, jiekou, postvalue){
 		/**var demo = api.require('LologC');
 		demo.Loonlinelog({
@@ -931,7 +931,7 @@
 		}, function(ret) {
 			console.log("wangluo"+JSON.stringify(ret));
 		});**/
-		
+
 		var now = new Date();
 		var year = now.getFullYear();
 		var month = now.getMonth() + 1;
@@ -955,7 +955,7 @@
 		if (ss < 10)
 			clock += '0';
 		clock += ss;
-		
+
 		log = log.replace(/"([^"]*)"/g, "“$1”");
 		log = log.replace(/'([^']*)'/g, "‘$1’");
 		postvalue = JSON.stringify(postvalue);
@@ -970,7 +970,7 @@
 		});
 		console.log(JSON.stringify(ret));
 	}
-	
+
 	u.Lologpathlist = function(callBack){
 		/**var demo = api.require('LologC');
 		demo.Lologpathlist(function(ret) {
@@ -992,7 +992,7 @@
 			callBack([]);
 		}
 	}
-	
+
 	u.Lofilepath = function(data, callBack){
 		/**var demo = api.require('LologC');
 		demo.Lofilepath({
@@ -1011,7 +1011,7 @@
 		    callBack("");
 		}
 	}
-	
+
 	u.Lodate = function(){
 		var now = new Date();
 		var year = now.getFullYear();
@@ -1026,9 +1026,9 @@
 		clock += day;
 		return (clock);
 	}
-	
+
 	u.clearlogfile = function(){
-	
+
 		var now = new Date();
 		var year = now.getFullYear();
 		var month = now.getMonth() + 1;
@@ -1040,11 +1040,11 @@
 		if (day < 10)
 			clock += "0";
 		clock += day;
-	
+
 		var noclock = clock.replace(/\-/g, '/');
 	    noclock = new Date(noclock).getTime();
 	    noclock = noclock / 1000;
-	
+
 		//循环计算日志时间 超过一周就删除
 		var fslog = api.require('fs');
 	    var retfirlist = fslog.readDirSync({
@@ -1062,7 +1062,7 @@
 							logtimedate = logtimedate + "-";
 						}
 					}
-					
+
 					logtimedate = logtimedate.replace(/\-/g, '/');
 				    logtimedate = new Date(logtimedate).getTime();
 				    logtimedate = logtimedate / 1000;
@@ -1078,7 +1078,7 @@
 			}
 		}
 	}
-	
+
 	u.initlogdbtime = function(){
 		var now = new Date();
 		var year = now.getFullYear();
@@ -1093,7 +1093,7 @@
 		clock += day;
 		$api.setStorage("logdbtime",clock);
 	}
-	
+
 	u.showalertmsg = function(name, msg){
 		var framename = name;
 		api.openFrame({
@@ -1117,7 +1117,7 @@
             });
 		}, 1500);
 	}
-	
+
 	u.showguize = function(){
 		api.openWin({
 		    name: 'roulurl_win',
@@ -1141,7 +1141,7 @@
 		var xiangpuli = 'widget://html/guize/xiangpuli.html';
 		var zishengtang = 'widget://html/guize/zishengtang.html';
 		var other = 'widget://html/guize/other.html';
-		
+
 		var urlname = '';
 		switch(brandname){
 			case '汉高':
@@ -1189,7 +1189,7 @@
 			case '美源':
 				urlname = meiyuan;
 				break;
-			default: 
+			default:
 				urlname = other;
 		}
 		api.openWin({

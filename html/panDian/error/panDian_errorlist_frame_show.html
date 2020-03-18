@@ -26,6 +26,7 @@
 						<span :class="[value.isred]" class="left" v-text="value.name"></span>
 						<span :class="[value.isred]" class="right"  v-text="value.count"></span>
 					</li>
+
 				</ul>
 			</div>
 		</div>
@@ -50,7 +51,7 @@
 				    name: 'closeshoplist'
 				});
 			}, 1000);
-			
+
 			appvue = new Vue({
 				el: "#app",
 				data: {

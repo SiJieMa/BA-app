@@ -179,7 +179,7 @@
 				vScrollBarEnabled : false,
 				hScrollBarEnabled : false
 			});
-			
+
 			if(api.pageParam.closeotherwin == true){
 				setTimeout(function(){
 					//更新
@@ -194,7 +194,7 @@
 					});
 				}, 500)
 			}
-			
+
 			if(api.pageParam.closeotherwin == "closeerrorlist"){
 				setTimeout(function(){
 					//更新
@@ -206,13 +206,13 @@
 					});
 				}, 500)
 			}
-			
+
 		};
-		
+
 		function openxiangqingdetail(){
 			api.openWin({
 			    name: 'panDian_errorlist_show_win',
-			    url: 'widget://html/panDian/error/panDian_errorlist _show.html',
+			    url: 'widget://html/panDian/error/panDian_errorlist_show.html',
 			    pageParam: {
 			        creportskucode: api.pageParam.creportskucode
 			    }

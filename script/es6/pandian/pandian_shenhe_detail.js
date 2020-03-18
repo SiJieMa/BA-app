@@ -18,7 +18,7 @@ function initlist(tag) {
 			tag.list = ret.map((value, index) => {
 
 				if (index == 0) {
-					
+
 					let newsplist = [];
 					for(let i = (value.AuthorList.length - 1); i >= 0; i--){
 						let spvalue = value.AuthorList[i];
@@ -26,7 +26,7 @@ function initlist(tag) {
 						let dtCreateTimeMonth = spvalue.dtCreateTime.split("T")[1];
 						let dtCreateTimeMonthnew = dtCreateTimeMonth.split(".")[0];
 						spvalue.dtCreateTime = dtCreateTimeYear+" "+dtCreateTimeMonthnew;
-						
+
 						let iStatue = spvalue.iStatue;
 						let cAuthorName = spvalue.cAuthorName;
 						spvalue.shenheren = typeof cAuthorName == "undefined" ? "" : cAuthorName;
@@ -42,9 +42,9 @@ function initlist(tag) {
 						// 	tag.jindu = spvalue.cAuthorNode;
 						// }
 					}
-					
+
 					tag.splist = newsplist;
-					
+
 					/**tag.splist = value.AuthorList.filter((spvalue) => {
 						if(typeof(spvalue.iStatue) != 'undefined'){
 							let dtCreateTimeYear = spvalue.dtCreateTime.split("T")[0];
@@ -61,22 +61,22 @@ function initlist(tag) {
 				listobj.cProductFullName = value.cProductFullName;
 				listobj.cReportSkuCode = value.cReportSkuCode;
 				listobj.cReportSkuType = value.cReportSkuType;
-				
+
 				//判断是否有复盘失败的可能
 				listobj.cReportSkuTypeFU = value.iSalesAmount == "2" ? "复盘失败-" : "";
-				
+
 				listobj.iReceiptNumber = value.iReceiptNumber;
 				listobj.id = value.id;
-				listobj.RealTimeInventory = value.RealTimeInventory;
-				
+				listobj.RealTimeInventory = value.iCurrentInventory;
+
 				if((value.cReportSkuType == "其他")||(value.cReportSkuType == "丢件")){
 					listobj.shuomingtype = value.cErrorContent;
 				}else{
 					listobj.shuomingname = "";
 					listobj.shuomingtype = "";
 				}
-				
-				if(value.RealTimeInventory > value.iReceiptNumber){
+
+				if(value.iCurrentInventory > value.iReceiptNumber){
 					listobj.isyingkui = "盘亏原因："
 					listobj.shuomingname = value.cReportSkuType == "其他"?"缺失说明:":"丢件原因:";
 				}else{

@@ -69,7 +69,7 @@ function initlist(tag) {
 
 				listobj.iReceiptNumber = value.iReceiptNumber;
 				listobj.id = value.id;
-				listobj.RealTimeInventory = value.RealTimeInventory;
+				listobj.RealTimeInventory = value.iCurrentInventory;
 
 				if (value.cReportSkuType == "其他" || value.cReportSkuType == "丢件") {
 					listobj.shuomingtype = value.cErrorContent;
@@ -78,7 +78,7 @@ function initlist(tag) {
 					listobj.shuomingtype = "";
 				}
 
-				if (value.RealTimeInventory > value.iReceiptNumber) {
+				if (value.iCurrentInventory > value.iReceiptNumber) {
 					listobj.isyingkui = "盘亏原因：";
 					listobj.shuomingname = value.cReportSkuType == "其他" ? "缺失说明:" : "丢件原因:";
 				} else {
